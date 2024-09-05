@@ -1,0 +1,12 @@
+{
+    "model":
+    {
+        "obj":"assets/models/primitives/icylinder.obj",
+        "texture":"assets/models/primitives/flatwhite.png",
+        "material":
+        {
+            "name":"primitive_material",
+            "emit":[255,255,255,255]
+        }
+    }
+}

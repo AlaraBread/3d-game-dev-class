@@ -50,8 +50,14 @@ Mkfile.old
 dkms.conf
 makefile.dep
 gf3d
+!gf3d/
 *.log
 
 # backup files
 *.blend1
 
+# compiled shaders
+*.spv
+
+# IDE
+.vscode/
