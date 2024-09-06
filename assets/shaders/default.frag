@@ -43,8 +43,13 @@ void main() {
 	surfaceColor.xyz *= ubo.material.diffuse.xyz;
 	surfaceColor.w *= ubo.material.diffuse.w * ubo.material.transparency;
 
-	float d = dot(normal, normalize(vec3(0.5, 1.0, 0.5)));
+	float d = dot(normal, normalize(vec3(0.1, 0.1, 1.0)));
 	float bands = 4.0;
-	outColor = (round(clamp((d+2.0)*0.5, 0.0, 1.0)*bands)/bands)*surfaceColor;
+	if(d >= 0.9) {
+		// specular
+		outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), surfaceColor, 0.7);
+	} else {
+		outColor = (round(clamp((d+2.0)*0.5, 0.0, 1.0)*bands)/bands)*surfaceColor;
+	}
 	outColor.w = 1.0;
 }
