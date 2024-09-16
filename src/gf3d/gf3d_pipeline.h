@@ -17,8 +17,12 @@ typedef struct {
 	Uint32 vertexCount;
 	VkBuffer indexBuffer;
 	void *uboData;	  // pointer to corresponding memory in the pipeline uboData
-	VkImageView *imageView;
-	VkSampler *imageSampler;
+	VkImageView *image1View;
+	VkSampler *image1Sampler;
+	VkImageLayout image1Layout;
+	VkImageView *image2View;
+	VkSampler *image2Sampler;
+	VkImageLayout image2Layout;
 } PipelineDrawCall;
 
 typedef struct {
@@ -158,9 +162,9 @@ void gf3d_pipeline_reset_frame(Pipeline *pipe, Uint32 frame);
  */
 void gf3d_pipeline_queue_render(
 	Pipeline *pipe, VkBuffer vertexBuffer, Uint32 vertexCount,
-	VkBuffer indexBuffer, void *uboData, 
-	VkImageView *imageView,
-	VkSampler *imageSampler
+	VkBuffer indexBuffer, void *uboData, VkImageView *image1View,
+	VkSampler *image1Sampler, VkImageLayout image1Layout, VkImageView *image2View,
+	VkSampler *image2Sampler, VkImageLayout image2Layout
 );
 
 /**

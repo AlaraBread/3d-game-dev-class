@@ -347,8 +347,10 @@ void gf2d_sprite_draw(
 	gf3d_pipeline_queue_render(
 		gf2d_sprite.pipe, sprite->buffer,
 		6, // its a single quad
-		gf2d_sprite.faceBuffer, &spriteUBO, &sprite->texture->textureImageView,
-		&sprite->texture->textureSampler
+		gf2d_sprite.faceBuffer, &spriteUBO,
+		&sprite->texture->textureImageView, &sprite->texture->textureSampler,
+		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+		VK_NULL_HANDLE, VK_NULL_HANDLE, VK_IMAGE_LAYOUT_UNDEFINED
 	);
 }
 

@@ -178,6 +178,9 @@ void gf3d_command_configure_render_pass(
 	VkRenderPassBeginInfo renderPassInfo = {0};
 
 	clearValues[0].color.float32[3] = 1.0;
+	clearValues[1].color.float32[0] = 0.5;
+	clearValues[1].color.float32[1] = 0.5;
+	clearValues[1].color.float32[2] = 0.5;
 	clearValues[2].depthStencil.depth = 1.0f;
 
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

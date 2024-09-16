@@ -86,11 +86,11 @@ void gf3d_pipeline_call_render(
 void gf3d_pipeline_update_descriptor_set(
 	Pipeline *pipe, PipelineDrawCall *drawCall
 ) {
-	int count = 1;
+	int count = 0;
 	int frame;
 	UniformBuffer *buffer;
 	VkDescriptorImageInfo imageInfo = {0};
-	VkWriteDescriptorSet descriptorWrite[2] = {0};
+	VkWriteDescriptorSet descriptorWrite[3] = {0};
 	VkDescriptorBufferInfo bufferInfo = {0};
 	if((!pipe) || (!drawCall)) return;
 
@@ -108,21 +108,38 @@ void gf3d_pipeline_update_descriptor_set(
 	descriptorWrite[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	descriptorWrite[0].descriptorCount = 1;
 	descriptorWrite[0].pBufferInfo = &bufferInfo;
+	count += 1;
 
-	if(drawCall->imageView && drawCall->imageSampler) {
-		count = 2;
-		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = *drawCall->imageView;
-		imageInfo.sampler = *drawCall->imageSampler;
-		descriptorWrite[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrite[1].dstSet = *drawCall->descriptorSet;
-		descriptorWrite[1].dstBinding = 1;
-		descriptorWrite[1].dstArrayElement = 0;
-		descriptorWrite[1].descriptorType =
+	if(drawCall->image1View && drawCall->image1Sampler) {
+		imageInfo.imageLayout = drawCall->image1Layout;
+		imageInfo.imageView = *drawCall->image1View;
+		imageInfo.sampler = *drawCall->image1Sampler;
+		descriptorWrite[count].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrite[count].dstSet = *drawCall->descriptorSet;
+		descriptorWrite[count].dstBinding = count;
+		descriptorWrite[count].dstArrayElement = 0;
+		descriptorWrite[count].descriptorType =
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		descriptorWrite[1].descriptorCount = 1;
-		descriptorWrite[1].pImageInfo = &imageInfo;
-		descriptorWrite[1].pTexelBufferView = NULL; // Optional
+		descriptorWrite[count].descriptorCount = 1;
+		descriptorWrite[count].pImageInfo = &imageInfo;
+		descriptorWrite[count].pTexelBufferView = NULL; // Optional
+		count += 1;
+	}
+
+	if(drawCall->image2View && drawCall->image2Sampler) {
+		imageInfo.imageLayout = drawCall->image2Layout;
+		imageInfo.imageView = *drawCall->image2View;
+		imageInfo.sampler = *drawCall->image2Sampler;
+		descriptorWrite[count].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		descriptorWrite[count].dstSet = *drawCall->descriptorSet;
+		descriptorWrite[count].dstBinding = count;
+		descriptorWrite[count].dstArrayElement = 0;
+		descriptorWrite[count].descriptorType =
+			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		descriptorWrite[count].descriptorCount = 1;
+		descriptorWrite[count].pImageInfo = &imageInfo;
+		descriptorWrite[count].pTexelBufferView = NULL; // Optional
+		count += 1;
 	}
 	vkUpdateDescriptorSets(pipe->device, count, descriptorWrite, 0, NULL);
 }
@@ -173,9 +190,9 @@ PipelineDrawCall *gf3d_pipeline_draw_call_new(Pipeline *pipe) {
 
 void gf3d_pipeline_queue_render(
 	Pipeline *pipe, VkBuffer vertexBuffer, Uint32 vertexCount,
-	VkBuffer indexBuffer, void *uboData, 
-	VkImageView *imageView,
-	VkSampler *imageSampler
+	VkBuffer indexBuffer, void *uboData, VkImageView *image1View,
+	VkSampler *image1Sampler, VkImageLayout image1Layout, VkImageView *image2View,
+	VkSampler *image2Sampler, VkImageLayout image2Layout
 ) {
 	PipelineDrawCall *drawCall;
 	if(!pipe) return;
@@ -190,8 +207,14 @@ void gf3d_pipeline_queue_render(
 	drawCall->vertexBuffer = vertexBuffer;
 	drawCall->vertexCount = vertexCount;
 	drawCall->indexBuffer = indexBuffer;
-	drawCall->imageView = imageView;
-	drawCall->imageSampler = imageSampler;
+
+	drawCall->image1View = image1View;
+	drawCall->image1Sampler = image1Sampler;
+	drawCall->image1Layout = image1Layout;
+	drawCall->image2View = image2View;
+	drawCall->image2Sampler = image2Sampler;
+	drawCall->image2Layout = image2Layout;
+
 	memcpy(drawCall->uboData, uboData, pipe->uboDataSize);
 }
 

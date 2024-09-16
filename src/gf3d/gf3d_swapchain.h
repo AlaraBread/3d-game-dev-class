@@ -80,5 +80,7 @@ void gf3d_swapchain_create_normal_image();
 
 VkImageView *gf3d_swapchain_get_normal_image_view();
 VkSampler *gf3d_swapchain_get_normal_image_sampler();
+VkImageView *gf3d_swapchain_get_depth_image_view();
+VkSampler *gf3d_swapchain_get_depth_image_sampler();
 
 #endif

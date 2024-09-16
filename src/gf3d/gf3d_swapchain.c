@@ -495,7 +495,7 @@ void gf3d_swapchain_create_depth_image() {
 	gf3d_swapchain_create_image(
 		gf3d_swapchain.extent.width, gf3d_swapchain.extent.height,
 		gf3d_pipeline_find_depth_format(), VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &gf3d_swapchain.depthImage,
 		&gf3d_swapchain.depthImageMemory
 	);
@@ -508,6 +508,14 @@ void gf3d_swapchain_create_depth_image() {
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 	);
+}
+
+VkImageView *gf3d_swapchain_get_depth_image_view() {
+	return &gf3d_swapchain.depthImageView;
+}
+
+VkSampler *gf3d_swapchain_get_depth_image_sampler() {
+	return &gf3d_swapchain.normalImageSampler;
 }
 
 void gf3d_swapchain_create_normal_image_sampler();

@@ -323,8 +323,9 @@ void gf3d_mesh_queue_render(
 		if(!primitive) continue;
 		gf3d_pipeline_queue_render(
 			pipe, primitive->vertexBuffer, primitive->faceCount * 3,
-			primitive->faceBuffer, uboData, &texture->textureImageView,
-			&texture->textureSampler
+			primitive->faceBuffer, uboData, &texture->textureImageView, &texture->textureSampler,
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			VK_NULL_HANDLE, VK_NULL_HANDLE, VK_IMAGE_LAYOUT_UNDEFINED
 		);
 	}
 }
