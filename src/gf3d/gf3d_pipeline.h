@@ -17,7 +17,8 @@ typedef struct {
 	Uint32 vertexCount;
 	VkBuffer indexBuffer;
 	void *uboData;	  // pointer to corresponding memory in the pipeline uboData
-	Texture *texture; // optional!!
+	VkImageView *imageView;
+	VkSampler *imageSampler;
 } PipelineDrawCall;
 
 typedef struct {
@@ -54,6 +55,9 @@ typedef struct {
 
 	VkCommandBuffer commandBuffer; /**<for current command*/
 	VkIndexType indexType;		   /**<size of the indices in the index buffer*/
+
+	void (* preRender) ();
+	void (* postRender) ();
 } Pipeline;
 
 /**
@@ -148,12 +152,15 @@ void gf3d_pipeline_reset_frame(Pipeline *pipe, Uint32 frame);
  * @param indexBuffer which face buffer to use for the draw
  * @param uboData the UBO data to draw with.  Note this is copied by the
  * function, feel free to change it after use
- * @param texture [optional] if you have a texture to render with, provide it
+ * @param imageView [optional] if you have a texture to render with, provide it
  * here.  Note if the pipeline needs one, you MUST provide one
+ * @param imageSampler [optional] sampler for the provided imageView
  */
 void gf3d_pipeline_queue_render(
 	Pipeline *pipe, VkBuffer vertexBuffer, Uint32 vertexCount,
-	VkBuffer indexBuffer, void *uboData, Texture *texture
+	VkBuffer indexBuffer, void *uboData, 
+	VkImageView *imageView,
+	VkSampler *imageSampler
 );
 
 /**
@@ -185,5 +192,6 @@ void gf3d_pipeline_submit_commands(Pipeline *pipe);
 void gf3d_pipeline_submit_all_pipe_commands();
 
 VkFormat gf3d_pipeline_find_depth_format();
+VkFormat gf3d_pipeline_find_normal_format();
 
 #endif

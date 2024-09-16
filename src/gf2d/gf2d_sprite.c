@@ -347,7 +347,8 @@ void gf2d_sprite_draw(
 	gf3d_pipeline_queue_render(
 		gf2d_sprite.pipe, sprite->buffer,
 		6, // its a single quad
-		gf2d_sprite.faceBuffer, &spriteUBO, sprite->texture
+		gf2d_sprite.faceBuffer, &spriteUBO, &sprite->texture->textureImageView,
+		&sprite->texture->textureSampler
 	);
 }
 

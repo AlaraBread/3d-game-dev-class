@@ -33,8 +33,9 @@ layout(location = 1) in vec2 fragTexCoord;
 layout(location = 2) in vec3 position;
 
 layout(location = 0) out vec4 outColor;
+layout(location = 1) out vec4 normalColor;
 
-void main() {	
+void main() {
 	int i;
 	vec4 surfaceColor = texture(texSampler, fragTexCoord);
 	vec3 normal = fragNormal;
@@ -45,11 +46,17 @@ void main() {
 
 	float d = dot(normal, normalize(vec3(0.1, 0.1, 1.0)));
 	float bands = 4.0;
-	if(d >= 0.9) {
+	if(d >= 0.3) {
 		// specular
-		outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), surfaceColor, 0.7);
+		if(d >= 0.9) {
+			outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), surfaceColor, 0.6);
+		} else {
+			outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), surfaceColor, 0.8);
+		}
 	} else {
 		outColor = (round(clamp((d+2.0)*0.5, 0.0, 1.0)*bands)/bands)*surfaceColor;
 	}
 	outColor.w = 1.0;
+	normalColor.xyz = (normal+vec3(1.0))/2.0;
+	normalColor.w = 1.0;
 }

@@ -24,6 +24,7 @@
 #include "gf3d_swapchain.h"
 #include "gf3d_texture.h"
 #include "gf3d_vgraphics.h"
+#include "gf3d_outline.h"
 
 extern int __DEBUG;
 
@@ -117,6 +118,7 @@ int main(int argc, char *argv[]) {
 		gf3d_model_draw_sky(sky, skyMat, GFC_COLOR_WHITE);
 		gf3d_model_draw(dino, dinoMat, GFC_COLOR_WHITE, 0);
 		draw_origin();
+		render_outlines();
 		// 2D draws
 		gf2d_mouse_draw();
 		gf2d_font_draw_line_tag(

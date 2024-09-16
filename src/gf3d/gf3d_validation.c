@@ -52,6 +52,9 @@ void gf3d_validation_query_layer_properties() {
 		newLayer->properties = &gf3d_validation.availableLayers[i];
 		newLayer->name = newLayer->properties->layerName;
 		newLayer->enabled = 1; // enabled by default
+		if(strcmp(gf3d_validation.availableLayers[i].layerName, "VK_LAYER_KHRONOS_validation") != 0) {
+			continue;
+		}
 		slog(
 			"Validation layer available: %s",
 			gf3d_validation.availableLayers[i].layerName

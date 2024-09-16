@@ -174,11 +174,11 @@ void gf3d_command_configure_render_pass(
 	VkFramebuffer framebuffer, VkPipeline graphicsPipeline,
 	VkPipelineLayout pipelineLayout
 ) {
-	VkClearValue clearValues[2] = {0};
+	VkClearValue clearValues[3] = {0};
 	VkRenderPassBeginInfo renderPassInfo = {0};
 
 	clearValues[0].color.float32[3] = 1.0;
-	clearValues[1].depthStencil.depth = 1.0f;
+	clearValues[2].depthStencil.depth = 1.0f;
 
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = renderPass;
@@ -186,7 +186,7 @@ void gf3d_command_configure_render_pass(
 	renderPassInfo.renderArea.offset.x = 0;
 	renderPassInfo.renderArea.offset.y = 0;
 	renderPassInfo.renderArea.extent = gf3d_swapchain_get_extent();
-	renderPassInfo.clearValueCount = 2;
+	renderPassInfo.clearValueCount = 3;
 	renderPassInfo.pClearValues = clearValues;
 
 	vkCmdBeginRenderPass(

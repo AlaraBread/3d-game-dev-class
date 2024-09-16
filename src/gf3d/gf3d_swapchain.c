@@ -29,6 +29,10 @@ typedef struct {
 	VkImage depthImage;
 	VkDeviceMemory depthImageMemory;
 	VkImageView depthImageView;
+	VkImage normalImage;
+	VkDeviceMemory normalImageMemory;
+	VkImageView normalImageView;
+	VkSampler normalImageSampler;
 } vSwapChain;
 
 static vSwapChain gf3d_swapchain = {0};
@@ -111,7 +115,7 @@ void gf3d_swapchain_create_frame_buffer(
 	VkFramebuffer *buffer, VkImageView *imageView, Pipeline *pipe
 ) {
 	VkFramebufferCreateInfo framebufferInfo = {0};
-	VkImageView imageViews[2];
+	VkImageView imageViews[3];
 
 	if(!pipe) {
 		slog("failed to create swapchain without a valid pipe");
@@ -119,11 +123,12 @@ void gf3d_swapchain_create_frame_buffer(
 	}
 
 	imageViews[0] = *imageView;
-	imageViews[1] = gf3d_swapchain.depthImageView;
+	imageViews[1] = gf3d_swapchain.normalImageView;
+	imageViews[2] = gf3d_swapchain.depthImageView;
 
 	framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	framebufferInfo.renderPass = pipe->renderPass;
-	framebufferInfo.attachmentCount = 2;
+	framebufferInfo.attachmentCount = 3;
 	framebufferInfo.pAttachments = imageViews;
 	framebufferInfo.width = gf3d_swapchain.extent.width;
 	framebufferInfo.height = gf3d_swapchain.extent.height;
@@ -191,7 +196,7 @@ void gf3d_swapchain_create(VkDevice device, VkSurfaceKHR surface) {
 	queueFamilyIndices[1] = presentFamily;
 	queueFamilyIndices[2] = transferFamily;
 
-	if(graphicsFamily != presentFamily) {
+	if(graphicsFamily != presentFamily && presentFamily != transferFamily && graphicsFamily != transferFamily) {
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
 		createInfo.queueFamilyIndexCount = 3;
 		createInfo.pQueueFamilyIndices = queueFamilyIndices;
@@ -309,6 +314,22 @@ void gf3d_swapchain_close() {
 		vkFreeMemory(
 			gf3d_swapchain.device, gf3d_swapchain.depthImageMemory, NULL
 		);
+	}
+	if(gf3d_swapchain.normalImageView != VK_NULL_HANDLE) {
+		vkDestroyImageView(
+			gf3d_swapchain.device, gf3d_swapchain.normalImageView, NULL
+		);
+	}
+	if(gf3d_swapchain.normalImage != VK_NULL_HANDLE) {
+		vkDestroyImage(gf3d_swapchain.device, gf3d_swapchain.normalImage, NULL);
+	}
+	if(gf3d_swapchain.normalImageMemory != VK_NULL_HANDLE) {
+		vkFreeMemory(
+			gf3d_swapchain.device, gf3d_swapchain.normalImageMemory, NULL
+		);
+	}
+	if(gf3d_swapchain.normalImageSampler != VK_NULL_HANDLE) {
+		vkDestroySampler(gf3d_swapchain.device, gf3d_swapchain.normalImageSampler, NULL);
 	}
 	if(gf3d_swapchain.frameBuffers) {
 		for(i = 0; i < gf3d_swapchain.framebufferCount; i++) {
@@ -455,7 +476,8 @@ void gf3d_swapchain_transition_image_layout(
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	} else {
-		slog("unsupported layout transition!");
+		sourceStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 	}
 
 	commandPool = gf3d_vgraphics_get_graphics_command_pool();
@@ -486,6 +508,58 @@ void gf3d_swapchain_create_depth_image() {
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 	);
+}
+
+void gf3d_swapchain_create_normal_image_sampler();
+
+void gf3d_swapchain_create_normal_image() {
+	gf3d_swapchain_create_image(
+		gf3d_swapchain.extent.width, gf3d_swapchain.extent.height,
+		gf3d_pipeline_find_normal_format(), VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &gf3d_swapchain.normalImage,
+		&gf3d_swapchain.normalImageMemory
+	);
+	gf3d_swapchain.normalImageView = gf3d_swapchain_create_image_view(
+		gf3d_swapchain.normalImage, gf3d_pipeline_find_normal_format(),
+		VK_IMAGE_ASPECT_COLOR_BIT
+	);
+	gf3d_swapchain_transition_image_layout(
+		gf3d_swapchain.normalImage, gf3d_pipeline_find_normal_format(),
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+	);
+	gf3d_swapchain_create_normal_image_sampler();
+}
+
+void gf3d_swapchain_create_normal_image_sampler() {
+	VkSamplerCreateInfo samplerInfo = {0};
+
+	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+	samplerInfo.magFilter = VK_FILTER_LINEAR;
+	samplerInfo.minFilter = VK_FILTER_LINEAR;
+	samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+	samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+	samplerInfo.anisotropyEnable = VK_TRUE;
+	samplerInfo.maxAnisotropy = 16;
+	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+	samplerInfo.unnormalizedCoordinates = VK_FALSE;
+	samplerInfo.compareEnable = VK_FALSE;
+	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	samplerInfo.mipLodBias = 0.0f;
+	samplerInfo.minLod = 0.0f;
+	samplerInfo.maxLod = 0.0f;
+	vkCreateSampler(gf3d_swapchain.device, &samplerInfo, NULL, &gf3d_swapchain.normalImageSampler);
+}
+
+VkImageView *gf3d_swapchain_get_normal_image_view() {
+	return &gf3d_swapchain.normalImageView;
+}
+
+VkSampler *gf3d_swapchain_get_normal_image_sampler() {
+	return &gf3d_swapchain.normalImageSampler;
 }
 
 uint32_t gf3d_swapchain_find_Memory_type(

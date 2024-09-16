@@ -12,7 +12,7 @@
 #include "gf3d_swapchain.h"
 #include "gf3d_vgraphics.h"
 
-#define ATTRIBUTE_COUNT 5
+#define ATTRIBUTE_COUNT 3
 
 extern int __DEBUG;
 
@@ -96,16 +96,6 @@ void gf3d_mesh_init(Uint32 mesh_max) {
 	gf3d_mesh.attributeDescriptions[2].location = 2;
 	gf3d_mesh.attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
 	gf3d_mesh.attributeDescriptions[2].offset = offsetof(Vertex, texel);
-
-	gf3d_mesh.attributeDescriptions[3].binding = 0;
-	gf3d_mesh.attributeDescriptions[3].location = 3;
-	gf3d_mesh.attributeDescriptions[3].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-	gf3d_mesh.attributeDescriptions[3].offset = offsetof(Vertex, bones);
-
-	gf3d_mesh.attributeDescriptions[4].binding = 0;
-	gf3d_mesh.attributeDescriptions[4].location = 4;
-	gf3d_mesh.attributeDescriptions[4].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-	gf3d_mesh.attributeDescriptions[4].offset = offsetof(Vertex, weights);
 
 	gf3d_mesh.mesh_list = gfc_allocate_array(sizeof(Mesh), mesh_max);
 
@@ -333,7 +323,8 @@ void gf3d_mesh_queue_render(
 		if(!primitive) continue;
 		gf3d_pipeline_queue_render(
 			pipe, primitive->vertexBuffer, primitive->faceCount * 3,
-			primitive->faceBuffer, uboData, texture
+			primitive->faceBuffer, uboData, &texture->textureImageView,
+			&texture->textureSampler
 		);
 	}
 }

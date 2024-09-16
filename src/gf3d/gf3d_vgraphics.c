@@ -30,6 +30,7 @@
 #include "gf3d_vqueues.h"
 
 #include "gf3d_vgraphics.h"
+#include "gf3d_outline.h"
 
 typedef struct {
 	SDL_Window *main_window;
@@ -192,6 +193,7 @@ void gf3d_vgraphics_init(const char *config) {
 		gf3d_mesh_init(1024); // TODO: pull this from a parameter
 		gf3d_model_manager_init(1024);
 		renderPipe = gf3d_mesh_get_pipeline();
+		outline_init();
 	}
 	if(sj_object_get_value_as_bool(json, "enable_2d", &enable) && (enable)) {
 		gf3d_vgraphics.enable_2d = 1;
@@ -200,6 +202,7 @@ void gf3d_vgraphics_init(const char *config) {
 	}
 
 	gf3d_swapchain_create_depth_image();
+	gf3d_swapchain_create_normal_image();
 	gf3d_swapchain_setup_frame_buffers(renderPipe);
 	gf3d_vgraphics_semaphores_create();
 }
@@ -308,12 +311,12 @@ void gf3d_vgraphics_setup(
 	slog_sync();
 
 	// create instance
-	vkCreateInstance(
+	VkResult result = vkCreateInstance(
 		&gf3d_vgraphics.vk_instance_info, NULL, &gf3d_vgraphics.vk_instance
 	);
 
 	if(!gf3d_vgraphics.vk_instance) {
-		slog("failed to create a vulkan instance");
+		slog("failed to create a vulkan instance %d", result);
 		gf3d_vgraphics_close();
 		return;
 	}

@@ -440,6 +440,8 @@ VkImageLayout gf3d_config_image_layer_from_str(const char *str) {
 		return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	} else if(strcmp(str, "VK_IMAGE_LAYOUT_PREINITIALIZED") == 0) {
 		return VK_IMAGE_LAYOUT_PREINITIALIZED;
+	} else if (strcmp(str, "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") == 0) {
+		return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 	}
 	// NOTE: there are a lot more of these, but are specific to later
 	// versions or extensions.  If you want to support more, just

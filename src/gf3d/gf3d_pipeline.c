@@ -109,11 +109,11 @@ void gf3d_pipeline_update_descriptor_set(
 	descriptorWrite[0].descriptorCount = 1;
 	descriptorWrite[0].pBufferInfo = &bufferInfo;
 
-	if(drawCall->texture) {
+	if(drawCall->imageView && drawCall->imageSampler) {
 		count = 2;
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = drawCall->texture->textureImageView;
-		imageInfo.sampler = drawCall->texture->textureSampler;
+		imageInfo.imageView = *drawCall->imageView;
+		imageInfo.sampler = *drawCall->imageSampler;
 		descriptorWrite[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrite[1].dstSet = *drawCall->descriptorSet;
 		descriptorWrite[1].dstBinding = 1;
@@ -173,7 +173,9 @@ PipelineDrawCall *gf3d_pipeline_draw_call_new(Pipeline *pipe) {
 
 void gf3d_pipeline_queue_render(
 	Pipeline *pipe, VkBuffer vertexBuffer, Uint32 vertexCount,
-	VkBuffer indexBuffer, void *uboData, Texture *texture
+	VkBuffer indexBuffer, void *uboData, 
+	VkImageView *imageView,
+	VkSampler *imageSampler
 ) {
 	PipelineDrawCall *drawCall;
 	if(!pipe) return;
@@ -188,7 +190,8 @@ void gf3d_pipeline_queue_render(
 	drawCall->vertexBuffer = vertexBuffer;
 	drawCall->vertexCount = vertexCount;
 	drawCall->indexBuffer = indexBuffer;
-	drawCall->texture = texture;
+	drawCall->imageView = imageView;
+	drawCall->imageSampler = imageSampler;
 	memcpy(drawCall->uboData, uboData, pipe->uboDataSize);
 }
 
@@ -265,19 +268,30 @@ VkFormat gf3d_pipeline_find_depth_format() {
 	);
 }
 
+VkFormat gf3d_pipeline_find_normal_format() {
+	VkFormat formats[] = {
+		VK_FORMAT_B8G8R8A8_UNORM,
+	};
+	return gf3d_pipeline_find_supported_format(
+		formats, 2, VK_IMAGE_TILING_OPTIMAL,
+		VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT | VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
+	);
+}
+
 int gf3d_pipeline_render_pass_create(
 	VkDevice device, SJson *config, VkRenderPass *renderPass
 ) {
 	SJson *item;
 	const char *str;
 	VkAttachmentDescription colorAttachment = {0};
-	VkAttachmentReference colorAttachmentRef = {0};
+	VkAttachmentDescription normalAttachment = {0};
 	VkSubpassDescription subpass = {0};
 	VkRenderPassCreateInfo renderPassInfo = {0};
 	VkSubpassDependency dependency = {0};
 	VkAttachmentDescription depthAttachment = {0};
 	VkAttachmentReference depthAttachmentRef = {0};
-	VkAttachmentDescription attachments[2];
+	VkAttachmentDescription attachments[3];
+	VkAttachmentReference colorAttachmentRefs[2];
 
 	if(!config) return 0;
 	if(!renderPass) return 0;
@@ -287,7 +301,10 @@ int gf3d_pipeline_render_pass_create(
 		depthAttachment = gf3d_config_attachment_description(
 			item, gf3d_pipeline_find_depth_format()
 		);
-		depthAttachmentRef.attachment = 1;
+		if(depthAttachment.finalLayout == VK_IMAGE_LAYOUT_UNDEFINED) {
+			slog("undefined depth attachment final layout!!!!");
+		}
+		depthAttachmentRef.attachment = 2;
 		depthAttachmentRef.layout = depthAttachment.finalLayout;
 	}
 	item = sj_object_get_value(config, "colorAttachment");
@@ -295,8 +312,22 @@ int gf3d_pipeline_render_pass_create(
 		colorAttachment = gf3d_config_attachment_description(
 			item, gf3d_swapchain_get_format()
 		);
-		colorAttachmentRef.attachment = 0;
-		colorAttachmentRef.layout = colorAttachment.finalLayout;
+		if(colorAttachment.finalLayout == VK_IMAGE_LAYOUT_UNDEFINED) {
+			slog("undefined color attachment final layout!!!!");
+		}
+		colorAttachmentRefs[0].attachment = 0;
+		colorAttachmentRefs[0].layout = colorAttachment.finalLayout;
+	}
+	item = sj_object_get_value(config, "normalAttachment");
+	if(item) {
+		normalAttachment = gf3d_config_attachment_description(
+			item, gf3d_swapchain_get_format()
+		);
+		if(normalAttachment.finalLayout == VK_IMAGE_LAYOUT_UNDEFINED) {
+			slog("undefined normal attachment final layout!!!!");
+		}
+		colorAttachmentRefs[1].attachment = 1;
+		colorAttachmentRefs[1].layout = normalAttachment.finalLayout;
 	}
 
 	item = sj_object_get_value(config, "dependency");
@@ -308,15 +339,16 @@ int gf3d_pipeline_render_pass_create(
 		subpass.pipelineBindPoint =
 			gf3d_config_pipeline_bindpoint_from_str(str);
 	}
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &colorAttachmentRef;
+	subpass.colorAttachmentCount = 2;
+	subpass.pColorAttachments = (const VkAttachmentReference *) &colorAttachmentRefs;
 	subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
 	memcpy(&attachments[0], &colorAttachment, sizeof(VkAttachmentDescription));
-	memcpy(&attachments[1], &depthAttachment, sizeof(VkAttachmentDescription));
+	memcpy(&attachments[1], &normalAttachment, sizeof(VkAttachmentDescription));
+	memcpy(&attachments[2], &depthAttachment, sizeof(VkAttachmentDescription));
 
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = 2;
+	renderPassInfo.attachmentCount = 3;
 	renderPassInfo.pAttachments = attachments;
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
@@ -394,7 +426,6 @@ Pipeline *gf3d_pipeline_create_from_config(
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {0};
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {0};
 	VkPipelineMultisampleStateCreateInfo multisampling = {0};
-	VkPipelineColorBlendAttachmentState colorBlendAttachment = {0};
 	VkPipelineColorBlendStateCreateInfo colorBlending = {0};
 	VkPipelineDepthStencilStateCreateInfo depthStencil = {0};
 
@@ -509,16 +540,20 @@ Pipeline *gf3d_pipeline_create_from_config(
 		sj_object_get_value(config, "multisampling")
 	);
 
-	colorBlendAttachment = gf3d_config_pipeline_color_blend_attachment(
+	VkPipelineColorBlendAttachmentState colorBlendAttachments[2];
+	colorBlendAttachments[0] = gf3d_config_pipeline_color_blend_attachment(
 		sj_object_get_value(config, "colorBlendAttachment")
+	);
+	colorBlendAttachments[1] = gf3d_config_pipeline_color_blend_attachment(
+		sj_object_get_value(config, "normalColorBlendAttachment")
 	);
 
 	colorBlending.sType =
 		VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	colorBlending.logicOpEnable = VK_FALSE;
 	colorBlending.logicOp = VK_LOGIC_OP_COPY; // Optional
-	colorBlending.attachmentCount = 1;
-	colorBlending.pAttachments = &colorBlendAttachment;
+	colorBlending.attachmentCount = 2;
+	colorBlending.pAttachments = (const VkPipelineColorBlendAttachmentState *) &colorBlendAttachments;
 	colorBlending.blendConstants[0] = 0.0f; // Optional
 	colorBlending.blendConstants[1] = 0.0f; // Optional
 	colorBlending.blendConstants[2] = 0.0f; // Optional
@@ -759,6 +794,7 @@ void gf3d_pipeline_submit_all_pipe_commands() {
 	int i;
 	for(i = 0; i < gf3d_pipeline.maxPipelines; i++) {
 		if(!gf3d_pipeline.pipelineList[i].inUse) continue;
+		if(gf3d_pipeline.pipelineList[i].preRender) gf3d_pipeline.pipelineList[i].preRender();
 		// Update UBOS
 		gf3_pipeline_update_ubos(&gf3d_pipeline.pipelineList[i]);
 		// Update Descriptor sets
@@ -767,6 +803,7 @@ void gf3d_pipeline_submit_all_pipe_commands() {
 		gf3d_pipeline_render_all_drawcalls(&gf3d_pipeline.pipelineList[i]);
 		// submit commands
 		gf3d_pipeline_submit_commands(&gf3d_pipeline.pipelineList[i]);
+		if(gf3d_pipeline.pipelineList[i].postRender) gf3d_pipeline.pipelineList[i].postRender();
 	}
 }
 
