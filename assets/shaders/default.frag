@@ -57,6 +57,6 @@ void main() {
 		outColor = (round(clamp((d+2.0)*0.5, 0.0, 1.0)*bands)/bands)*surfaceColor;
 	}
 	outColor.w = 1.0;
-	normalColor.xyz = (normal+vec3(1.0))/2.0;
+	normalColor.xyz = (normal+vec3(1))/2;
 	normalColor.w = 1.0;
 }

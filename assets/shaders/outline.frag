@@ -18,8 +18,17 @@ float cubicIn(float t) {
   return t * t * t;
 }
 
+float cubicOut(float t) {
+  float f = t - 1.0;
+  return f * f * f + 1.0;
+}
+
 vec3 readNormal(vec2 UV) {
-	return normalize((texture(normalTexture, UV).xyz*2)-vec3(1));
+	vec3 v = (texture(normalTexture, UV).xyz*2)-vec3(1);
+	if(dot(v, v) < 0.5*0.5) {
+		return vec3(0);
+	}
+	return v;
 }
 
 float linearizeDepth(float d, float zNear, float zFar) {
@@ -65,17 +74,21 @@ void main() {
 	float curDepth = readDepth(fragTexCoord);
 	vec2 pixel_size = 1.0/vec2(1280, 720);
 	outColor.xyz = ubo.color;
-	outColor.w = 0;
-	for(int i = 0; i < 16; i++) {
+	float edginess = 0;
+	if(curDepth == 1.0) {
+		return;
+	}
+	for(int i = 0; i < 20; i++) {
 		vec2 offset = get_pixel_offset(i);
 		vec2 uv = offset*pixel_size+fragTexCoord;
 		vec3 n = readNormal(uv);
 		float d = readDepth(uv);
-		if(dot(n, curNormal) < 0.9 || abs(d-curDepth) > 0.1) {
-			outColor.w = 1;
-			break;
+		if(d == 1.0) {
+			continue;
+		}
+		if(dot(n, curNormal) < 0.4 || abs(d-curDepth) > 0.1) {
+			edginess += 1.0/20.0;
 		}
 	}
-	outColor.w = 1;
-	outColor.xyz = curNormal;
+	outColor.w = cubicOut(edginess);
 }

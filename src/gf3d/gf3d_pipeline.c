@@ -89,7 +89,7 @@ void gf3d_pipeline_update_descriptor_set(
 	int count = 0;
 	int frame;
 	UniformBuffer *buffer;
-	VkDescriptorImageInfo imageInfo = {0};
+	VkDescriptorImageInfo imageInfo[3] = {0};
 	VkWriteDescriptorSet descriptorWrite[3] = {0};
 	VkDescriptorBufferInfo bufferInfo = {0};
 	if((!pipe) || (!drawCall)) return;
@@ -111,9 +111,9 @@ void gf3d_pipeline_update_descriptor_set(
 	count += 1;
 
 	if(drawCall->image1View && drawCall->image1Sampler) {
-		imageInfo.imageLayout = drawCall->image1Layout;
-		imageInfo.imageView = *drawCall->image1View;
-		imageInfo.sampler = *drawCall->image1Sampler;
+		imageInfo[count].imageLayout = drawCall->image1Layout;
+		imageInfo[count].imageView = *drawCall->image1View;
+		imageInfo[count].sampler = *drawCall->image1Sampler;
 		descriptorWrite[count].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrite[count].dstSet = *drawCall->descriptorSet;
 		descriptorWrite[count].dstBinding = count;
@@ -121,15 +121,15 @@ void gf3d_pipeline_update_descriptor_set(
 		descriptorWrite[count].descriptorType =
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorWrite[count].descriptorCount = 1;
-		descriptorWrite[count].pImageInfo = &imageInfo;
+		descriptorWrite[count].pImageInfo = &imageInfo[count];
 		descriptorWrite[count].pTexelBufferView = NULL; // Optional
 		count += 1;
 	}
 
 	if(drawCall->image2View && drawCall->image2Sampler) {
-		imageInfo.imageLayout = drawCall->image2Layout;
-		imageInfo.imageView = *drawCall->image2View;
-		imageInfo.sampler = *drawCall->image2Sampler;
+		imageInfo[count].imageLayout = drawCall->image2Layout;
+		imageInfo[count].imageView = *drawCall->image2View;
+		imageInfo[count].sampler = *drawCall->image2Sampler;
 		descriptorWrite[count].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrite[count].dstSet = *drawCall->descriptorSet;
 		descriptorWrite[count].dstBinding = count;
@@ -137,7 +137,7 @@ void gf3d_pipeline_update_descriptor_set(
 		descriptorWrite[count].descriptorType =
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorWrite[count].descriptorCount = 1;
-		descriptorWrite[count].pImageInfo = &imageInfo;
+		descriptorWrite[count].pImageInfo = &imageInfo[count];
 		descriptorWrite[count].pTexelBufferView = NULL; // Optional
 		count += 1;
 	}
