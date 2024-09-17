@@ -126,7 +126,6 @@ int main(int argc, char *argv[]) {
 		);
 		gf3d_vgraphics_render_end();
 		if(gfc_input_command_down("exit")) _done = 1; // exit condition
-		game_frame_delay();
 	}
 	vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());
 	// cleanup

@@ -276,6 +276,9 @@ VkExtent2D gf3d_swapchain_configure_extent(Uint32 width, Uint32 height) {
 VkExtent2D gf3d_swapchain_get_extent() { return gf3d_swapchain.extent; }
 
 int gf3d_swapchain_get_presentation_mode() {
+	// using fifo for now
+	return VK_PRESENT_MODE_FIFO_KHR;
+	/*
 	int i;
 	int chosen = -1;
 	for(i = 0; i < gf3d_swapchain.formatCount; i++) {
@@ -284,6 +287,7 @@ int gf3d_swapchain_get_presentation_mode() {
 		chosen = i;
 	}
 	return chosen;
+	*/
 }
 
 int gf3d_swapchain_choose_format() {
