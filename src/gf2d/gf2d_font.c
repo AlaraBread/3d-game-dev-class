@@ -36,9 +36,7 @@ void gf2d_font_close() {
 	int i, c;
 	FontImage *image;
 	for(i = 0; i < font_manager.font_max; i++) {
-		if(font_manager.font_list[i].font != NULL) {
-			TTF_CloseFont(font_manager.font_list[i].font);
-		}
+		if(font_manager.font_list[i].font != NULL) { TTF_CloseFont(font_manager.font_list[i].font); }
 	}
 	c = gfc_list_get_count(font_manager.font_images);
 	for(i = 0; i < c; i++) {
@@ -57,9 +55,7 @@ void gf2d_font_image_free(FontImage *image) {
 	free(image);
 }
 
-void gf2d_font_image_new(
-	Sprite *sprite, GFC_TextBlock text, GFC_Color color, Font *font
-) {
+void gf2d_font_image_new(Sprite *sprite, GFC_TextBlock text, GFC_Color color, Font *font) {
 	FontImage *image;
 	if(!sprite) return;
 	image = gfc_allocate_array(sizeof(FontImage), 1);
@@ -72,8 +68,7 @@ void gf2d_font_image_new(
 	gfc_list_append(font_manager.font_images, image);
 }
 
-FontImage *
-	gf2d_font_image_get(GFC_TextBlock text, GFC_Color color, Font *font) {
+FontImage *gf2d_font_image_get(GFC_TextBlock text, GFC_Color color, Font *font) {
 	FontImage *image;
 	int i, c;
 	c = gfc_list_get_count(font_manager.font_images);
@@ -213,15 +208,12 @@ void gf2d_fonts_load_json(const char *filename) {
 		str = sj_get_string_value(sj_object_get_value(item, "tag"));
 		if(str) {
 			fontType = gf2d_font_type_from_text(str);
-			if(fontType < FT_MAX)
-				font_manager.font_tags[fontType] = &font_manager.font_list[i];
+			if(fontType < FT_MAX) font_manager.font_tags[fontType] = &font_manager.font_list[i];
 		}
 		sj_get_integer_value(sj_object_get_value(item, "size"), &size);
 		font_manager.font_list[i].pointSize = size;
-		font_manager.font_list[i].font = TTF_OpenFont(
-			font_manager.font_list[i].filename,
-			font_manager.font_list[i].pointSize
-		);
+		font_manager.font_list[i].font =
+			TTF_OpenFont(font_manager.font_list[i].filename, font_manager.font_list[i].pointSize);
 		if(!font_manager.font_list[i].font) slog("failed to load font %s");
 	}
 	sj_free(file);
@@ -231,9 +223,7 @@ Font *gf2d_font_get_by_filename(char *filename) {
 	int i;
 	if(!filename) return NULL;
 	for(i = 0; i < font_manager.font_max; i++) {
-		if(gfc_line_cmp(font_manager.font_list[i].filename, filename) == 0) {
-			return &font_manager.font_list[i];
-		}
+		if(gfc_line_cmp(font_manager.font_list[i].filename, filename) == 0) { return &font_manager.font_list[i]; }
 	}
 	return NULL; // not found
 }
@@ -246,23 +236,15 @@ Font *gf2d_font_get_by_tag(FontTypes tag) {
 	return font_manager.font_tags[tag];
 }
 
-void gf2d_font_draw_line_named(
-	char *text, char *filename, GFC_Color color, GFC_Vector2D position
-) {
-	gf2d_font_draw_line(
-		text, gf2d_font_get_by_filename(filename), color, position
-	);
+void gf2d_font_draw_line_named(char *text, char *filename, GFC_Color color, GFC_Vector2D position) {
+	gf2d_font_draw_line(text, gf2d_font_get_by_filename(filename), color, position);
 }
 
-void gf2d_font_draw_line_tag(
-	char *text, FontTypes tag, GFC_Color color, GFC_Vector2D position
-) {
+void gf2d_font_draw_line_tag(char *text, FontTypes tag, GFC_Color color, GFC_Vector2D position) {
 	gf2d_font_draw_line(text, gf2d_font_get_by_tag(tag), color, position);
 }
 
-void gf2d_font_draw_line(
-	char *text, Font *font, GFC_Color color, GFC_Vector2D position
-) {
+void gf2d_font_draw_line(char *text, Font *font, GFC_Color color, GFC_Vector2D position) {
 	SDL_Surface *surface;
 	Sprite *sprite;
 	FontImage *image;
@@ -284,9 +266,8 @@ void gf2d_font_draw_line(
 	if(image != NULL) {
 		image->last_used = SDL_GetTicks();
 		gf2d_sprite_draw_full(
-			image->image, position, gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0,
-			gfc_vector2d(0, 0), gfc_color(1, 1, 1, 1), gfc_vector4d(0, 0, 0, 0),
-			0
+			image->image, position, gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0),
+			gfc_color(1, 1, 1, 1), gfc_vector4d(0, 0, 0, 0), 0
 		);
 		return;
 	}
@@ -304,8 +285,8 @@ void gf2d_font_draw_line(
 		return;
 	}
 	gf2d_sprite_draw_full(
-		sprite, position, gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0,
-		gfc_vector2d(0, 0), gfc_color(1, 1, 1, 1), gfc_vector4d(0, 0, 0, 0), 0
+		sprite, position, gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0), gfc_color(1, 1, 1, 1),
+		gfc_vector4d(0, 0, 0, 0), 0
 	);
 
 	gf2d_font_image_new(sprite, text, color, font);
@@ -343,17 +324,11 @@ void gf2d_font_chomp(char *text, int length, int strl) {
 	}
 }
 
-GFC_Rect gf2d_font_get_text_wrap_bounds_tag(
-	char *thetext, FontTypes tag, Uint32 w, Uint32 h
-) {
-	return gf2d_font_get_text_wrap_bounds(
-		thetext, gf2d_font_get_by_tag(tag), w, h
-	);
+GFC_Rect gf2d_font_get_text_wrap_bounds_tag(char *thetext, FontTypes tag, Uint32 w, Uint32 h) {
+	return gf2d_font_get_text_wrap_bounds(thetext, gf2d_font_get_by_tag(tag), w, h);
 }
 
-GFC_Rect gf2d_font_get_text_wrap_bounds(
-	char *thetext, Font *font, Uint32 w, Uint32 h
-) {
+GFC_Rect gf2d_font_get_text_wrap_bounds(char *thetext, Font *font, Uint32 w, Uint32 h) {
 	GFC_Rect r = {0, 0, 0, 0};
 	GFC_TextBlock textline;
 	GFC_TextBlock temptextline;
@@ -393,22 +368,14 @@ GFC_Rect gf2d_font_get_text_wrap_bounds(
 
 		if(sscanf(text, "%s", word) == EOF) { break; }
 		gf2d_font_chomp(text, strlen(word) + 1, GFCTEXTLEN);
-		strncpy(
-			textline, temptextline, GFCTEXTLEN
-		); /*keep the last line that worked*/
+		strncpy(textline, temptextline, GFCTEXTLEN); /*keep the last line that worked*/
 		for(i = 0; i < (space - 1); i++) {
-			gfc_block_sprintf(
-				tempBuffer, "%s%c", temptextline, ' '
-			); /*add spaces*/
+			gfc_block_sprintf(tempBuffer, "%s%c", temptextline, ' '); /*add spaces*/
 			gfc_block_cpy(temptextline, tempBuffer);
 		}
-		gfc_block_sprintf(
-			tempBuffer, "%s %s", temptextline, word
-		); /*add a word*/
+		gfc_block_sprintf(tempBuffer, "%s %s", temptextline, word); /*add a word*/
 		gfc_block_cpy(temptextline, tempBuffer);
-		TTF_SizeText(
-			font->font, temptextline, &tw, &th
-		); /*see how big it is now*/
+		TTF_SizeText(font->font, temptextline, &tw, &th); /*see how big it is now*/
 		th += font_manager.row_padding;
 		lindex += strlen(word);
 		if(tw > w) /*see if we have gone over*/
@@ -426,15 +393,11 @@ GFC_Rect gf2d_font_get_text_wrap_bounds(
 	return r;
 }
 
-void gf2d_font_draw_text_wrap_tag(
-	char *text, FontTypes tag, GFC_Color color, GFC_Rect block
-) {
+void gf2d_font_draw_text_wrap_tag(char *text, FontTypes tag, GFC_Color color, GFC_Rect block) {
 	gf2d_font_draw_text_wrap(text, block, color, gf2d_font_get_by_tag(tag));
 }
 
-void gf2d_font_draw_text_wrap(
-	char *thetext, GFC_Rect block, GFC_Color color, Font *font
-) {
+void gf2d_font_draw_text_wrap(char *thetext, GFC_Rect block, GFC_Color color, Font *font) {
 	GFC_TextBlock textline;
 	GFC_TextBlock temptextline;
 	GFC_TextBlock tempBuffer;
@@ -480,37 +443,25 @@ void gf2d_font_draw_text_wrap(
 		} while(whitespace);
 		if(sscanf(text, "%s", word) == EOF) {
 			block.y = drawheight + (h * row);
-			gf2d_font_draw_line(
-				temptextline, font, color, gfc_vector2d(block.x, block.y)
-			);
+			gf2d_font_draw_line(temptextline, font, color, gfc_vector2d(block.x, block.y));
 			return;
 		}
 
 		gf2d_font_chomp(text, strlen(word) + space, GFCTEXTLEN);
-		strncpy(
-			textline, temptextline, GFCTEXTLEN
-		); /*keep the last line that worked*/
+		strncpy(textline, temptextline, GFCTEXTLEN); /*keep the last line that worked*/
 		for(i = 0; i < (space - 1); i++) {
-			gfc_block_sprintf(
-				tempBuffer, "%s%c", temptextline, ' '
-			); /*add spaces*/
+			gfc_block_sprintf(tempBuffer, "%s%c", temptextline, ' '); /*add spaces*/
 			gfc_block_cpy(temptextline, tempBuffer);
 		}
-		gfc_block_sprintf(
-			tempBuffer, "%s %s", temptextline, word
-		); /*add a word*/
+		gfc_block_sprintf(tempBuffer, "%s %s", temptextline, word); /*add a word*/
 		gfc_block_cpy(temptextline, tempBuffer);
-		TTF_SizeText(
-			font->font, temptextline, &w, &h
-		); /*see how big it is now*/
+		TTF_SizeText(font->font, temptextline, &w, &h); /*see how big it is now*/
 		h += font_manager.row_padding;
 		lindex += strlen(word);
 		if(w > block.w) /*see if we have gone over*/
 		{
 			block.y = drawheight + (h * row);
-			gf2d_font_draw_line(
-				textline, font, color, gfc_vector2d(block.x, block.y)
-			);
+			gf2d_font_draw_line(textline, font, color, gfc_vector2d(block.x, block.y));
 			row++;
 			/*draw the line and get ready for the next line*/
 			if(block.h != 0) {

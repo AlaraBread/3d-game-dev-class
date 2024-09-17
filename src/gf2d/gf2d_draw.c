@@ -98,32 +98,25 @@ void gf2d_draw_rect(GFC_Rect rect, GFC_Color color) {
 	if(image) {
 		image->last_used = SDL_GetTicks();
 		gf2d_sprite_draw_full(
-			image->image, gfc_vector2d(rect.x, rect.y), gfc_vector2d(1, 1),
-			gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0), color,
-			gfc_vector4d(0, 0, 0, 0), 0
+			image->image, gfc_vector2d(rect.x, rect.y), gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0),
+			color, gfc_vector4d(0, 0, 0, 0), 0
 		);
 		return;
 	}
-	if((!rect.w) || (!rect.h)) {
-		slog("cannot render a zero dimension rectangle");
-	}
-	surface =
-		gf3d_vgraphics_create_surface((Uint32)rect.w + 1, (Uint32)rect.h + 1);
+	if((!rect.w) || (!rect.h)) { slog("cannot render a zero dimension rectangle"); }
+	surface = gf3d_vgraphics_create_surface((Uint32)rect.w + 1, (Uint32)rect.h + 1);
 	if(!surface) { slog("failed to create surface for rectangle draw"); }
 	rects[0] = gfc_rect_to_sdl_rect(gfc_rect(0, 0, rect.w, 2));
 	rects[1] = gfc_rect_to_sdl_rect(gfc_rect(0, 0, 2, rect.h));
 	rects[2] = gfc_rect_to_sdl_rect(gfc_rect(0, rect.h - 2, rect.w, 2));
 	rects[3] = gfc_rect_to_sdl_rect(gfc_rect(rect.w - 2, 0, 2, rect.h));
 
-	SDL_FillRects(
-		surface, rects, 4, SDL_MapRGBA(surface->format, 255, 255, 255, 255)
-	);
+	SDL_FillRects(surface, rects, 4, SDL_MapRGBA(surface->format, 255, 255, 255, 255));
 
 	sprite = gf2d_sprite_from_surface(surface, 0, 0, 1);
 
 	gf2d_sprite_draw_full(
-		sprite, gfc_vector2d(rect.x, rect.y), gfc_vector2d(1, 1),
-		gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0), color,
+		sprite, gfc_vector2d(rect.x, rect.y), gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0), color,
 		gfc_vector4d(0, 0, 0, 0), 0
 	);
 
@@ -139,9 +132,7 @@ void gf2d_draw_edge(GFC_Edge2D edge, GFC_Color color) {
 	Sprite *sprite;
 	SDL_Surface *surface;
 	DrawImage *image = NULL;
-	length = (int)gfc_vector2d_magnitude_between(
-		gfc_vector2d(edge.x1, edge.y1), gfc_vector2d(edge.x2, edge.y2)
-	);
+	length = (int)gfc_vector2d_magnitude_between(gfc_vector2d(edge.x1, edge.y1), gfc_vector2d(edge.x2, edge.y2));
 	if(length < 1) return; // nothing to draw
 	dir.x = edge.x2 = edge.x1;
 	dir.y = edge.y2 = edge.y1;
@@ -151,9 +142,8 @@ void gf2d_draw_edge(GFC_Edge2D edge, GFC_Color color) {
 	if(image) {
 		image->last_used = SDL_GetTicks();
 		gf2d_sprite_draw_full(
-			image->image, gfc_vector2d(edge.x1, edge.y1), gfc_vector2d(1, 1),
-			gfc_vector2d(0, 0), angle, gfc_vector2d(0, 0), color,
-			gfc_vector4d(0, 0, 0, 0), 0
+			image->image, gfc_vector2d(edge.x1, edge.y1), gfc_vector2d(1, 1), gfc_vector2d(0, 0), angle,
+			gfc_vector2d(0, 0), color, gfc_vector4d(0, 0, 0, 0), 0
 		);
 		return;
 	}
@@ -161,14 +151,11 @@ void gf2d_draw_edge(GFC_Edge2D edge, GFC_Color color) {
 	if(!surface) { slog("failed to create surface for edge draw"); }
 	rect.w = 1;
 	rect.h = length;
-	SDL_FillRect(
-		surface, &rect, SDL_MapRGBA(surface->format, 255, 255, 255, 255)
-	);
+	SDL_FillRect(surface, &rect, SDL_MapRGBA(surface->format, 255, 255, 255, 255));
 	sprite = gf2d_sprite_from_surface(surface, 0, 0, 1);
 	gf2d_sprite_draw_full(
-		sprite, gfc_vector2d(edge.x1, edge.y1), gfc_vector2d(1, 1),
-		gfc_vector2d(0, 0), angle, gfc_vector2d(0, 0), color,
-		gfc_vector4d(0, 0, 0, 0), 0
+		sprite, gfc_vector2d(edge.x1, edge.y1), gfc_vector2d(1, 1), gfc_vector2d(0, 0), angle, gfc_vector2d(0, 0),
+		color, gfc_vector4d(0, 0, 0, 0), 0
 	);
 	gf2d_draw_image_new(sprite, shape, 1);
 }
@@ -186,27 +173,22 @@ void gf2d_draw_rect_filled(GFC_Rect rect, GFC_Color color) {
 	if(image) {
 		image->last_used = SDL_GetTicks();
 		gf2d_sprite_draw_full(
-			image->image, gfc_vector2d(rect.x, rect.y), gfc_vector2d(1, 1),
-			gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0), color,
-			gfc_vector4d(0, 0, 0, 0), 0
+			image->image, gfc_vector2d(rect.x, rect.y), gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0),
+			color, gfc_vector4d(0, 0, 0, 0), 0
 		);
 
 		return;
 	}
-	surface =
-		gf3d_vgraphics_create_surface((Uint32)rect.w + 1, (Uint32)rect.h + 1);
+	surface = gf3d_vgraphics_create_surface((Uint32)rect.w + 1, (Uint32)rect.h + 1);
 	if(!surface) { slog("failed to create surface for rectangle draw"); }
 	rects = gfc_rect_to_sdl_rect(shape.s.r);
 
-	SDL_FillRect(
-		surface, &rects, SDL_MapRGBA(surface->format, 255, 255, 255, 255)
-	);
+	SDL_FillRect(surface, &rects, SDL_MapRGBA(surface->format, 255, 255, 255, 255));
 
 	sprite = gf2d_sprite_from_surface(surface, 0, 0, 1);
 
 	gf2d_sprite_draw_full(
-		sprite, gfc_vector2d(rect.x, rect.y), gfc_vector2d(1, 1),
-		gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0), color,
+		sprite, gfc_vector2d(rect.x, rect.y), gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0), color,
 		gfc_vector4d(0, 0, 0, 0), 0
 	);
 	gf2d_draw_image_new(sprite, shape, 1);
@@ -217,9 +199,7 @@ void gf2d_draw_rect_filled(GFC_Rect rect, GFC_Color color) {
  * http://groups.csail.mit.edu/graphics/classes/6.837/F98/Lecture6/circle.html
  */
 
-static int gf2d_draw_circle_points(
-	SDL_Point *p, GFC_Vector2D center, SDL_Point point
-) {
+static int gf2d_draw_circle_points(SDL_Point *p, GFC_Vector2D center, SDL_Point point) {
 	if(point.x == 0) {
 		gfc_vector2d_set(p[0], center.x, center.y + point.y);
 		gfc_vector2d_set(p[1], center.x, center.y - point.y);
@@ -248,18 +228,14 @@ static int gf2d_draw_circle_points(
 	return 0;
 }
 
-void gf2d_draw_points_to_surface(
-	SDL_Surface *surface, SDL_Point *pointArray, Uint32 c
-) {
+void gf2d_draw_points_to_surface(SDL_Surface *surface, SDL_Point *pointArray, Uint32 c) {
 	int i;
 	SDL_Rect pixel = {0, 0, 1, 1};
 	if(!surface) return;
 	for(i = 0; i < c; i++) {
 		pixel.x = pointArray[i].x;
 		pixel.y = pointArray[i].y;
-		SDL_FillRect(
-			surface, &pixel, SDL_MapRGBA(surface->format, 255, 255, 255, 255)
-		);
+		SDL_FillRect(surface, &pixel, SDL_MapRGBA(surface->format, 255, 255, 255, 255));
 	}
 }
 
@@ -280,9 +256,8 @@ void gf2d_draw_circle_filled(GFC_Vector2D center, int radius, GFC_Color color) {
 	if(image) {
 		image->last_used = SDL_GetTicks();
 		gf2d_sprite_draw_full(
-			image->image, gfc_vector2d(center.x - radius, center.y - radius),
-			gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0),
-			color, gfc_vector4d(0, 0, 0, 0), 0
+			image->image, gfc_vector2d(center.x - radius, center.y - radius), gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0,
+			gfc_vector2d(0, 0), color, gfc_vector4d(0, 0, 0, 0), 0
 		);
 		return;
 	}
@@ -294,9 +269,7 @@ void gf2d_draw_circle_filled(GFC_Vector2D center, int radius, GFC_Color color) {
 			 "drawing");
 		return;
 	}
-	i = gf2d_draw_circle_points(
-		&pointArray[i], gfc_vector2d(radius, radius), point
-	);
+	i = gf2d_draw_circle_points(&pointArray[i], gfc_vector2d(radius, radius), point);
 	while(point.x < point.y) {
 		point.x++;
 		if(p < 0) {
@@ -305,14 +278,10 @@ void gf2d_draw_circle_filled(GFC_Vector2D center, int radius, GFC_Color color) {
 			point.y--;
 			p += 2 * (point.x - point.y) + 1;
 		}
-		i += gf2d_draw_circle_points(
-			&pointArray[i], gfc_vector2d(radius, radius), point
-		);
+		i += gf2d_draw_circle_points(&pointArray[i], gfc_vector2d(radius, radius), point);
 		if(i + 8 >= radius * 8) { break; }
 	}
-	surface = gf3d_vgraphics_create_surface(
-		(Uint32)(radius * 2) + 1, (Uint32)(radius * 2) + 1
-	);
+	surface = gf3d_vgraphics_create_surface((Uint32)(radius * 2) + 1, (Uint32)(radius * 2) + 1);
 	if(!surface) { slog("failed to create surface for rectangle draw"); }
 	c = i;
 
@@ -321,18 +290,15 @@ void gf2d_draw_circle_filled(GFC_Vector2D center, int radius, GFC_Color color) {
 		pixel.x = pointArray[i].x;
 		pixel.y = pointArray[i].y;
 		pixel.w = ((radius - pointArray[i].x) * 2) + 1.0;
-		SDL_FillRect(
-			surface, &pixel, SDL_MapRGBA(surface->format, 255, 255, 255, 255)
-		);
+		SDL_FillRect(surface, &pixel, SDL_MapRGBA(surface->format, 255, 255, 255, 255));
 	}
 	free(pointArray);
 
 	sprite = gf2d_sprite_from_surface(surface, 0, 0, 1);
 
 	gf2d_sprite_draw_full(
-		sprite, gfc_vector2d(center.x - radius, center.y - radius),
-		gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0), color,
-		gfc_vector4d(0, 0, 0, 0), 0
+		sprite, gfc_vector2d(center.x - radius, center.y - radius), gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0,
+		gfc_vector2d(0, 0), color, gfc_vector4d(0, 0, 0, 0), 0
 	);
 	gf2d_draw_image_new(sprite, shape, 1);
 }
@@ -354,9 +320,8 @@ void gf2d_draw_circle(GFC_Vector2D center, int radius, GFC_Color color) {
 	if(image) {
 		image->last_used = SDL_GetTicks();
 		gf2d_sprite_draw_full(
-			image->image, gfc_vector2d(center.x - radius, center.y - radius),
-			gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0),
-			color, gfc_vector4d(0, 0, 0, 0), 0
+			image->image, gfc_vector2d(center.x - radius, center.y - radius), gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0,
+			gfc_vector2d(0, 0), color, gfc_vector4d(0, 0, 0, 0), 0
 		);
 		return;
 	}
@@ -368,9 +333,7 @@ void gf2d_draw_circle(GFC_Vector2D center, int radius, GFC_Color color) {
 			 "drawing");
 		return;
 	}
-	i = gf2d_draw_circle_points(
-		&pointArray[i], gfc_vector2d(radius, radius), point
-	);
+	i = gf2d_draw_circle_points(&pointArray[i], gfc_vector2d(radius, radius), point);
 	while(point.x < point.y) {
 		point.x++;
 		if(p < 0) {
@@ -379,32 +342,25 @@ void gf2d_draw_circle(GFC_Vector2D center, int radius, GFC_Color color) {
 			point.y--;
 			p += 2 * (point.x - point.y) + 1;
 		}
-		i += gf2d_draw_circle_points(
-			&pointArray[i], gfc_vector2d(radius, radius), point
-		);
+		i += gf2d_draw_circle_points(&pointArray[i], gfc_vector2d(radius, radius), point);
 		if(i + 8 >= radius * 8) { break; }
 	}
-	surface = gf3d_vgraphics_create_surface(
-		(Uint32)(radius * 2) + 1, (Uint32)(radius * 2) + 1
-	);
+	surface = gf3d_vgraphics_create_surface((Uint32)(radius * 2) + 1, (Uint32)(radius * 2) + 1);
 	if(!surface) { slog("failed to create surface for rectangle draw"); }
 	c = i;
 
 	for(i = 0; i < c; i++) {
 		pixel.x = pointArray[i].x;
 		pixel.y = pointArray[i].y;
-		SDL_FillRect(
-			surface, &pixel, SDL_MapRGBA(surface->format, 255, 255, 255, 255)
-		);
+		SDL_FillRect(surface, &pixel, SDL_MapRGBA(surface->format, 255, 255, 255, 255));
 	}
 	free(pointArray);
 
 	sprite = gf2d_sprite_from_surface(surface, 0, 0, 1);
 
 	gf2d_sprite_draw_full(
-		sprite, gfc_vector2d(center.x - radius, center.y - radius),
-		gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0, gfc_vector2d(0, 0), color,
-		gfc_vector4d(0, 0, 0, 0), 0
+		sprite, gfc_vector2d(center.x - radius, center.y - radius), gfc_vector2d(1, 1), gfc_vector2d(0, 0), 0,
+		gfc_vector2d(0, 0), color, gfc_vector4d(0, 0, 0, 0), 0
 	);
 	gf2d_draw_image_new(sprite, shape, 0);
 }
@@ -416,10 +372,7 @@ void gf2d_draw_shape(GFC_Shape shape, GFC_Color color, GFC_Vector2D offset) {
 			gf2d_draw_rect(shape.s.r, color);
 			break;
 		case ST_CIRCLE:
-			gf2d_draw_circle(
-				gfc_vector2d(shape.s.c.x + offset.x, shape.s.c.y + offset.y),
-				shape.s.c.r, color
-			);
+			gf2d_draw_circle(gfc_vector2d(shape.s.c.x + offset.x, shape.s.c.y + offset.y), shape.s.c.r, color);
 			break;
 		case ST_EDGE:
 			gf2d_draw_edge(shape.s.e, color);

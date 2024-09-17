@@ -56,8 +56,7 @@ Actor *gf2d_actor_new() {
 	int i;
 	/*search for an unused actor address*/
 	for(i = 0; i < actor_manager.maxActors; i++) {
-		if((actor_manager.actorList[i]._refCount == 0) &&
-		   (actor_manager.actorList[i].al == NULL)) {
+		if((actor_manager.actorList[i]._refCount == 0) && (actor_manager.actorList[i].al == NULL)) {
 			actor_manager.actorList[i]._refCount = 1; // set ref count
 			actor_manager.actorList[i].al = gfc_action_list_new();
 			return &actor_manager.actorList[i]; // return address of this
@@ -67,9 +66,8 @@ Actor *gf2d_actor_new() {
 	/*find an unused actor address and clean up the old data*/
 	for(i = 0; i < actor_manager.maxActors; i++) {
 		if(actor_manager.actorList[i]._refCount == 0) {
-			gf2d_actor_delete(&actor_manager.actorList[i]
-			);										  // clean up the old data
-			actor_manager.actorList[i]._refCount = 1; // set ref count
+			gf2d_actor_delete(&actor_manager.actorList[i]); // clean up the old data
+			actor_manager.actorList[i]._refCount = 1;		// set ref count
 			actor_manager.actorList[i].al = gfc_action_list_new();
 			return &actor_manager.actorList[i]; // return address of this
 												// array element
@@ -83,9 +81,7 @@ Actor *gf2d_actor_get_by_filename(const char *filename) {
 	int i;
 	if(!filename) { return NULL; }
 	for(i = 0; i < actor_manager.maxActors; i++) {
-		if(gfc_line_cmp(actor_manager.actorList[i].filename, filename) == 0) {
-			return &actor_manager.actorList[i];
-		}
+		if(gfc_line_cmp(actor_manager.actorList[i].filename, filename) == 0) { return &actor_manager.actorList[i]; }
 	}
 	return NULL; // not found
 }
@@ -101,9 +97,7 @@ SJson *gf2d_actor_to_json(Actor *actor) {
 	sj_object_insert(save, "framesPerLine", sj_new_int(actor->framesPerLine));
 	sj_object_insert(save, "scale", sj_vector2d_new(actor->scale));
 	sj_object_insert(save, "center", sj_vector2d_new(actor->center));
-	sj_object_insert(
-		save, "color", sj_vector4d_new(gfc_color_to_vector4(actor->color))
-	);
+	sj_object_insert(save, "color", sj_vector4d_new(gfc_color_to_vector4(actor->color)));
 	sj_object_insert(save, "drawOffset", sj_vector2d_new(actor->drawOffset));
 	sj_object_insert(save, "actionList", gfc_action_list_to_json(actor->al));
 	return save;
@@ -136,32 +130,23 @@ Actor *gf2d_actor_load_json(SJson *json) {
 	}
 	if(sj_get_string_value(sj_object_get_value(actorJS, "sprite"))) {
 		actor->sprite = gf2d_sprite_parse(actorJS);
-		if(actor->sprite) {
-			gfc_line_cpy(actor->spriteFile, actor->sprite->filename);
-		}
+		if(actor->sprite) { gfc_line_cpy(actor->spriteFile, actor->sprite->filename); }
 	}
 
 	sj_value_as_vector2d(sj_object_get_value(actorJS, "scale"), &actor->scale);
-	if((actor->sprite) &&
-	   (sj_value_as_vector2d(sj_object_get_value(actorJS, "scaleTo"), &scaleTo)
-	   )) {
+	if((actor->sprite) && (sj_value_as_vector2d(sj_object_get_value(actorJS, "scaleTo"), &scaleTo))) {
 		actor->scale.x = scaleTo.x / actor->sprite->frameWidth;
 		actor->scale.y = scaleTo.y / actor->sprite->frameHeight;
 	}
-	sj_value_as_vector2d(
-		sj_object_get_value(actorJS, "center"), &actor->center
-	);
-	sj_value_as_vector2d(
-		sj_object_get_value(actorJS, "drawOffset"), &actor->drawOffset
-	);
+	sj_value_as_vector2d(sj_object_get_value(actorJS, "center"), &actor->center);
+	sj_value_as_vector2d(sj_object_get_value(actorJS, "drawOffset"), &actor->drawOffset);
 	sj_value_as_vector4d(sj_object_get_value(actorJS, "color"), &color);
 	actor->color = gfc_color_from_vector4(color);
 
 	actor->size.x = actor->frameWidth * actor->scale.x;
 	actor->size.y = actor->frameHeight * actor->scale.y;
 
-	actor->al =
-		gfc_action_list_parse(sj_object_get_value(actorJS, "actionList"));
+	actor->al = gfc_action_list_parse(sj_object_get_value(actorJS, "actionList"));
 	return actor;
 }
 
@@ -185,8 +170,7 @@ Actor *gf2d_actor_load_image(const char *file) {
 	actor->framesPerLine = 1;
 	actor->size = gfc_vector2d(sprite->frameWidth, sprite->frameHeight);
 	actor->scale = gfc_vector2d(1, 1);
-	actor->center =
-		gfc_vector2d(sprite->frameWidth * 0.5, sprite->frameHeight * 0.5);
+	actor->center = gfc_vector2d(sprite->frameWidth * 0.5, sprite->frameHeight * 0.5);
 	actor->color = gfc_color8(255, 255, 255, 255);
 	actor->al = gfc_action_list_new();
 	action = gfc_action_new();
@@ -219,8 +203,7 @@ Actor *gf2d_actor_load(const char *file) {
 	return gf2d_actor_load_image(file);
 }
 
-GFC_Action *
-	gf2d_actor_get_action(Actor *actor, const char *name, float *frame) {
+GFC_Action *gf2d_actor_get_action(Actor *actor, const char *name, float *frame) {
 	GFC_Action *action;
 	if(!actor) return NULL;
 	action = gf2d_actor_get_action_by_name(actor, name);
@@ -256,8 +239,8 @@ Uint32 gf2d_actor_get_framecount(Actor *actor) {
 }
 
 void gf2d_actor_draw(
-	Actor *actor, float frame, GFC_Vector2D position, GFC_Vector2D *scale,
-	GFC_Vector2D *center, float *rotation, GFC_Color *color, GFC_Vector2D *flip
+	Actor *actor, float frame, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *center, float *rotation,
+	GFC_Color *color, GFC_Vector2D *flip
 ) {
 	GFC_Color drawGFC_Color;
 	GFC_Vector2D drawCenter;
@@ -286,8 +269,7 @@ void gf2d_actor_draw(
 		// flip the center point
 		drawCenter.x = actor->frameWidth - drawCenter.x;
 	}
-	if((drawScale.y < 0
-	   )) // only for scale based flipping, normal flipping works fine
+	if((drawScale.y < 0)) // only for scale based flipping, normal flipping works fine
 	{
 		// flip the center point
 		drawCenter.y = actor->frameHeight - drawCenter.y;
@@ -295,8 +277,7 @@ void gf2d_actor_draw(
 
 	gfc_vector2d_add(drawPosition, position, actor->drawOffset);
 	gf2d_sprite_draw(
-		actor->sprite, drawPosition, &drawScale, &drawCenter, rotation, flip,
-		&drawGFC_Color, &drawClip, (int)frame
+		actor->sprite, drawPosition, &drawScale, &drawCenter, rotation, flip, &drawGFC_Color, &drawClip, (int)frame
 	);
 }
 

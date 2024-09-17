@@ -4,28 +4,28 @@
 #include "gfc_matrix.h"
 
 typedef struct {
-	GFC_Matrix4 cameraMat;	  // final matrix to become the view matrix
-	GFC_Matrix4 cameraMatInv; // final matrix to become the inverse view matrix
-	GFC_Vector3D scale;		  // for building camera matrix
-	GFC_Vector3D position;	  // for building camera matrix
-	GFC_Vector3D rotation;	  // pitch, roll, yaw for building camera matrix
-	float moveStep;	  // when using gf3d_camera_controls_update, this is how
-					  // much the camera will move per frame
-	float rotateStep; // when using gf3d_camera_controls_update, this is how
-					  // much the camera will move per frame
-	int autoPan;  // if true, the amount gf3d_camera_controls_update will pan
-				  // the camera around
-	int freeLook; // if true, the amount gf3d_camera_controls_update will
-				  // check user input for movement
-	Uint8 cameraTargetLock; // if true, the gf3d_camera_controls_update
-							// keeps the camera pointed towards the target
+	GFC_Matrix4 cameraMat;			 // final matrix to become the view matrix
+	GFC_Matrix4 cameraMatInv;		 // final matrix to become the inverse view matrix
+	GFC_Vector3D scale;				 // for building camera matrix
+	GFC_Vector3D position;			 // for building camera matrix
+	GFC_Vector3D rotation;			 // pitch, roll, yaw for building camera matrix
+	float moveStep;					 // when using gf3d_camera_controls_update, this is how
+									 // much the camera will move per frame
+	float rotateStep;				 // when using gf3d_camera_controls_update, this is how
+									 // much the camera will move per frame
+	int autoPan;					 // if true, the amount gf3d_camera_controls_update will pan
+									 // the camera around
+	int freeLook;					 // if true, the amount gf3d_camera_controls_update will
+									 // check user input for movement
+	Uint8 cameraTargetLock;			 // if true, the gf3d_camera_controls_update
+									 // keeps the camera pointed towards the target
 	GFC_Vector3D lookTargetPosition; // the generic camera target to look at
-	GFC_Vector3D forward; // unit vector pointing in the forward direction
-						  // relative to the camera
-	GFC_Vector3D right;	  // unit vector pointing in the right direction
-						  // relative to the camera
-	GFC_Vector3D up; // unit vector pointing in the up direction relative to
-					 // the camera
+	GFC_Vector3D forward;			 // unit vector pointing in the forward direction
+									 // relative to the camera
+	GFC_Vector3D right;				 // unit vector pointing in the right direction
+									 // relative to the camera
+	GFC_Vector3D up;				 // unit vector pointing in the up direction relative to
+									 // the camera
 } Camera;
 
 /**
@@ -242,9 +242,7 @@ GFC_Vector3D gf3d_camera_get_angles();
  * @param up        [output] if provided, it will be set with the normal
  * gfc_vector directly up from where the camera is looking
  */
-void gf3d_camera_get_view_vectors(
-	GFC_Vector3D *forward, GFC_Vector3D *right, GFC_Vector3D *up
-);
+void gf3d_camera_get_view_vectors(GFC_Vector3D *forward, GFC_Vector3D *right, GFC_Vector3D *up);
 
 /**
  * @brief update the camera based on keyboard controls, autopan, and look target

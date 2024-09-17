@@ -22,8 +22,7 @@ void gf3d_command_pool_close();
 void gf3d_command_free(Command *com);
 void gf3d_command_buffer_begin(Command *com, Pipeline *pipe);
 void gf3d_command_configure_render_pass(
-	VkCommandBuffer commandBuffer, VkRenderPass renderPass,
-	VkFramebuffer framebuffer, VkPipeline graphicsPipeline,
+	VkCommandBuffer commandBuffer, VkRenderPass renderPass, VkFramebuffer framebuffer, VkPipeline graphicsPipeline,
 	VkPipelineLayout pipelineLayout
 );
 
@@ -46,8 +45,7 @@ void gf3d_command_system_init(Uint32 max_commands, VkDevice defaultDevice) {
 	}
 	gf3d_commands.device = defaultDevice;
 	gf3d_commands.max_commands = max_commands;
-	gf3d_commands.command_list =
-		(Command *)gfc_allocate_array(sizeof(Command), max_commands);
+	gf3d_commands.command_list = (Command *)gfc_allocate_array(sizeof(Command), max_commands);
 
 	atexit(gf3d_command_system_close);
 }
@@ -66,9 +64,7 @@ Command *gf3d_command_pool_new() {
 
 void gf3d_command_free(Command *com) {
 	if((!com) || (!com->_inuse)) return;
-	if(com->commandPool != VK_NULL_HANDLE) {
-		vkDestroyCommandPool(gf3d_commands.device, com->commandPool, NULL);
-	}
+	if(com->commandPool != VK_NULL_HANDLE) { vkDestroyCommandPool(gf3d_commands.device, com->commandPool, NULL); }
 	if(com->commandBuffers) { free(com->commandBuffers); }
 	memset(com, 0, sizeof(Command));
 }
@@ -86,15 +82,12 @@ Command *gf3d_command_graphics_pool_setup(Uint32 count) {
 	poolInfo.queueFamilyIndex = gf3d_vqueues_get_graphics_queue_family();
 	poolInfo.flags = 0; // Optional
 
-	if(vkCreateCommandPool(
-		   gf3d_commands.device, &poolInfo, NULL, &com->commandPool
-	   ) != VK_SUCCESS) {
+	if(vkCreateCommandPool(gf3d_commands.device, &poolInfo, NULL, &com->commandPool) != VK_SUCCESS) {
 		slog("failed to create command pool!");
 		return NULL;
 	}
 
-	com->commandBuffers =
-		(VkCommandBuffer *)gfc_allocate_array(sizeof(VkCommandBuffer), count);
+	com->commandBuffers = (VkCommandBuffer *)gfc_allocate_array(sizeof(VkCommandBuffer), count);
 	if(!com->commandBuffers) {
 		slog("failed to allocate command buffer array");
 		gf3d_command_free(com);
@@ -107,9 +100,7 @@ Command *gf3d_command_graphics_pool_setup(Uint32 count) {
 	allocInfo.commandBufferCount = count;
 	com->commandBufferCount = count;
 
-	if(vkAllocateCommandBuffers(
-		   gf3d_commands.device, &allocInfo, com->commandBuffers
-	   ) != VK_SUCCESS) {
+	if(vkAllocateCommandBuffers(gf3d_commands.device, &allocInfo, com->commandBuffers) != VK_SUCCESS) {
 		slog("failed to allocate command buffers!");
 		gf3d_command_free(com);
 		return NULL;
@@ -142,20 +133,15 @@ VkCommandBuffer gf3d_command_get_graphics_buffer(Command *com) {
 	return com->commandBuffers[com->commandBufferNext++];
 }
 
-void gf3d_command_configure_render_pass_end(VkCommandBuffer commandBuffer) {
-	vkCmdEndRenderPass(commandBuffer);
-}
+void gf3d_command_configure_render_pass_end(VkCommandBuffer commandBuffer) { vkCmdEndRenderPass(commandBuffer); }
 
 VkCommandBuffer gf3d_command_rendering_begin(Uint32 index, Pipeline *pipe) {
 	VkCommandBuffer commandBuffer;
 
-	commandBuffer = gf3d_command_begin_single_time(
-		gf3d_vgraphics_get_graphics_command_pool()
-	);
+	commandBuffer = gf3d_command_begin_single_time(gf3d_vgraphics_get_graphics_command_pool());
 
 	gf3d_command_configure_render_pass(
-		commandBuffer, pipe->renderPass,
-		gf3d_swapchain_get_frame_buffer_by_index(index), pipe->pipeline,
+		commandBuffer, pipe->renderPass, gf3d_swapchain_get_frame_buffer_by_index(index), pipe->pipeline,
 		pipe->pipelineLayout
 	);
 
@@ -164,14 +150,11 @@ VkCommandBuffer gf3d_command_rendering_begin(Uint32 index, Pipeline *pipe) {
 
 void gf3d_command_rendering_end(VkCommandBuffer commandBuffer) {
 	gf3d_command_configure_render_pass_end(commandBuffer);
-	gf3d_command_end_single_time(
-		gf3d_vgraphics_get_graphics_command_pool(), commandBuffer
-	);
+	gf3d_command_end_single_time(gf3d_vgraphics_get_graphics_command_pool(), commandBuffer);
 }
 
 void gf3d_command_configure_render_pass(
-	VkCommandBuffer commandBuffer, VkRenderPass renderPass,
-	VkFramebuffer framebuffer, VkPipeline graphicsPipeline,
+	VkCommandBuffer commandBuffer, VkRenderPass renderPass, VkFramebuffer framebuffer, VkPipeline graphicsPipeline,
 	VkPipelineLayout pipelineLayout
 ) {
 	VkClearValue clearValues[3] = {0};
@@ -189,12 +172,8 @@ void gf3d_command_configure_render_pass(
 	renderPassInfo.clearValueCount = 3;
 	renderPassInfo.pClearValues = clearValues;
 
-	vkCmdBeginRenderPass(
-		commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE
-	);
-	vkCmdBindPipeline(
-		commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline
-	);
+	vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 }
 
 VkCommandBuffer gf3d_command_begin_single_time(Command *com) {
@@ -227,14 +206,10 @@ void gf3d_command_end_single_time(Command *com, VkCommandBuffer commandBuffer) {
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &commandBuffer;
 
-	vkQueueSubmit(
-		gf3d_vqueues_get_graphics_queue(), 1, &submitInfo, VK_NULL_HANDLE
-	);
+	vkQueueSubmit(gf3d_vqueues_get_graphics_queue(), 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(gf3d_vqueues_get_graphics_queue());
 
-	vkFreeCommandBuffers(
-		gf3d_commands.device, com->commandPool, 1, &commandBuffer
-	);
+	vkFreeCommandBuffers(gf3d_commands.device, com->commandPool, 1, &commandBuffer);
 }
 
 /*eol@eof*/

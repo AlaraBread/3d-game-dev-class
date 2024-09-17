@@ -121,12 +121,8 @@ void gf3d_camera_yaw(float magnitude) { gf3d_camera.rotation.z -= magnitude; }
 
 void gf3d_camera_pitch(float magnitude) {
 	gf3d_camera.rotation.x -= magnitude;
-	if(gf3d_camera.rotation.x >= -GFC_HALF_PI) {
-		gf3d_camera.rotation.x = -GFC_HALF_PI - GFC_EPSILON;
-	}
-	if(gf3d_camera.rotation.x <= -GFC_PI_HALFPI) {
-		gf3d_camera.rotation.x = -GFC_PI_HALFPI + GFC_EPSILON;
-	}
+	if(gf3d_camera.rotation.x >= -GFC_HALF_PI) { gf3d_camera.rotation.x = -GFC_HALF_PI - GFC_EPSILON; }
+	if(gf3d_camera.rotation.x <= -GFC_PI_HALFPI) { gf3d_camera.rotation.x = -GFC_PI_HALFPI + GFC_EPSILON; }
 }
 
 void gf3d_camera_roll(float magnitude) { gf3d_camera.rotation.y -= magnitude; }
@@ -187,9 +183,7 @@ void gf3d_camera_calc_view_vectors() {
 	gfc_vector3d_rotate_about_z(&gf3d_camera.up, -gf3d_camera.rotation.z);
 }
 
-void gf3d_camera_get_view_vectors(
-	GFC_Vector3D *forward, GFC_Vector3D *right, GFC_Vector3D *up
-) {
+void gf3d_camera_get_view_vectors(GFC_Vector3D *forward, GFC_Vector3D *right, GFC_Vector3D *up) {
 	gf3d_camera_calc_view_vectors();
 	if(forward) *forward = gf3d_camera.forward;
 	if(right) *right = gf3d_camera.right;
@@ -197,10 +191,7 @@ void gf3d_camera_get_view_vectors(
 }
 
 GFC_Vector3D gf3d_camera_get_angles() {
-	return gfc_vector3d(
-		-gf3d_camera.rotation.x, -gf3d_camera.rotation.y,
-		-gf3d_camera.rotation.z
-	);
+	return gfc_vector3d(-gf3d_camera.rotation.x, -gf3d_camera.rotation.y, -gf3d_camera.rotation.z);
 }
 
 void gf3d_camera_set_rotation(GFC_Vector3D rotation) {
@@ -230,24 +221,18 @@ void gf3d_camera_set_look_target(GFC_Vector3D target) {
 	gf3d_camera_look_at(target, NULL);
 }
 
-GFC_Vector3D gf3d_camera_get_look_target() {
-	return gf3d_camera.lookTargetPosition;
-}
+GFC_Vector3D gf3d_camera_get_look_target() { return gf3d_camera.lookTargetPosition; }
 
-void gf3d_camera_toggle_free_look() {
-	gf3d_camera_enable_free_look(!gf3d_camera.freeLook);
-}
+void gf3d_camera_toggle_free_look() { gf3d_camera_enable_free_look(!gf3d_camera.freeLook); }
 
-void gf3d_camera_enable_free_look(Uint8 enable) {
-	gf3d_camera.freeLook = enable;
-}
+void gf3d_camera_enable_free_look(Uint8 enable) { gf3d_camera.freeLook = enable; }
 
 void gf3d_camera_set_auto_pan(Bool enable) { gf3d_camera.autoPan = enable; }
 
 Bool gf3d_camera_free_look_enabled() { return gf3d_camera.freeLook; }
 
 void gf3d_camera_controls_update(double delta) {
-	float moveSpeed = gf3d_camera.moveStep*delta;
+	float moveSpeed = gf3d_camera.moveStep * delta;
 	GFC_Vector3D position, rotation;
 	const Uint8 *keys;
 
@@ -269,17 +254,15 @@ void gf3d_camera_controls_update(double delta) {
 		if(keys[SDL_SCANCODE_SPACE]) gf3d_camera_move_up(moveSpeed);
 		if(keys[SDL_SCANCODE_Z]) gf3d_camera_move_up(-moveSpeed);
 
-		if(keys[SDL_SCANCODE_UP]) gf3d_camera_pitch(-gf3d_camera.rotateStep*delta);
-		if(keys[SDL_SCANCODE_DOWN]) gf3d_camera_pitch(gf3d_camera.rotateStep*delta);
-		if(keys[SDL_SCANCODE_RIGHT]) gf3d_camera_yaw(-gf3d_camera.rotateStep*delta);
-		if(keys[SDL_SCANCODE_LEFT]) gf3d_camera_yaw(gf3d_camera.rotateStep*delta);
+		if(keys[SDL_SCANCODE_UP]) gf3d_camera_pitch(-gf3d_camera.rotateStep * delta);
+		if(keys[SDL_SCANCODE_DOWN]) gf3d_camera_pitch(gf3d_camera.rotateStep * delta);
+		if(keys[SDL_SCANCODE_RIGHT]) gf3d_camera_yaw(-gf3d_camera.rotateStep * delta);
+		if(keys[SDL_SCANCODE_LEFT]) gf3d_camera_yaw(gf3d_camera.rotateStep * delta);
 
 		return;
 	}
 	if(gf3d_camera.autoPan) { gf3d_camera_walk_right(moveSpeed / 5); }
-	if(gf3d_camera.cameraTargetLock) {
-		gf3d_camera_look_at(gf3d_camera.lookTargetPosition, NULL);
-	}
+	if(gf3d_camera.cameraTargetLock) { gf3d_camera_look_at(gf3d_camera.lookTargetPosition, NULL); }
 }
 
 /*eol@eof*/

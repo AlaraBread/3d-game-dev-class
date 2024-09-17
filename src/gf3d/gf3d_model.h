@@ -49,11 +49,10 @@ typedef struct {
 	Uint32 refCount;
 	GFC_TextLine filename;
 
-	GFC_List *mesh_list; // sub meshes of the model
-	Uint8 mesh_as_frame; // if true, this model is animated as a sequence of
-						 // meshes
-	GF3D_Material
-		*material; // if set, use this material when sending draw calls
+	GFC_List *mesh_list;	 // sub meshes of the model
+	Uint8 mesh_as_frame;	 // if true, this model is animated as a sequence of
+							 // meshes
+	GF3D_Material *material; // if set, use this material when sending draw calls
 	Texture *texture;
 	Texture *normalMap;
 	GFC_Box bounds;		// copied from the mesh
@@ -127,9 +126,7 @@ Model *gf3d_model_copy(Model *in);
  * @param offset move the vertices of modelB by this much as they are added
  * @param rotation apply this rotation to the vertices and normals
  */
-void gf3d_model_append(
-	Model *modelA, Model *modelB, GFC_Vector3D offsetB, GFC_Vector3D rotation
-);
+void gf3d_model_append(Model *modelA, Model *modelB, GFC_Vector3D offsetB, GFC_Vector3D rotation);
 
 /**
  * @brief move all of the vertices of the model mesh data by the offset
@@ -163,10 +160,7 @@ void gf3d_model_draw(
  * @param colorMod color modulation (values from 0 to 1);
  * @param frame the animation frame to use for armature based animations
  */
-void gf3d_model_draw_index(
-	Model *model, Uint32 index, GFC_Matrix4 modelMat, GFC_Color colorMod,
-	Uint32 frame
-);
+void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame);
 
 /**
  * @brief draw all of the meshes of a model.  This is meant for multi-mesh
@@ -177,9 +171,7 @@ void gf3d_model_draw_index(
  * @param frame used to access a frame of armature based animation
  * @note this is called by gf3d_model_draw when not using a sequence of meshes
  */
-void gf3d_model_draw_all_meshes(
-	Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame
-);
+void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame);
 
 /**
  * @brief queue up a model for rendering as a sky
@@ -211,8 +203,7 @@ void gf3d_model_mat_parse(ModelMat *mat, SJson *config);
  * @param scale used to make this matrix
  */
 void mat_from_parent(
-	GFC_Matrix4 out, GFC_Matrix4 parent, GFC_Vector3D position,
-	GFC_Vector3D rotation, GFC_Vector3D scale
+	GFC_Matrix4 out, GFC_Matrix4 parent, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale
 );
 
 /**

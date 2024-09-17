@@ -64,9 +64,7 @@ void gf3d_mesh_primitive_free(MeshPrimitive *primitive);
 /**
  * @brief move the primitive
  */
-void gf3d_mesh_primitive_move(
-	MeshPrimitive *in, GFC_Vector3D offset, GFC_Vector3D rotation
-);
+void gf3d_mesh_primitive_move(MeshPrimitive *in, GFC_Vector3D offset, GFC_Vector3D rotation);
 
 void gf3d_mesh_init(Uint32 mesh_max) {
 	Uint32 count = 0;
@@ -104,19 +102,15 @@ void gf3d_mesh_init(Uint32 mesh_max) {
 	// the order of the pipeline creation is the order they are submitted
 	// in.
 	gf3d_mesh.sky_pipe = gf3d_pipeline_create_from_config(
-		gf3d_vgraphics_get_default_logical_device(),
-		"assets/config/sky_pipeline.cfg", gf3d_vgraphics_get_view_extent(),
-		mesh_max, gf3d_mesh_get_bind_description(),
-		gf3d_mesh_get_attribute_descriptions(NULL), count, sizeof(MeshUBO),
+		gf3d_vgraphics_get_default_logical_device(), "assets/config/sky_pipeline.cfg", gf3d_vgraphics_get_view_extent(),
+		mesh_max, gf3d_mesh_get_bind_description(), gf3d_mesh_get_attribute_descriptions(NULL), count, sizeof(MeshUBO),
 		VK_INDEX_TYPE_UINT16
 	);
 
 	gf3d_mesh.pipe = gf3d_pipeline_create_from_config(
-		gf3d_vgraphics_get_default_logical_device(),
-		"assets/config/model_pipeline.cfg", gf3d_vgraphics_get_view_extent(),
-		mesh_max, gf3d_mesh_get_bind_description(),
-		gf3d_mesh_get_attribute_descriptions(NULL), count, sizeof(ModelUBO),
-		VK_INDEX_TYPE_UINT16
+		gf3d_vgraphics_get_default_logical_device(), "assets/config/model_pipeline.cfg",
+		gf3d_vgraphics_get_view_extent(), mesh_max, gf3d_mesh_get_bind_description(),
+		gf3d_mesh_get_attribute_descriptions(NULL), count, sizeof(ModelUBO), VK_INDEX_TYPE_UINT16
 	);
 
 	if(__DEBUG) slog("mesh system initialized");
@@ -148,15 +142,12 @@ VkCommandBuffer gf3d_mesh_get_sky_command_buffer() {
 	return gf3d_mesh.sky_pipe->commandBuffer;
 }
 
-VkVertexInputAttributeDescription *
-	gf3d_mesh_get_attribute_descriptions(Uint32 *count) {
+VkVertexInputAttributeDescription *gf3d_mesh_get_attribute_descriptions(Uint32 *count) {
 	if(count) *count = ATTRIBUTE_COUNT;
 	return gf3d_mesh.attributeDescriptions;
 }
 
-VkVertexInputBindingDescription *gf3d_mesh_get_bind_description() {
-	return &gf3d_mesh.bindingDescription;
-}
+VkVertexInputBindingDescription *gf3d_mesh_get_bind_description() { return &gf3d_mesh.bindingDescription; }
 
 Mesh *gf3d_mesh_copy(Mesh *in) {
 	Mesh *out;
@@ -181,9 +172,7 @@ Mesh *gf3d_mesh_copy(Mesh *in) {
 	return out;
 }
 
-void gf3d_mesh_move_vertices(
-	Mesh *in, GFC_Vector3D offset, GFC_Vector3D rotation
-) {
+void gf3d_mesh_move_vertices(Mesh *in, GFC_Vector3D offset, GFC_Vector3D rotation) {
 	int i, c;
 	MeshPrimitive *primitive;
 	if(!in) return;
@@ -221,9 +210,7 @@ Mesh *gf3d_mesh_get_by_filename(const char *filename) {
 	int i;
 	for(i = 0; i < gf3d_mesh.mesh_max; i++) {
 		if(!gf3d_mesh.mesh_list[i]._inuse) continue;
-		if(gfc_line_cmp(gf3d_mesh.mesh_list[i].filename, filename) == 0) {
-			return &gf3d_mesh.mesh_list[i];
-		}
+		if(gfc_line_cmp(gf3d_mesh.mesh_list[i].filename, filename) == 0) { return &gf3d_mesh.mesh_list[i]; }
 	}
 	return NULL;
 }
@@ -253,31 +240,19 @@ void gf3d_mesh_close() {
 void gf3d_mesh_primitive_delete_buffers(MeshPrimitive *primitive) {
 	if(!primitive) return;
 	if(primitive->faceBuffer != VK_NULL_HANDLE) {
-		vkDestroyBuffer(
-			gf3d_vgraphics_get_default_logical_device(), primitive->faceBuffer,
-			NULL
-		);
+		vkDestroyBuffer(gf3d_vgraphics_get_default_logical_device(), primitive->faceBuffer, NULL);
 		primitive->faceBuffer = VK_NULL_HANDLE;
 	}
 	if(primitive->faceBufferMemory != VK_NULL_HANDLE) {
-		vkFreeMemory(
-			gf3d_vgraphics_get_default_logical_device(),
-			primitive->faceBufferMemory, NULL
-		);
+		vkFreeMemory(gf3d_vgraphics_get_default_logical_device(), primitive->faceBufferMemory, NULL);
 		primitive->faceBufferMemory = VK_NULL_HANDLE;
 	}
 	if(primitive->vertexBuffer != VK_NULL_HANDLE) {
-		vkDestroyBuffer(
-			gf3d_vgraphics_get_default_logical_device(),
-			primitive->vertexBuffer, NULL
-		);
+		vkDestroyBuffer(gf3d_vgraphics_get_default_logical_device(), primitive->vertexBuffer, NULL);
 		primitive->vertexBuffer = VK_NULL_HANDLE;
 	}
 	if(primitive->vertexBufferMemory != VK_NULL_HANDLE) {
-		vkFreeMemory(
-			gf3d_vgraphics_get_default_logical_device(),
-			primitive->vertexBufferMemory, NULL
-		);
+		vkFreeMemory(gf3d_vgraphics_get_default_logical_device(), primitive->vertexBufferMemory, NULL);
 		primitive->vertexBufferMemory = VK_NULL_HANDLE;
 	}
 }
@@ -300,9 +275,7 @@ void gf3d_mesh_scene_add(Mesh *mesh) {
 	if(!mesh) return;
 }
 
-void gf3d_mesh_queue_render(
-	Mesh *mesh, Pipeline *pipe, void *uboData, Texture *texture
-) {
+void gf3d_mesh_queue_render(Mesh *mesh, Pipeline *pipe, void *uboData, Texture *texture) {
 	int i, c;
 	MeshPrimitive *primitive;
 	if(!mesh) {
@@ -322,17 +295,14 @@ void gf3d_mesh_queue_render(
 		primitive = gfc_list_get_nth(mesh->primitives, i);
 		if(!primitive) continue;
 		gf3d_pipeline_queue_render(
-			pipe, primitive->vertexBuffer, primitive->faceCount * 3,
-			primitive->faceBuffer, uboData, &texture->textureImageView, &texture->textureSampler,
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			pipe, primitive->vertexBuffer, primitive->faceCount * 3, primitive->faceBuffer, uboData,
+			&texture->textureImageView, &texture->textureSampler, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			VK_NULL_HANDLE, VK_NULL_HANDLE, VK_IMAGE_LAYOUT_UNDEFINED
 		);
 	}
 }
 
-void gf3d_mesh_render_generic(
-	Mesh *mesh, Pipeline *pipe, VkDescriptorSet *descriptorSet
-) {
+void gf3d_mesh_render_generic(Mesh *mesh, Pipeline *pipe, VkDescriptorSet *descriptorSet) {
 	int i, c;
 	MeshPrimitive *primitive;
 	if(!mesh) {
@@ -352,27 +322,20 @@ void gf3d_mesh_render_generic(
 		primitive = gfc_list_get_nth(mesh->primitives, i);
 		if(!primitive) continue;
 		gf3d_pipeline_call_render(
-			pipe, descriptorSet, primitive->vertexBuffer,
-			primitive->faceCount * 3, primitive->faceBuffer
+			pipe, descriptorSet, primitive->vertexBuffer, primitive->faceCount * 3, primitive->faceBuffer
 		);
 	}
 }
 
-void gf3d_mesh_render(
-	Mesh *mesh, VkCommandBuffer commandBuffer, VkDescriptorSet *descriptorSet
-) {
+void gf3d_mesh_render(Mesh *mesh, VkCommandBuffer commandBuffer, VkDescriptorSet *descriptorSet) {
 	gf3d_mesh_render_generic(mesh, gf3d_mesh.pipe, descriptorSet);
 }
 
-void gf3d_mesh_render_sky(
-	Mesh *mesh, VkCommandBuffer commandBuffer, VkDescriptorSet *descriptorSet
-) {
+void gf3d_mesh_render_sky(Mesh *mesh, VkCommandBuffer commandBuffer, VkDescriptorSet *descriptorSet) {
 	gf3d_mesh_render_generic(mesh, gf3d_mesh.sky_pipe, descriptorSet);
 }
 
-void gf3d_mesh_setup_face_buffers(
-	MeshPrimitive *mesh, Face *faces, Uint32 fcount
-) {
+void gf3d_mesh_setup_face_buffers(MeshPrimitive *mesh, Face *faces, Uint32 fcount) {
 	void *data;
 	VkDevice device = gf3d_vgraphics_get_default_logical_device();
 	VkDeviceSize bufferSize = sizeof(Face) * fcount;
@@ -382,9 +345,7 @@ void gf3d_mesh_setup_face_buffers(
 
 	gf3d_buffer_create(
 		bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		&stagingBuffer, &stagingBufferMemory
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory
 	);
 
 	vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
@@ -392,10 +353,8 @@ void gf3d_mesh_setup_face_buffers(
 	vkUnmapMemory(device, stagingBufferMemory);
 
 	gf3d_buffer_create(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &mesh->faceBuffer,
-		&mesh->faceBufferMemory
+		bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &mesh->faceBuffer, &mesh->faceBufferMemory
 	);
 
 	gf3d_buffer_copy(stagingBuffer, mesh->faceBuffer, bufferSize);
@@ -445,9 +404,7 @@ void gf3d_mesh_create_vertex_buffer_from_vertices(MeshPrimitive *mesh) {
 
 	gf3d_buffer_create(
 		bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		&stagingBuffer, &stagingBufferMemory
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory
 	);
 
 	vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
@@ -455,10 +412,8 @@ void gf3d_mesh_create_vertex_buffer_from_vertices(MeshPrimitive *mesh) {
 	vkUnmapMemory(device, stagingBufferMemory);
 
 	gf3d_buffer_create(
-		bufferSize,
-		VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &mesh->vertexBuffer,
-		&mesh->vertexBufferMemory
+		bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &mesh->vertexBuffer, &mesh->vertexBufferMemory
 	);
 
 	gf3d_buffer_copy(stagingBuffer, mesh->vertexBuffer, bufferSize);
@@ -481,16 +436,12 @@ GFC_Vector3D gf3d_mesh_get_scaled_to(Mesh *mesh, GFC_Vector3D size) {
 }
 
 Uint8 gf3d_mesh_primitive_append(
-	MeshPrimitive *primitiveA, MeshPrimitive *primitiveB, GFC_Vector3D offsetB,
-	GFC_Vector3D rotation
+	MeshPrimitive *primitiveA, MeshPrimitive *primitiveB, GFC_Vector3D offsetB, GFC_Vector3D rotation
 ) {
 	ObjData *objNew;
 	if((!primitiveA) || (!primitiveB)) return 0; // fail
 	if((!primitiveA->objData) || (!primitiveB->objData)) return 0;
-	objNew = gf3d_obj_merge(
-		primitiveA->objData, gfc_vector3d(0, 0, 0), primitiveB->objData,
-		offsetB, rotation
-	);
+	objNew = gf3d_obj_merge(primitiveA->objData, gfc_vector3d(0, 0, 0), primitiveB->objData, offsetB, rotation);
 	if(!objNew) return 0;
 	gf3d_mesh_primitive_delete_buffers(primitiveA);
 	gf3d_obj_free(primitiveA->objData);
@@ -499,16 +450,12 @@ Uint8 gf3d_mesh_primitive_append(
 	return 1;
 }
 
-void gf3d_mesh_append(
-	Mesh *meshA, Mesh *meshB, GFC_Vector3D offsetB, GFC_Vector3D rotation
-) {
+void gf3d_mesh_append(Mesh *meshA, Mesh *meshB, GFC_Vector3D offsetB, GFC_Vector3D rotation) {
 	int i, c;
 	MeshPrimitive *primitiveA;
 	MeshPrimitive *primitiveB;
 	if((!meshA) || (!meshB)) return;
-	c =
-		MIN(gfc_list_get_count(meshA->primitives),
-			gfc_list_get_count(meshB->primitives));
+	c = MIN(gfc_list_get_count(meshA->primitives), gfc_list_get_count(meshB->primitives));
 	for(i = 0; i < c; i++) {
 		primitiveA = gfc_list_get_nth(meshA->primitives, i);
 		primitiveB = gfc_list_get_nth(meshB->primitives, i);
@@ -546,9 +493,7 @@ MeshPrimitive *gf3d_mesh_primitive_copy(MeshPrimitive *in) {
 	return out;
 }
 
-void gf3d_mesh_primitive_move(
-	MeshPrimitive *in, GFC_Vector3D offset, GFC_Vector3D rotation
-) {
+void gf3d_mesh_primitive_move(MeshPrimitive *in, GFC_Vector3D offset, GFC_Vector3D rotation) {
 	if(!in) return;
 	if(!in->objData) return;
 	gf3d_obj_move(in->objData, offset, rotation);

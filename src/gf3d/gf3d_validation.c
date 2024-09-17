@@ -38,12 +38,9 @@ void gf3d_validation_query_layer_properties() {
 
 	if(!gf3d_validation.layerCount) return;
 
-	gf3d_validation.availableLayers = (VkLayerProperties *)gfc_allocate_array(
-		sizeof(VkLayerProperties), gf3d_validation.layerCount
-	);
-	vkEnumerateInstanceLayerProperties(
-		&gf3d_validation.layerCount, gf3d_validation.availableLayers
-	);
+	gf3d_validation.availableLayers =
+		(VkLayerProperties *)gfc_allocate_array(sizeof(VkLayerProperties), gf3d_validation.layerCount);
+	vkEnumerateInstanceLayerProperties(&gf3d_validation.layerCount, gf3d_validation.availableLayers);
 
 	gf3d_validation.layers = gfc_list_new();
 	for(i = 0; i < gf3d_validation.layerCount; i++) {
@@ -52,21 +49,15 @@ void gf3d_validation_query_layer_properties() {
 		newLayer->properties = &gf3d_validation.availableLayers[i];
 		newLayer->name = newLayer->properties->layerName;
 		newLayer->enabled = 1; // enabled by default
-		if(strcmp(gf3d_validation.availableLayers[i].layerName, "VK_LAYER_KHRONOS_validation") != 0) {
-			continue;
-		}
-		slog(
-			"Validation layer available: %s",
-			gf3d_validation.availableLayers[i].layerName
-		);
+		if(strcmp(gf3d_validation.availableLayers[i].layerName, "VK_LAYER_KHRONOS_validation") != 0) { continue; }
+		slog("Validation layer available: %s", gf3d_validation.availableLayers[i].layerName);
 		gfc_list_append(gf3d_validation.layers, newLayer);
 	}
 }
 
 void gf3d_validation_close() {
 	if(gf3d_validation.enabledLayers) {
-		free(gf3d_validation.enabledLayers
-		); // data pointed to by this is owned elsewhere
+		free(gf3d_validation.enabledLayers); // data pointed to by this is owned elsewhere
 	}
 	if(gf3d_validation.availableLayers) {
 		free(gf3d_validation.availableLayers);
@@ -133,10 +124,7 @@ void gf3d_validation_init(const char *config) {
 Bool gf3d_validation_check_layer_support(char *layerName) {
 	int i;
 	for(i = 0; i < gf3d_validation.layerCount; i++) {
-		if(strcmp(layerName, gf3d_validation.availableLayers[i].layerName) ==
-		   0) {
-			return true;
-		}
+		if(strcmp(layerName, gf3d_validation.availableLayers[i].layerName) == 0) { return true; }
 	}
 	return false;
 }
@@ -155,17 +143,11 @@ void gf3d_validation_layer_enable(const char *name, Bool enable) {
 	}
 }
 
-Uint32 gf3d_validation_get_available_layer_count() {
-	return gf3d_validation.layerCount;
-}
+Uint32 gf3d_validation_get_available_layer_count() { return gf3d_validation.layerCount; }
 
-Uint32 gf3d_validation_get_enabled_layer_count() {
-	return gf3d_validation.enabledCount;
-}
+Uint32 gf3d_validation_get_enabled_layer_count() { return gf3d_validation.enabledCount; }
 
-VkLayerProperties *gf3d_validation_get_validation_layer_data() {
-	return gf3d_validation.availableLayers;
-}
+VkLayerProperties *gf3d_validation_get_validation_layer_data() { return gf3d_validation.availableLayers; }
 
 const char *const *gf3d_validation_get_enabled_layer_names() {
 	return (const char *const *)gf3d_validation.enabledLayers;

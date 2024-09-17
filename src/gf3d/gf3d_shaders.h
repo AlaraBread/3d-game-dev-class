@@ -21,8 +21,6 @@ char *gf3d_shaders_load_data(const char *filename, size_t *rsize);
  * @param size the mount of bites contained in the shader
  * @param device the logical device to create this for
  */
-VkShaderModule gf3d_shaders_create_module(
-	const char *shader, size_t size, VkDevice device
-);
+VkShaderModule gf3d_shaders_create_module(const char *shader, size_t size, VkDevice device);
 
 #endif

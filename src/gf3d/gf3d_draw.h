@@ -23,8 +23,7 @@ void gf3d_draw_init();
  * @param color the color to draw with
  */
 void gf3d_draw_edge_3d(
-	GFC_Edge3D edge, GFC_Vector3D position, GFC_Vector3D rotation,
-	GFC_Vector3D scale, float radius, GFC_Color color
+	GFC_Edge3D edge, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, float radius, GFC_Color color
 );
 
 /**
@@ -37,8 +36,7 @@ void gf3d_draw_edge_3d(
  * @param color the color to draw with
  */
 void gf3d_draw_cube_solid(
-	GFC_Box cube, GFC_Vector3D position, GFC_Vector3D rotation,
-	GFC_Vector3D scale, GFC_Color color
+	GFC_Box cube, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, GFC_Color color
 );
 
 /**
@@ -53,8 +51,8 @@ void gf3d_draw_cube_solid(
  * @param ambient how much to adjust render due to global ambient light
  */
 void gf3d_draw_sphere_solid(
-	GFC_Sphere sphere, GFC_Vector3D position, GFC_Vector3D rotation,
-	GFC_Vector3D scale, GFC_Color color, GFC_Color ambient
+	GFC_Sphere sphere, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, GFC_Color color,
+	GFC_Color ambient
 );
 
 #endif

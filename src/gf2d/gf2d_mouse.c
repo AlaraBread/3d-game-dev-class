@@ -50,10 +50,7 @@ void gf2d_mouse_update() {
 
 void gf2d_mouse_draw() {
 	if(_mouse.hidden > 0) return;
-	gf2d_actor_draw(
-		_mouse.actor, _mouse.frame, _mouse.mouse[0].position, NULL, NULL, NULL,
-		NULL, NULL
-	);
+	gf2d_actor_draw(_mouse.actor, _mouse.frame, _mouse.mouse[0].position, NULL, NULL, NULL, NULL, NULL);
 }
 
 int gf2d_mouse_moved() {
@@ -69,9 +66,7 @@ int gf2d_mouse_button_pressed(int button) {
 	int mask;
 	if(_mouse.hidden) return 0;
 	mask = 1 << button;
-	if((_mouse.mouse[0].buttons & mask) && !(_mouse.mouse[1].buttons & mask)) {
-		return 1;
-	}
+	if((_mouse.mouse[0].buttons & mask) && !(_mouse.mouse[1].buttons & mask)) { return 1; }
 	return 0;
 }
 
@@ -79,9 +74,7 @@ int gf2d_mouse_button_held(int button) {
 	int mask;
 	if(_mouse.hidden) return 0;
 	mask = 1 << button;
-	if((_mouse.mouse[0].buttons & mask) && (_mouse.mouse[1].buttons & mask)) {
-		return 1;
-	}
+	if((_mouse.mouse[0].buttons & mask) && (_mouse.mouse[1].buttons & mask)) { return 1; }
 	return 0;
 }
 
@@ -89,9 +82,7 @@ int gf2d_mouse_button_released(int button) {
 	int mask;
 	if(_mouse.hidden) return 0;
 	mask = 1 << button;
-	if(!(_mouse.mouse[0].buttons & mask) && (_mouse.mouse[1].buttons & mask)) {
-		return 1;
-	}
+	if(!(_mouse.mouse[0].buttons & mask) && (_mouse.mouse[1].buttons & mask)) { return 1; }
 	return 0;
 }
 
@@ -149,8 +140,6 @@ GFC_Vector2D gf2d_mouse_get_movement() {
 	return dif;
 }
 
-int gf2d_mouse_in_rect(GFC_Rect r) {
-	return gfc_point_in_rect(_mouse.mouse[0].position, r);
-}
+int gf2d_mouse_in_rect(GFC_Rect r) { return gfc_point_in_rect(_mouse.mouse[0].position, r); }
 
 /*eol@eof*/

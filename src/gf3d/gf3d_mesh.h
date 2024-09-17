@@ -94,9 +94,7 @@ Mesh *gf3d_mesh_copy(Mesh *in);
  * @param offset how much to move it
  * @param rotation apply this rotation to the vertices and normals
  */
-void gf3d_mesh_move_vertices(
-	Mesh *in, GFC_Vector3D offset, GFC_Vector3D rotation
-);
+void gf3d_mesh_move_vertices(Mesh *in, GFC_Vector3D offset, GFC_Vector3D rotation);
 
 /**
  * @brief allocate a zero initialized mesh primitive
@@ -116,9 +114,7 @@ MeshPrimitive *gf3d_mesh_primitive_new();
  * @param offsetB an offset to apply to all the vertices in the second Obj
  * @param rotation apply this rotation to the vertices and normals
  */
-void gf3d_mesh_append(
-	Mesh *meshA, Mesh *meshB, GFC_Vector3D offsetB, GFC_Vector3D rotation
-);
+void gf3d_mesh_append(Mesh *meshA, Mesh *meshB, GFC_Vector3D offsetB, GFC_Vector3D rotation);
 
 /**
  * @brief get the scaling factor necessary to make the mesh fit within the
@@ -137,8 +133,7 @@ GFC_Vector3D gf3d_mesh_get_scaled_to(Mesh *mesh, GFC_Vector3D size);
  * @param count (optional, output) the number of attributes
  * @return a pointer to a vertex input attribute description array
  */
-VkVertexInputAttributeDescription *
-	gf3d_mesh_get_attribute_descriptions(Uint32 *count);
+VkVertexInputAttributeDescription *gf3d_mesh_get_attribute_descriptions(Uint32 *count);
 
 /**
  * @brief get the binding description for mesh based rendering
@@ -176,9 +171,7 @@ VkCommandBuffer gf3d_mesh_get_sky_command_buffer();
  * @param uboData the data to use to draw the mesh
  * @param texture texture data to use
  */
-void gf3d_mesh_queue_render(
-	Mesh *mesh, Pipeline *pipe, void *uboData, Texture *texture
-);
+void gf3d_mesh_queue_render(Mesh *mesh, Pipeline *pipe, void *uboData, Texture *texture);
 
 /**
  * @brief adds a mesh to the render pass rendered as an outline highlight
@@ -187,19 +180,13 @@ void gf3d_mesh_queue_render(
  * @param com the command pool to use to handle the request we are rendering
  * with
  */
-void gf3d_mesh_render(
-	Mesh *mesh, VkCommandBuffer commandBuffer, VkDescriptorSet *descriptorSet
-);
-void gf3d_mesh_render_sky(
-	Mesh *mesh, VkCommandBuffer commandBuffer, VkDescriptorSet *descriptorSet
-);
+void gf3d_mesh_render(Mesh *mesh, VkCommandBuffer commandBuffer, VkDescriptorSet *descriptorSet);
+void gf3d_mesh_render_sky(Mesh *mesh, VkCommandBuffer commandBuffer, VkDescriptorSet *descriptorSet);
 
 /**
  * @brief render a mesh through a given pipeline
  */
-void gf3d_mesh_render_generic(
-	Mesh *mesh, Pipeline *pipe, VkDescriptorSet *descriptorSet
-);
+void gf3d_mesh_render_generic(Mesh *mesh, Pipeline *pipe, VkDescriptorSet *descriptorSet);
 
 /**
  * @brief create a mesh's internal buffers based on vertices

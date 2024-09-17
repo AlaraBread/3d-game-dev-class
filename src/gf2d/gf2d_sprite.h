@@ -33,20 +33,19 @@
 
 typedef struct {
 	Uint8 _inuse;
-	GFC_TextLine filename; /**<the name of the file used to create the sprite*/
-	Uint32 frameCount;	   /**<how many frames are loaded for this model*/
-	Texture *texture;	   /**<texture memory pointer*/
-	Uint8 framesPerLine;   /**<how many frames are per line in the sprite
-				  sheet*/
+	GFC_TextLine filename;			   /**<the name of the file used to create the sprite*/
+	Uint32 frameCount;				   /**<how many frames are loaded for this model*/
+	Texture *texture;				   /**<texture memory pointer*/
+	Uint8 framesPerLine;			   /**<how many frames are per line in the sprite
+							  sheet*/
 	Uint32 frameWidth, frameHeight;	   /*<the size, in pixels, of the
 						  individual sprite frames*/
 	float widthPercent, heightPercent; /**<size percent of the sprite frame
 						  from the texture*/
 	VkBuffer buffer;
 	VkDeviceMemory bufferMemory;
-	VkDescriptorSet
-		*descriptorSet;	  /**<descriptor sets used for this sprite to render*/
-	SDL_Surface *surface; /**<pointer to the cpu surface data*/
+	VkDescriptorSet *descriptorSet; /**<descriptor sets used for this sprite to render*/
+	SDL_Surface *surface;			/**<pointer to the cpu surface data*/
 } Sprite;
 
 /**
@@ -75,10 +74,7 @@ Sprite *gf2d_sprite_new();
  * @return NULL on error (check logs) or a pointer to a sprite that can be draw
  * to the 2d overlay
  */
-Sprite *gf2d_sprite_load(
-	const char *filename, int frame_width, int frame_height,
-	Uint32 frames_per_line
-);
+Sprite *gf2d_sprite_load(const char *filename, int frame_width, int frame_height, Uint32 frames_per_line);
 
 /**
  * @brief loads a flat image into memory
@@ -122,10 +118,7 @@ void gf2d_sprite_create_vertex_buffer(Sprite *sprite);
  * @return NULL on error (check logs) or a pointer to a sprite that can be draw
  * to the 2d overlay
  */
-Sprite *gf2d_sprite_from_surface(
-	SDL_Surface *surface, int frame_width, int frame_height,
-	Uint32 frames_per_line
-);
+Sprite *gf2d_sprite_from_surface(SDL_Surface *surface, int frame_width, int frame_height, Uint32 frames_per_line);
 
 /**
  * @brief free a previously loaded sprite
@@ -149,9 +142,8 @@ void gf2d_sprite_free(Sprite *sprite);
  * @param frame which frame to draw
  */
 void gf2d_sprite_draw(
-	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D *scale,
-	GFC_Vector2D *center, float *rotation, GFC_Vector2D *flip,
-	GFC_Color *colorShift, GFC_Vector4D *clip, Uint32 frame
+	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *center, float *rotation,
+	GFC_Vector2D *flip, GFC_Color *colorShift, GFC_Vector4D *clip, Uint32 frame
 );
 
 /**
@@ -169,8 +161,7 @@ void gf2d_sprite_draw(
  * @param frame which frame to draw
  */
 void gf2d_sprite_draw_full(
-	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D scale,
-	GFC_Vector2D center, float rotation, GFC_Vector2D flip,
+	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D scale, GFC_Vector2D center, float rotation, GFC_Vector2D flip,
 	GFC_Color colorShift, GFC_Vector4D clip, Uint32 frame
 );
 
@@ -186,8 +177,8 @@ void gf2d_sprite_draw_full(
  * @param surface the surface to draw to
  */
 void gf2d_sprite_draw_to_surface(
-	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D *scale,
-	GFC_Vector2D *scaleCenter, Uint32 frame, SDL_Surface *surface
+	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *scaleCenter, Uint32 frame,
+	SDL_Surface *surface
 );
 
 /**
@@ -196,9 +187,7 @@ void gf2d_sprite_draw_to_surface(
  * @param position here on the screen to draw it
  * @param frame which frame to draw
  */
-void gf2d_sprite_draw_simple(
-	Sprite *sprite, GFC_Vector2D position, Uint32 frame
-);
+void gf2d_sprite_draw_simple(Sprite *sprite, GFC_Vector2D position, Uint32 frame);
 
 void gf2d_sprite_draw_image(Sprite *sprite, GFC_Vector2D position);
 
@@ -213,8 +202,7 @@ Pipeline *gf2d_sprite_get_pipeline();
  */
 VkVertexInputBindingDescription *gf2d_sprite_get_bind_description();
 
-VkVertexInputAttributeDescription *
-	gf2d_sprite_get_attribute_descriptions(Uint32 *count);
+VkVertexInputAttributeDescription *gf2d_sprite_get_attribute_descriptions(Uint32 *count);
 
 /**
  * @brief needs to be called once at the beginning of each render frame

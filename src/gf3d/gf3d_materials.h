@@ -41,8 +41,8 @@ typedef struct {
 	float specularExponent; // specular power
 	float ior;				// index of refraction
 	float transparency;		// how translucent the material should be overall
-	float shininess; // how shiny the materials is.  // how pronounced the
-					 // specular is
+	float shininess;		// how shiny the materials is.  // how pronounced the
+							// specular is
 } GF3D_Material;
 
 /**

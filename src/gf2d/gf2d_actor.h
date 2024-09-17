@@ -159,8 +159,8 @@ Uint32 gf2d_actor_get_framecount(Actor *actor);
  * @param flip (optional) if x or y is non-zero it will flip in that direction
  */
 void gf2d_actor_draw(
-	Actor *actor, float frame, GFC_Vector2D position, GFC_Vector2D *scale,
-	GFC_Vector2D *center, float *rotation, GFC_Color *color, GFC_Vector2D *flip
+	Actor *actor, float frame, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *center, float *rotation,
+	GFC_Color *color, GFC_Vector2D *flip
 );
 
 /**

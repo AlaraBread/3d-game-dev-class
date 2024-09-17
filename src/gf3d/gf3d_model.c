@@ -40,8 +40,7 @@ void gf3d_model_create_descriptor_pool(Model *model);
 void gf3d_model_create_descriptor_sets(Model *model);
 void gf3d_model_create_descriptor_set_layout();
 void gf3d_model_update_uniform_buffer(
-	Model *model, UniformBuffer *ubo, GFC_Matrix4 modelMat,
-	GFC_Vector4D colorMod, GFC_Vector4D ambientLight
+	Model *model, UniformBuffer *ubo, GFC_Matrix4 modelMat, GFC_Vector4D colorMod, GFC_Vector4D ambientLight
 );
 
 VkDescriptorSetLayout *gf3d_model_get_descriptor_set_layout();
@@ -62,14 +61,12 @@ void gf3d_model_manager_init(Uint32 max_models) {
 		return;
 	}
 	gf3d_model.chain_length = gf3d_swapchain_get_chain_length();
-	gf3d_model.model_list =
-		(Model *)gfc_allocate_array(sizeof(Model), max_models);
+	gf3d_model.model_list = (Model *)gfc_allocate_array(sizeof(Model), max_models);
 	gf3d_model.max_models = max_models;
 	gf3d_model.device = gf3d_vgraphics_get_default_logical_device();
 	gf3d_model.pipe = gf3d_mesh_get_pipeline();
 	gf3d_model.defaultTexture = gf3d_texture_load("assets/images/default.png");
-	gf3d_model.defaultNormal =
-		gf3d_texture_load("assets/images/defaultNormalMap.png");
+	gf3d_model.defaultNormal = gf3d_texture_load("assets/images/defaultNormalMap.png");
 	gf3d_model.initiliazed = 1;
 	if(__DEBUG) slog("model manager initiliazed");
 	atexit(gf3d_model_manager_close);
@@ -80,8 +77,7 @@ Model *gf3d_model_get_by_filename(const char *filename) {
 	if(!gf3d_model.initiliazed) return NULL;
 	for(i = 0; i < gf3d_model.max_models; i++) {
 		if(!gf3d_model.model_list[i].refCount) { continue; }
-		if(strcmp(filename, gf3d_model.model_list[i].filename) == 0)
-			return &gf3d_model.model_list[i];
+		if(strcmp(filename, gf3d_model.model_list[i].filename) == 0) return &gf3d_model.model_list[i];
 	}
 	return NULL;
 }
@@ -115,16 +111,12 @@ void gf3d_model_move(Model *in, GFC_Vector3D offset, GFC_Vector3D rotation) {
 	}
 }
 
-void gf3d_model_append(
-	Model *modelA, Model *modelB, GFC_Vector3D offsetB, GFC_Vector3D rotation
-) {
+void gf3d_model_append(Model *modelA, Model *modelB, GFC_Vector3D offsetB, GFC_Vector3D rotation) {
 	int i, c;
 	Mesh *meshA, *meshB;
 	if((!modelA) || (!modelB)) return;
 	// only merge up to the minimum number of meshes between the two
-	c =
-		MIN(gfc_list_get_count(modelA->mesh_list),
-			gfc_list_get_count(modelB->mesh_list));
+	c = MIN(gfc_list_get_count(modelA->mesh_list), gfc_list_get_count(modelB->mesh_list));
 	for(i = 0; i < c; i++) {
 		meshA = gfc_list_get_nth(modelA->mesh_list, i);
 		meshB = gfc_list_get_nth(modelB->mesh_list, i);
@@ -345,9 +337,7 @@ Model *gf3d_model_load_full(const char *modelFile, const char *textureFile) {
 
 	model->texture = gf3d_texture_load(textureFile);
 
-	if(!model->texture) {
-		model->texture = gf3d_texture_load("assets/images/default.png");
-	}
+	if(!model->texture) { model->texture = gf3d_texture_load("assets/images/default.png"); }
 
 	return model;
 }
@@ -391,16 +381,12 @@ void gf3d_model_mat_reset(ModelMat *mat) {
 
 void gf3d_model_mat_extract_vectors(ModelMat *mat) {
 	if(!mat) return;
-	gfc_matrix4_to_vectors(
-		mat->mat, &mat->position, &mat->rotation, &mat->scale
-	);
+	gfc_matrix4_to_vectors(mat->mat, &mat->position, &mat->rotation, &mat->scale);
 }
 
 void gf3d_model_mat_set_matrix(ModelMat *mat) {
 	if(!mat) return;
-	gfc_matrix4_from_vectors(
-		mat->mat, mat->position, mat->rotation, mat->scale
-	);
+	gfc_matrix4_from_vectors(mat->mat, mat->position, mat->rotation, mat->scale);
 }
 
 void gf3d_model_mat_free(ModelMat *mat) {
@@ -415,8 +401,7 @@ SJson *gf3d_model_mat_save(ModelMat *mat, Bool updateFirst) {
 	json = sj_object_new();
 	if(!json) return NULL;
 	if(updateFirst) { gf3d_model_mat_extract_vectors(mat); }
-	if(mat->model)
-		sj_object_insert(json, "model", sj_new_str(mat->model->filename));
+	if(mat->model) sj_object_insert(json, "model", sj_new_str(mat->model->filename));
 	sj_object_insert(json, "position", sj_vector3d_new(mat->position));
 	sj_object_insert(json, "rotation", sj_vector3d_new(mat->rotation));
 	sj_object_insert(json, "scale", sj_vector3d_new(mat->scale));
@@ -424,8 +409,7 @@ SJson *gf3d_model_mat_save(ModelMat *mat, Bool updateFirst) {
 }
 
 void mat_from_parent(
-	GFC_Matrix4 out, GFC_Matrix4 parent, GFC_Vector3D position,
-	GFC_Vector3D rotation, GFC_Vector3D scale
+	GFC_Matrix4 out, GFC_Matrix4 parent, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale
 ) {
 	GFC_Matrix4 temp;
 	gfc_matrix4_from_vectors(temp, position, rotation, scale);
@@ -439,16 +423,10 @@ void gf3d_model_mat_parse(ModelMat *mat, SJson *config) {
 	gfc_matrix4_identity(mat->mat);
 	str = sj_object_get_value_as_string(config, "model");
 	if(str) mat->model = gf3d_model_load(str);
-	sj_value_as_vector3d(
-		sj_object_get_value(config, "position"), &mat->position
-	);
-	sj_value_as_vector3d(
-		sj_object_get_value(config, "rotation"), &mat->rotation
-	);
-	gfc_vector3d_scale(
-		mat->rotation, mat->rotation,
-		GFC_DEGTORAD
-	); // config file is in degrees
+	sj_value_as_vector3d(sj_object_get_value(config, "position"), &mat->position);
+	sj_value_as_vector3d(sj_object_get_value(config, "rotation"), &mat->rotation);
+	gfc_vector3d_scale(mat->rotation, mat->rotation,
+					   GFC_DEGTORAD); // config file is in degrees
 	sj_value_as_vector3d(sj_object_get_value(config, "scale"), &mat->scale);
 }
 
@@ -480,9 +458,7 @@ MeshUBO gf3d_model_get_sky_ubo(GFC_Matrix4 modelMat, GFC_Vector4D colorMod) {
 	return modelUBO;
 }
 
-void gf3d_model_draw_all_meshes(
-	Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame
-) {
+void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame) {
 	int i, c;
 	if(!model) return;
 	c = gfc_list_get_count(model->mesh_list);
@@ -491,9 +467,7 @@ void gf3d_model_draw_all_meshes(
 	}
 }
 
-void gf3d_model_draw(
-	Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame
-) {
+void gf3d_model_draw(Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame) {
 	if(!model) return;
 	if(model->mesh_as_frame) {
 		gf3d_model_draw_index(model, frame, modelMat, colorMod, 0);
@@ -502,10 +476,7 @@ void gf3d_model_draw(
 	gf3d_model_draw_all_meshes(model, modelMat, colorMod, frame);
 }
 
-void gf3d_model_draw_index(
-	Model *model, Uint32 index, GFC_Matrix4 modelMat, GFC_Color colorMod,
-	Uint32 frame
-) {
+void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame) {
 	Mesh *mesh;
 	GFC_Matrix4 matrix = {0};
 	GFC_Vector4D modColor = {0};
@@ -525,9 +496,7 @@ void gf3d_model_draw_index(
 		uboData.material = gf3d_material_get_ubo(model->material);
 		modColor = gfc_color_to_vector4f(colorMod);
 		// modulate the diffuse color based on input colorMod
-		gfc_vector4d_scale_by(
-			uboData.material.diffuse, uboData.material.diffuse, modColor
-		);
+		gfc_vector4d_scale_by(uboData.material.diffuse, uboData.material.diffuse, modColor);
 	} else
 		uboData.material = gf3d_material_make_basic_ubo(colorMod);
 	if(!model->texture) {
@@ -554,9 +523,7 @@ void gf3d_model_draw_sky(Model *model, GFC_Matrix4 modelMat, GFC_Color color) {
 	// queue up a render for batch rendering
 	mesh = gfc_list_get_nth(model->mesh_list, 0);
 
-	gf3d_mesh_queue_render(
-		mesh, gf3d_mesh_get_sky_pipeline(), &uboData, texture
-	);
+	gf3d_mesh_queue_render(mesh, gf3d_mesh_get_sky_pipeline(), &uboData, texture);
 }
 
 /*eol@eof*/

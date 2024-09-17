@@ -9,9 +9,7 @@
  * @param dstBuffer the buffer to copy to
  * @param size how much to copy
  */
-void gf3d_buffer_copy(
-	VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size
-);
+void gf3d_buffer_copy(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 /**
  * @brief create and allocate the memory for a buffer
@@ -23,8 +21,7 @@ void gf3d_buffer_copy(
  * @return 1 on success, 0 on failure
  */
 int gf3d_buffer_create(
-	VkDeviceSize size, VkBufferUsageFlags usage,
-	VkMemoryPropertyFlags properties, VkBuffer *buffer,
+	VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer *buffer,
 	VkDeviceMemory *bufferMemory
 );
 

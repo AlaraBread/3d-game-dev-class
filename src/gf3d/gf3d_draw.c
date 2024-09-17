@@ -23,31 +23,21 @@ void gf3d_draw_close() {
 }
 
 void gf3d_draw_init() {
-	gf3d_draw_manager.cube = gf3d_model_load_full(
-		"assets/models/primitives/cube.obj",
-		"assets/models/primitives/flatwhite.png"
-	);
-	gf3d_draw_manager.icube = gf3d_model_load_full(
-		"assets/models/primitives/icube.obj",
-		"assets/models/primitives/flatwhite.png"
-	);
-	gf3d_draw_manager.sphere = gf3d_model_load_full(
-		"assets/models/primitives/sphere.obj",
-		"assets/models/primitives/flatwhite.png"
-	);
-	gf3d_draw_manager.isphere = gf3d_model_load_full(
-		"assets/models/primitives/isphere.obj",
-		"assets/models/primitives/flatwhite.png"
-	);
-	gf3d_draw_manager.icylinder =
-		gf3d_model_load("assets/models/primitives/icylinder.model");
+	gf3d_draw_manager.cube =
+		gf3d_model_load_full("assets/models/primitives/cube.obj", "assets/models/primitives/flatwhite.png");
+	gf3d_draw_manager.icube =
+		gf3d_model_load_full("assets/models/primitives/icube.obj", "assets/models/primitives/flatwhite.png");
+	gf3d_draw_manager.sphere =
+		gf3d_model_load_full("assets/models/primitives/sphere.obj", "assets/models/primitives/flatwhite.png");
+	gf3d_draw_manager.isphere =
+		gf3d_model_load_full("assets/models/primitives/isphere.obj", "assets/models/primitives/flatwhite.png");
+	gf3d_draw_manager.icylinder = gf3d_model_load("assets/models/primitives/icylinder.model");
 
 	atexit(gf3d_draw_close);
 }
 
 void gf3d_draw_edge_3d(
-	GFC_Edge3D edge, GFC_Vector3D position, GFC_Vector3D rotation,
-	GFC_Vector3D scale, float radius, GFC_Color color
+	GFC_Edge3D edge, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, float radius, GFC_Color color
 ) {
 	Mesh *mesh;
 	GFC_Matrix4 modelMat;
@@ -72,47 +62,32 @@ void gf3d_draw_edge_3d(
 	scale.z *= radius / mesh->bounds.d;
 
 	gfc_matrix4_from_vectors(
-		modelMat,
-		gfc_vector3d(
-			position.x + edge.a.x, position.y + edge.a.y, position.z + edge.a.z
-		),
-		gfc_vector3d(
-			rotation.x + angles.x, rotation.y + angles.y, rotation.z + angles.z
-		),
-		scale
+		modelMat, gfc_vector3d(position.x + edge.a.x, position.y + edge.a.y, position.z + edge.a.z),
+		gfc_vector3d(rotation.x + angles.x, rotation.y + angles.y, rotation.z + angles.z), scale
 	);
 	gf3d_model_draw(gf3d_draw_manager.icylinder, modelMat, color, 0);
 }
 
 void gf3d_draw_cube_solid(
-	GFC_Box cube, GFC_Vector3D position, GFC_Vector3D rotation,
-	GFC_Vector3D scale, GFC_Color color
+	GFC_Box cube, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, GFC_Color color
 ) {
 	GFC_Matrix4 modelMat;
 
 	gfc_matrix4_from_vectors(
-		modelMat,
-		gfc_vector3d(
-			position.x + cube.x, position.y + cube.y, position.z + cube.z
-		),
-		rotation,
+		modelMat, gfc_vector3d(position.x + cube.x, position.y + cube.y, position.z + cube.z), rotation,
 		gfc_vector3d(scale.x * cube.w, scale.y * cube.h, scale.z * cube.d)
 	);
 	gf3d_model_draw(gf3d_draw_manager.cube, modelMat, color, 0);
 }
 
 void gf3d_draw_sphere_solid(
-	GFC_Sphere sphere, GFC_Vector3D position, GFC_Vector3D rotation,
-	GFC_Vector3D scale, GFC_Color color, GFC_Color ambient
+	GFC_Sphere sphere, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, GFC_Color color,
+	GFC_Color ambient
 ) {
 	GFC_Matrix4 modelMat;
 
 	gfc_matrix4_from_vectors(
-		modelMat,
-		gfc_vector3d(
-			position.x + sphere.x, position.y + sphere.y, position.z + sphere.z
-		),
-		rotation,
+		modelMat, gfc_vector3d(position.x + sphere.x, position.y + sphere.y, position.z + sphere.z), rotation,
 		gfc_vector3d(scale.x * sphere.r, scale.y * sphere.r, scale.z * sphere.r)
 	);
 	gf3d_model_draw(gf3d_draw_manager.sphere, modelMat, color, 0);

@@ -102,9 +102,7 @@ void gf3d_vgraphics_clear();
  * @return 0 if there is no matching memory type supported, the memory type
  * index otherwise
  */
-uint32_t gf3d_vgraphics_find_memory_type(
-	uint32_t typeFilter, VkMemoryPropertyFlags properties
-);
+uint32_t gf3d_vgraphics_find_memory_type(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 void gf3d_vgraphics_rotate_camera(float degrees);
 

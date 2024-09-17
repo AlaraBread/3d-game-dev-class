@@ -12,13 +12,10 @@ VkCompareOp gf3d_config_compar_op_flag_from_str(const char *str) {
 	if(strcmp(str, "VK_COMPARE_OP_NEVER") == 0) return VK_COMPARE_OP_NEVER;
 	if(strcmp(str, "VK_COMPARE_OP_LESS") == 0) return VK_COMPARE_OP_LESS;
 	if(strcmp(str, "VK_COMPARE_OP_EQUAL") == 0) return VK_COMPARE_OP_EQUAL;
-	if(strcmp(str, "VK_COMPARE_OP_LESS_OR_EQUAL") == 0)
-		return VK_COMPARE_OP_LESS_OR_EQUAL;
+	if(strcmp(str, "VK_COMPARE_OP_LESS_OR_EQUAL") == 0) return VK_COMPARE_OP_LESS_OR_EQUAL;
 	if(strcmp(str, "VK_COMPARE_OP_GREATER") == 0) return VK_COMPARE_OP_GREATER;
-	if(strcmp(str, "VK_COMPARE_OP_NOT_EQUAL") == 0)
-		return VK_COMPARE_OP_NOT_EQUAL;
-	if(strcmp(str, "VK_COMPARE_OP_GREATER_OR_EQUAL") == 0)
-		return VK_COMPARE_OP_GREATER_OR_EQUAL;
+	if(strcmp(str, "VK_COMPARE_OP_NOT_EQUAL") == 0) return VK_COMPARE_OP_NOT_EQUAL;
+	if(strcmp(str, "VK_COMPARE_OP_GREATER_OR_EQUAL") == 0) return VK_COMPARE_OP_GREATER_OR_EQUAL;
 	if(strcmp(str, "VK_COMPARE_OP_ALWAYS") == 0) return VK_COMPARE_OP_ALWAYS;
 	return VK_COMPARE_OP_NEVER;
 }
@@ -28,18 +25,12 @@ VkPrimitiveTopology gf3d_config_primitive_topology_from_str(const char *str) {
 		slog("not topology data provided");
 		return 0;
 	}
-	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_POINT_LIST") == 0)
-		return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
-	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_LINE_LIST") == 0)
-		return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_LINE_STRIP") == 0)
-		return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
-	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST") == 0)
-		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP") == 0)
-		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN") == 0)
-		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_POINT_LIST") == 0) return VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_LINE_LIST") == 0) return VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_LINE_STRIP") == 0) return VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST") == 0) return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP") == 0) return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN") == 0) return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
 	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY") == 0)
 		return VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY;
 	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY") == 0)
@@ -48,15 +39,13 @@ VkPrimitiveTopology gf3d_config_primitive_topology_from_str(const char *str) {
 		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY;
 	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY") == 0)
 		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY;
-	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_PATCH_LIST") == 0)
-		return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
+	if(strcmp(str, "VK_PRIMITIVE_TOPOLOGY_PATCH_LIST") == 0) return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
 	return 0;
 }
 
 #if defined(VkPipelineDepthStencilStateCreateFlagBits)
 
-VkPipelineDepthStencilStateCreateFlagBits
-	gf3d_config_depth_stencil_create_flags(SJson *flags) {
+VkPipelineDepthStencilStateCreateFlagBits gf3d_config_depth_stencil_create_flags(SJson *flags) {
 	int i, c;
 	SJson *item;
 	const char *flag;
@@ -72,8 +61,7 @@ VkPipelineDepthStencilStateCreateFlagBits
 	return bits;
 }
 
-VkPipelineDepthStencilStateCreateFlagBits
-	gf3d_config_depth_stencil_create_flag_from_str(const char *str) {
+VkPipelineDepthStencilStateCreateFlagBits gf3d_config_depth_stencil_create_flag_from_str(const char *str) {
 	if(!str) return 0;
 	if(strcmp(
 		   str, "VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE_RASTERIZATION_ORDER_"
@@ -100,36 +88,20 @@ VkPipelineDepthStencilStateCreateFlagBits
 
 VkDescriptorType gf3d_config_descriptor_type_from_str(const char *str) {
 	if(!str) return 0;
-	if(strcmp(str, "VK_DESCRIPTOR_TYPE_SAMPLER") == 0) {
-		return VK_DESCRIPTOR_TYPE_SAMPLER;
-	}
+	if(strcmp(str, "VK_DESCRIPTOR_TYPE_SAMPLER") == 0) { return VK_DESCRIPTOR_TYPE_SAMPLER; }
 	if(strcmp(str, "VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER") == 0) {
 		return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	}
-	if(strcmp(str, "VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE") == 0) {
-		return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-	}
-	if(strcmp(str, "VK_DESCRIPTOR_TYPE_STORAGE_IMAGE") == 0) {
-		return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-	}
-	if(strcmp(str, "VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER") == 0) {
-		return VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
-	}
-	if(strcmp(str, "VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER") == 0) {
-		return VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
-	}
-	if(strcmp(str, "VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER") == 0) {
-		return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	}
-	if(strcmp(str, "VK_DESCRIPTOR_TYPE_STORAGE_BUFFER") == 0) {
-		return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	}
+	if(strcmp(str, "VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE") == 0) { return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE; }
+	if(strcmp(str, "VK_DESCRIPTOR_TYPE_STORAGE_IMAGE") == 0) { return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE; }
+	if(strcmp(str, "VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER") == 0) { return VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER; }
+	if(strcmp(str, "VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER") == 0) { return VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER; }
+	if(strcmp(str, "VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER") == 0) { return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; }
+	if(strcmp(str, "VK_DESCRIPTOR_TYPE_STORAGE_BUFFER") == 0) { return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; }
 	if(strcmp(str, "VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC") == 0) {
 		return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC;
 	}
-	if(strcmp(str, "VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT") == 0) {
-		return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
-	}
+	if(strcmp(str, "VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT") == 0) { return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT; }
 	return 0;
 }
 
@@ -151,54 +123,34 @@ VkShaderStageFlagBits gf3d_config_shader_stage_flags(SJson *flags) {
 
 VkShaderStageFlagBits gf3d_config_shader_stage_flag_from_str(const char *str) {
 	if(!str) return 0;
-	if(strcmp(str, "VK_SHADER_STAGE_VERTEX_BIT") == 0) {
-		return VK_SHADER_STAGE_VERTEX_BIT;
-	}
+	if(strcmp(str, "VK_SHADER_STAGE_VERTEX_BIT") == 0) { return VK_SHADER_STAGE_VERTEX_BIT; }
 	if(strcmp(str, "VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT") == 0) {
 		return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
 	}
 	if(strcmp(str, "VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT") == 0) {
 		return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 	}
-	if(strcmp(str, "VK_SHADER_STAGE_GEOMETRY_BIT") == 0) {
-		return VK_SHADER_STAGE_GEOMETRY_BIT;
-	}
-	if(strcmp(str, "VK_SHADER_STAGE_FRAGMENT_BIT") == 0) {
-		return VK_SHADER_STAGE_FRAGMENT_BIT;
-	}
-	if(strcmp(str, "VK_SHADER_STAGE_COMPUTE_BIT") == 0) {
-		return VK_SHADER_STAGE_COMPUTE_BIT;
-	}
-	if(strcmp(str, "VK_SHADER_STAGE_ALL_GRAPHICS") == 0) {
-		return VK_SHADER_STAGE_ALL_GRAPHICS;
-	}
+	if(strcmp(str, "VK_SHADER_STAGE_GEOMETRY_BIT") == 0) { return VK_SHADER_STAGE_GEOMETRY_BIT; }
+	if(strcmp(str, "VK_SHADER_STAGE_FRAGMENT_BIT") == 0) { return VK_SHADER_STAGE_FRAGMENT_BIT; }
+	if(strcmp(str, "VK_SHADER_STAGE_COMPUTE_BIT") == 0) { return VK_SHADER_STAGE_COMPUTE_BIT; }
+	if(strcmp(str, "VK_SHADER_STAGE_ALL_GRAPHICS") == 0) { return VK_SHADER_STAGE_ALL_GRAPHICS; }
 	if(strcmp(str, "VK_SHADER_STAGE_ALL") == 0) { return VK_SHADER_STAGE_ALL; }
 	return 0;
 }
 
 VkPipelineBindPoint gf3d_config_pipeline_bindpoint_from_str(const char *str) {
 	if(!str) return 0;
-	if(strcmp(str, "VK_PIPELINE_BIND_POINT_GRAPHICS") == 0) {
-		return VK_PIPELINE_BIND_POINT_GRAPHICS;
-	}
-	if(strcmp(str, "VK_PIPELINE_BIND_POINT_COMPUTE") == 0) {
-		return VK_PIPELINE_BIND_POINT_COMPUTE;
-	}
+	if(strcmp(str, "VK_PIPELINE_BIND_POINT_GRAPHICS") == 0) { return VK_PIPELINE_BIND_POINT_GRAPHICS; }
+	if(strcmp(str, "VK_PIPELINE_BIND_POINT_COMPUTE") == 0) { return VK_PIPELINE_BIND_POINT_COMPUTE; }
 	// NOTE: there are a lot more, but depend on extensions
 	return 0;
 }
 
 VkDependencyFlags gf3d_config_dependency_flag_bits_from_str(const char *str) {
 	if(!str) return 0;
-	if(strcmp(str, "VK_DEPENDENCY_BY_REGION_BIT") == 0) {
-		return VK_DEPENDENCY_BY_REGION_BIT;
-	}
-	if(strcmp(str, "VK_DEPENDENCY_DEVICE_GROUP_BIT") == 0) {
-		return VK_DEPENDENCY_DEVICE_GROUP_BIT;
-	}
-	if(strcmp(str, "VK_DEPENDENCY_VIEW_LOCAL_BIT") == 0) {
-		return VK_DEPENDENCY_VIEW_LOCAL_BIT;
-	}
+	if(strcmp(str, "VK_DEPENDENCY_BY_REGION_BIT") == 0) { return VK_DEPENDENCY_BY_REGION_BIT; }
+	if(strcmp(str, "VK_DEPENDENCY_DEVICE_GROUP_BIT") == 0) { return VK_DEPENDENCY_DEVICE_GROUP_BIT; }
+	if(strcmp(str, "VK_DEPENDENCY_VIEW_LOCAL_BIT") == 0) { return VK_DEPENDENCY_VIEW_LOCAL_BIT; }
 	return 0;
 }
 
@@ -222,57 +174,27 @@ VkDependencyFlags gf3d_config_dependency_flag_bits(SJson *array) {
 
 VkAccessFlagBits gf3d_config_access_flag_bits_from_str(const char *str) {
 	if(!str) return 0;
-	if(strcmp(str, "VK_ACCESS_INDIRECT_COMMAND_READ_BIT") == 0) {
-		return VK_ACCESS_INDIRECT_COMMAND_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_INDEX_READ_BIT") == 0) {
-		return VK_ACCESS_INDEX_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT") == 0) {
-		return VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_UNIFORM_READ_BIT") == 0) {
-		return VK_ACCESS_UNIFORM_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_INPUT_ATTACHMENT_READ_BIT") == 0) {
-		return VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_SHADER_READ_BIT") == 0) {
-		return VK_ACCESS_SHADER_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_SHADER_WRITE_BIT") == 0) {
-		return VK_ACCESS_SHADER_WRITE_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_COLOR_ATTACHMENT_READ_BIT") == 0) {
-		return VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT") == 0) {
-		return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	}
+	if(strcmp(str, "VK_ACCESS_INDIRECT_COMMAND_READ_BIT") == 0) { return VK_ACCESS_INDIRECT_COMMAND_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_INDEX_READ_BIT") == 0) { return VK_ACCESS_INDEX_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT") == 0) { return VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_UNIFORM_READ_BIT") == 0) { return VK_ACCESS_UNIFORM_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_INPUT_ATTACHMENT_READ_BIT") == 0) { return VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_SHADER_READ_BIT") == 0) { return VK_ACCESS_SHADER_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_SHADER_WRITE_BIT") == 0) { return VK_ACCESS_SHADER_WRITE_BIT; }
+	if(strcmp(str, "VK_ACCESS_COLOR_ATTACHMENT_READ_BIT") == 0) { return VK_ACCESS_COLOR_ATTACHMENT_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT") == 0) { return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; }
 	if(strcmp(str, "VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT") == 0) {
 		return VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
 	}
 	if(strcmp(str, "VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT") == 0) {
 		return VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 	}
-	if(strcmp(str, "VK_ACCESS_TRANSFER_READ_BIT") == 0) {
-		return VK_ACCESS_TRANSFER_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_TRANSFER_WRITE_BIT") == 0) {
-		return VK_ACCESS_TRANSFER_WRITE_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_HOST_READ_BIT") == 0) {
-		return VK_ACCESS_HOST_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_HOST_WRITE_BIT") == 0) {
-		return VK_ACCESS_HOST_WRITE_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_MEMORY_READ_BIT") == 0) {
-		return VK_ACCESS_MEMORY_READ_BIT;
-	}
-	if(strcmp(str, "VK_ACCESS_MEMORY_WRITE_BIT") == 0) {
-		return VK_ACCESS_MEMORY_WRITE_BIT;
-	}
+	if(strcmp(str, "VK_ACCESS_TRANSFER_READ_BIT") == 0) { return VK_ACCESS_TRANSFER_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_TRANSFER_WRITE_BIT") == 0) { return VK_ACCESS_TRANSFER_WRITE_BIT; }
+	if(strcmp(str, "VK_ACCESS_HOST_READ_BIT") == 0) { return VK_ACCESS_HOST_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_HOST_WRITE_BIT") == 0) { return VK_ACCESS_HOST_WRITE_BIT; }
+	if(strcmp(str, "VK_ACCESS_MEMORY_READ_BIT") == 0) { return VK_ACCESS_MEMORY_READ_BIT; }
+	if(strcmp(str, "VK_ACCESS_MEMORY_WRITE_BIT") == 0) { return VK_ACCESS_MEMORY_WRITE_BIT; }
 	return 0;
 }
 
@@ -300,35 +222,26 @@ VkSubpassDependency gf3d_config_subpass_dependency(SJson *config) {
 	VkSubpassDependency dependency = {0};
 	if(!config) return dependency;
 
-	dependency.srcSubpass =
-		VK_SUBPASS_EXTERNAL; // NOTE: this will need to be
-							 // revisited as, it is not simple
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL; // NOTE: this will need to be
+												 // revisited as, it is not simple
 	dependency.dstSubpass = 0;
 
 	array = sj_object_get_value(config, "srcStageMask");
 	if(array) {
 		str = sj_get_string_value(array);
-		dependency.srcStageMask =
-			gf3d_config_pipeline_stage_flags_from_str(str);
+		dependency.srcStageMask = gf3d_config_pipeline_stage_flags_from_str(str);
 	}
 	array = sj_object_get_value(config, "dstStageMask");
 	if(array) {
 		str = sj_get_string_value(array);
-		dependency.dstStageMask =
-			gf3d_config_pipeline_stage_flags_from_str(str);
+		dependency.dstStageMask = gf3d_config_pipeline_stage_flags_from_str(str);
 	}
 	array = sj_object_get_value(config, "srcAccessMask");
-	if(array) {
-		dependency.srcAccessMask = gf3d_config_access_flag_bits(array);
-	}
+	if(array) { dependency.srcAccessMask = gf3d_config_access_flag_bits(array); }
 	array = sj_object_get_value(config, "dstAccessMask");
-	if(array) {
-		dependency.dstAccessMask = gf3d_config_access_flag_bits(array);
-	}
+	if(array) { dependency.dstAccessMask = gf3d_config_access_flag_bits(array); }
 	array = sj_object_get_value(config, "dependencyFlags");
-	if(array) {
-		dependency.dependencyFlags = gf3d_config_dependency_flag_bits(array);
-	}
+	if(array) { dependency.dependencyFlags = gf3d_config_dependency_flag_bits(array); }
 	return dependency;
 }
 
@@ -350,34 +263,20 @@ VkPipelineStageFlags gf3d_config_pipeline_stage_flags(SJson *array) {
 	return flags;
 }
 
-VkPipelineStageFlags gf3d_config_pipeline_stage_flags_from_str(const char *str
-) {
+VkPipelineStageFlags gf3d_config_pipeline_stage_flags_from_str(const char *str) {
 	if(!str) return 0;
-	if(strcmp(str, "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT") == 0) {
-		return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT") == 0) {
-		return VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT;
-	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_VERTEX_INPUT_BIT") == 0) {
-		return VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
-	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_VERTEX_SHADER_BIT") == 0) {
-		return VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
-	}
+	if(strcmp(str, "VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT") == 0) { return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT; }
+	if(strcmp(str, "VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT") == 0) { return VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT; }
+	if(strcmp(str, "VK_PIPELINE_STAGE_VERTEX_INPUT_BIT") == 0) { return VK_PIPELINE_STAGE_VERTEX_INPUT_BIT; }
+	if(strcmp(str, "VK_PIPELINE_STAGE_VERTEX_SHADER_BIT") == 0) { return VK_PIPELINE_STAGE_VERTEX_SHADER_BIT; }
 	if(strcmp(str, "VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT") == 0) {
 		return VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT;
 	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT") ==
-	   0) {
+	if(strcmp(str, "VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT") == 0) {
 		return VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT;
 	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT") == 0) {
-		return VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT;
-	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT") == 0) {
-		return VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-	}
+	if(strcmp(str, "VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT") == 0) { return VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT; }
+	if(strcmp(str, "VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT") == 0) { return VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; }
 	if(strcmp(str, "VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT") == 0) {
 		return VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	}
@@ -387,24 +286,12 @@ VkPipelineStageFlags gf3d_config_pipeline_stage_flags_from_str(const char *str
 	if(strcmp(str, "VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT") == 0) {
 		return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT") == 0) {
-		return VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
-	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_TRANSFER_BIT") == 0) {
-		return VK_PIPELINE_STAGE_TRANSFER_BIT;
-	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT") == 0) {
-		return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_HOST_BIT") == 0) {
-		return VK_PIPELINE_STAGE_HOST_BIT;
-	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT") == 0) {
-		return VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT;
-	}
-	if(strcmp(str, "VK_PIPELINE_STAGE_ALL_COMMANDS_BIT") == 0) {
-		return VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
-	}
+	if(strcmp(str, "VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT") == 0) { return VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT; }
+	if(strcmp(str, "VK_PIPELINE_STAGE_TRANSFER_BIT") == 0) { return VK_PIPELINE_STAGE_TRANSFER_BIT; }
+	if(strcmp(str, "VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT") == 0) { return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT; }
+	if(strcmp(str, "VK_PIPELINE_STAGE_HOST_BIT") == 0) { return VK_PIPELINE_STAGE_HOST_BIT; }
+	if(strcmp(str, "VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT") == 0) { return VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT; }
+	if(strcmp(str, "VK_PIPELINE_STAGE_ALL_COMMANDS_BIT") == 0) { return VK_PIPELINE_STAGE_ALL_COMMANDS_BIT; }
 	// NOTE: this does not include any 1.3 stage options or extension
 	// options
 	return 0;
@@ -426,11 +313,9 @@ VkImageLayout gf3d_config_image_layer_from_str(const char *str) {
 		return VK_IMAGE_LAYOUT_GENERAL;
 	} else if(strcmp(str, "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL") == 0) {
 		return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	} else if(strcmp(str, "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL") ==
-			  0) {
+	} else if(strcmp(str, "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL") == 0) {
 		return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	} else if(strcmp(str, "VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL") ==
-			  0) {
+	} else if(strcmp(str, "VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL") == 0) {
 		return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
 	} else if(strcmp(str, "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL") == 0) {
 		return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -440,7 +325,7 @@ VkImageLayout gf3d_config_image_layer_from_str(const char *str) {
 		return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	} else if(strcmp(str, "VK_IMAGE_LAYOUT_PREINITIALIZED") == 0) {
 		return VK_IMAGE_LAYOUT_PREINITIALIZED;
-	} else if (strcmp(str, "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") == 0) {
+	} else if(strcmp(str, "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR") == 0) {
 		return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 	}
 	// NOTE: there are a lot more of these, but are specific to later
@@ -455,22 +340,17 @@ VkSampleCountFlagBits gf3d_config_parse_sample_count_bits(const char *str) {
 	if(strcmp(str, "VK_SAMPLE_COUNT_2_BIT") == 0) return VK_SAMPLE_COUNT_2_BIT;
 	if(strcmp(str, "VK_SAMPLE_COUNT_4_BIT") == 0) return VK_SAMPLE_COUNT_4_BIT;
 	if(strcmp(str, "VK_SAMPLE_COUNT_8_BIT") == 0) return VK_SAMPLE_COUNT_8_BIT;
-	if(strcmp(str, "VK_SAMPLE_COUNT_16_BIT") == 0)
-		return VK_SAMPLE_COUNT_16_BIT;
-	if(strcmp(str, "VK_SAMPLE_COUNT_32_BIT") == 0)
-		return VK_SAMPLE_COUNT_32_BIT;
-	if(strcmp(str, "VK_SAMPLE_COUNT_64_BIT") == 0)
-		return VK_SAMPLE_COUNT_64_BIT;
+	if(strcmp(str, "VK_SAMPLE_COUNT_16_BIT") == 0) return VK_SAMPLE_COUNT_16_BIT;
+	if(strcmp(str, "VK_SAMPLE_COUNT_32_BIT") == 0) return VK_SAMPLE_COUNT_32_BIT;
+	if(strcmp(str, "VK_SAMPLE_COUNT_64_BIT") == 0) return VK_SAMPLE_COUNT_64_BIT;
 	return 0;
 }
 
-VkAttachmentDescription
-	gf3d_config_attachment_description(SJson *config, VkFormat format) {
+VkAttachmentDescription gf3d_config_attachment_description(SJson *config, VkFormat format) {
 	int i, c;
 	SJson *array, *item;
 	const char *str;
-	VkAttachmentDescription data = {0
-	}; // keeping it generic here for ease of copy/paste
+	VkAttachmentDescription data = {0}; // keeping it generic here for ease of copy/paste
 	if(!config) {
 		slog("no json provided for gf3d_config_attachment_description");
 		return data;
@@ -558,8 +438,7 @@ VkPolygonMode gf3d_config_parse_polygon_mode(const char *str) {
 	if(strcmp(str, "VK_POLYGON_MODE_LINE") == 0) return VK_POLYGON_MODE_LINE;
 	if(strcmp(str, "VK_POLYGON_MODE_POINT") == 0) return VK_POLYGON_MODE_POINT;
 #if defined(VK_POLYGON_MODE_FILL_RECTANGLE_NV)
-	if(strcmp(str, "VK_POLYGON_MODE_FILL_RECTANGLE_NV") == 0)
-		return VK_POLYGON_MODE_FILL_RECTANGLE_NV;
+	if(strcmp(str, "VK_POLYGON_MODE_FILL_RECTANGLE_NV") == 0) return VK_POLYGON_MODE_FILL_RECTANGLE_NV;
 #endif
 	return 0;
 }
@@ -567,59 +446,43 @@ VkPolygonMode gf3d_config_parse_polygon_mode(const char *str) {
 VkCullModeFlags gf3d_config_parse_cull_mode(const char *str) {
 	if(!str) return 0;
 	if(strcmp(str, "VK_CULL_MODE_NONE") == 0) return VK_CULL_MODE_NONE;
-	if(strcmp(str, "VK_CULL_MODE_FRONT_BIT") == 0)
-		return VK_CULL_MODE_FRONT_BIT;
+	if(strcmp(str, "VK_CULL_MODE_FRONT_BIT") == 0) return VK_CULL_MODE_FRONT_BIT;
 	if(strcmp(str, "VK_CULL_MODE_BACK_BIT") == 0) return VK_CULL_MODE_BACK_BIT;
-	if(strcmp(str, "VK_CULL_MODE_FRONT_AND_BACK") == 0)
-		return VK_CULL_MODE_FRONT_AND_BACK;
+	if(strcmp(str, "VK_CULL_MODE_FRONT_AND_BACK") == 0) return VK_CULL_MODE_FRONT_AND_BACK;
 	return 0;
 }
 
 VkFrontFace gf3d_config_parse_front_face(const char *str) {
 	if(!str) return 0;
-	if(strcmp(str, "VK_FRONT_FACE_COUNTER_CLOCKWISE") == 0)
-		return VK_FRONT_FACE_COUNTER_CLOCKWISE;
-	if(strcmp(str, "VK_FRONT_FACE_CLOCKWISE") == 0)
-		return VK_FRONT_FACE_CLOCKWISE;
+	if(strcmp(str, "VK_FRONT_FACE_COUNTER_CLOCKWISE") == 0) return VK_FRONT_FACE_COUNTER_CLOCKWISE;
+	if(strcmp(str, "VK_FRONT_FACE_CLOCKWISE") == 0) return VK_FRONT_FACE_CLOCKWISE;
 	return 0;
 }
 
-VkPipelineRasterizationStateCreateInfo
-	gf3d_config_pipline_rasterization_state_create_info(SJson *config) {
+VkPipelineRasterizationStateCreateInfo gf3d_config_pipline_rasterization_state_create_info(SJson *config) {
 	short int b;
 	float f;
 	VkPipelineRasterizationStateCreateInfo rasterizer = {0};
 
 	if(!config) return rasterizer;
 
-	rasterizer.sType =
-		VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	rasterizer.pNext = NULL;
 	// rasterizer.flags;  FUTURE USE
 	b = 0;
 	sj_get_bool_value(sj_object_get_value(config, "depthClampEnable"), &b);
 	rasterizer.depthClampEnable = b;
 	b = 0;
-	sj_get_bool_value(
-		sj_object_get_value(config, "rasterizerDiscardEnable"), &b
-	);
+	sj_get_bool_value(sj_object_get_value(config, "rasterizerDiscardEnable"), &b);
 	rasterizer.rasterizerDiscardEnable = b;
-	rasterizer.polygonMode = gf3d_config_parse_polygon_mode(
-		sj_object_get_value_as_string(config, "polygonMode")
-	);
-	rasterizer.cullMode = gf3d_config_parse_cull_mode(
-		sj_object_get_value_as_string(config, "cullMode")
-	);
-	rasterizer.frontFace = gf3d_config_parse_front_face(
-		sj_object_get_value_as_string(config, "frontFace")
-	);
+	rasterizer.polygonMode = gf3d_config_parse_polygon_mode(sj_object_get_value_as_string(config, "polygonMode"));
+	rasterizer.cullMode = gf3d_config_parse_cull_mode(sj_object_get_value_as_string(config, "cullMode"));
+	rasterizer.frontFace = gf3d_config_parse_front_face(sj_object_get_value_as_string(config, "frontFace"));
 	b = 0;
 	sj_get_bool_value(sj_object_get_value(config, "depthBiasEnable"), &b);
 	rasterizer.depthBiasEnable = b;
 	f = 0;
-	sj_get_float_value(
-		sj_object_get_value(config, "depthBiasConstantFactor"), &f
-	);
+	sj_get_float_value(sj_object_get_value(config, "depthBiasConstantFactor"), &f);
 	rasterizer.depthBiasConstantFactor = f;
 	f = 0;
 	sj_get_float_value(sj_object_get_value(config, "depthBiasClamp"), &f);
@@ -633,18 +496,15 @@ VkPipelineRasterizationStateCreateInfo
 	return rasterizer;
 }
 
-VkPipelineMultisampleStateCreateInfo
-	gf3d_config_pipline_multisample_state_create_info(SJson *config) {
+VkPipelineMultisampleStateCreateInfo gf3d_config_pipline_multisample_state_create_info(SJson *config) {
 	VkPipelineMultisampleStateCreateInfo multisampling = {0};
 	short int b;
 	float f;
 	if(!config) return multisampling;
-	multisampling.sType =
-		VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 
-	multisampling.rasterizationSamples = gf3d_config_parse_sample_count_bits(
-		sj_object_get_value_as_string(config, "rasterizationSamples")
-	);
+	multisampling.rasterizationSamples =
+		gf3d_config_parse_sample_count_bits(sj_object_get_value_as_string(config, "rasterizationSamples"));
 	b = 0;
 	sj_get_bool_value(sj_object_get_value(config, "sampleShadingEnable"), &b);
 	multisampling.sampleShadingEnable = b;
@@ -660,17 +520,12 @@ VkPipelineMultisampleStateCreateInfo
 	return multisampling;
 }
 
-VkColorComponentFlagBits
-	gf3d_config_parse_color_component_flag_bits(const char *str) {
+VkColorComponentFlagBits gf3d_config_parse_color_component_flag_bits(const char *str) {
 	if(!str) return 0;
-	if(strcmp(str, "VK_COLOR_COMPONENT_R_BIT") == 0)
-		return VK_COLOR_COMPONENT_R_BIT;
-	if(strcmp(str, "VK_COLOR_COMPONENT_G_BIT") == 0)
-		return VK_COLOR_COMPONENT_G_BIT;
-	if(strcmp(str, "VK_COLOR_COMPONENT_B_BIT") == 0)
-		return VK_COLOR_COMPONENT_B_BIT;
-	if(strcmp(str, "VK_COLOR_COMPONENT_A_BIT") == 0)
-		return VK_COLOR_COMPONENT_A_BIT;
+	if(strcmp(str, "VK_COLOR_COMPONENT_R_BIT") == 0) return VK_COLOR_COMPONENT_R_BIT;
+	if(strcmp(str, "VK_COLOR_COMPONENT_G_BIT") == 0) return VK_COLOR_COMPONENT_G_BIT;
+	if(strcmp(str, "VK_COLOR_COMPONENT_B_BIT") == 0) return VK_COLOR_COMPONENT_B_BIT;
+	if(strcmp(str, "VK_COLOR_COMPONENT_A_BIT") == 0) return VK_COLOR_COMPONENT_A_BIT;
 	return 0;
 }
 
@@ -691,40 +546,23 @@ VkColorComponentFlagBits gf3d_config_color_component_flag_bits(SJson *array) {
 VkBlendFactor gf3d_config_parse_blend_factor(const char *str) {
 	if(!str) return 0;
 	if(strcmp(str, "VK_BLEND_FACTOR_ZERO") == 0) return VK_BLEND_FACTOR_ZERO;
-	if(strcmp(str, "VK_BLEND_FACTOR_SRC_COLOR") == 0)
-		return VK_BLEND_FACTOR_SRC_COLOR;
-	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR") == 0)
-		return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
-	if(strcmp(str, "VK_BLEND_FACTOR_DST_COLOR") == 0)
-		return VK_BLEND_FACTOR_DST_COLOR;
-	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR") == 0)
-		return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
-	if(strcmp(str, "VK_BLEND_FACTOR_SRC_ALPHA") == 0)
-		return VK_BLEND_FACTOR_SRC_ALPHA;
-	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA") == 0)
-		return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-	if(strcmp(str, "VK_BLEND_FACTOR_DST_ALPHA") == 0)
-		return VK_BLEND_FACTOR_DST_ALPHA;
-	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA") == 0)
-		return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
-	if(strcmp(str, "VK_BLEND_FACTOR_CONSTANT_COLOR") == 0)
-		return VK_BLEND_FACTOR_CONSTANT_COLOR;
-	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR") == 0)
-		return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
-	if(strcmp(str, "VK_BLEND_FACTOR_CONSTANT_ALPHA") == 0)
-		return VK_BLEND_FACTOR_CONSTANT_ALPHA;
-	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA") == 0)
-		return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
-	if(strcmp(str, "VK_BLEND_FACTOR_SRC_ALPHA_SATURATE") == 0)
-		return VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
-	if(strcmp(str, "VK_BLEND_FACTOR_SRC1_COLOR") == 0)
-		return VK_BLEND_FACTOR_SRC1_COLOR;
-	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR") == 0)
-		return VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR;
-	if(strcmp(str, "VK_BLEND_FACTOR_SRC1_ALPHA") == 0)
-		return VK_BLEND_FACTOR_SRC1_ALPHA;
-	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA") == 0)
-		return VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA;
+	if(strcmp(str, "VK_BLEND_FACTOR_SRC_COLOR") == 0) return VK_BLEND_FACTOR_SRC_COLOR;
+	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR") == 0) return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+	if(strcmp(str, "VK_BLEND_FACTOR_DST_COLOR") == 0) return VK_BLEND_FACTOR_DST_COLOR;
+	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR") == 0) return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+	if(strcmp(str, "VK_BLEND_FACTOR_SRC_ALPHA") == 0) return VK_BLEND_FACTOR_SRC_ALPHA;
+	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA") == 0) return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	if(strcmp(str, "VK_BLEND_FACTOR_DST_ALPHA") == 0) return VK_BLEND_FACTOR_DST_ALPHA;
+	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA") == 0) return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+	if(strcmp(str, "VK_BLEND_FACTOR_CONSTANT_COLOR") == 0) return VK_BLEND_FACTOR_CONSTANT_COLOR;
+	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR") == 0) return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
+	if(strcmp(str, "VK_BLEND_FACTOR_CONSTANT_ALPHA") == 0) return VK_BLEND_FACTOR_CONSTANT_ALPHA;
+	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA") == 0) return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
+	if(strcmp(str, "VK_BLEND_FACTOR_SRC_ALPHA_SATURATE") == 0) return VK_BLEND_FACTOR_SRC_ALPHA_SATURATE;
+	if(strcmp(str, "VK_BLEND_FACTOR_SRC1_COLOR") == 0) return VK_BLEND_FACTOR_SRC1_COLOR;
+	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR") == 0) return VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR;
+	if(strcmp(str, "VK_BLEND_FACTOR_SRC1_ALPHA") == 0) return VK_BLEND_FACTOR_SRC1_ALPHA;
+	if(strcmp(str, "VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA") == 0) return VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA;
 	return 0;
 }
 
@@ -738,33 +576,26 @@ VkBlendOp gf3d_config_parse_blend_op(const char *str) {
 	return 0;
 }
 
-VkPipelineColorBlendAttachmentState
-	gf3d_config_pipeline_color_blend_attachment(SJson *config) {
+VkPipelineColorBlendAttachmentState gf3d_config_pipeline_color_blend_attachment(SJson *config) {
 	short int b;
 	VkPipelineColorBlendAttachmentState colorBlendAttachment = {0};
 	if(!config) return colorBlendAttachment;
 
-	colorBlendAttachment.colorWriteMask = gf3d_config_color_component_flag_bits(
-		sj_object_get_value(config, "colorWriteMask")
-	);
+	colorBlendAttachment.colorWriteMask =
+		gf3d_config_color_component_flag_bits(sj_object_get_value(config, "colorWriteMask"));
 	b = 0;
 	sj_get_bool_value(sj_object_get_value(config, "blendEnable"), &b);
 	colorBlendAttachment.blendEnable = b;
-	colorBlendAttachment.srcColorBlendFactor = gf3d_config_parse_blend_factor(
-		sj_object_get_value_as_string(config, "srcColorBlendFactor")
-	);
-	colorBlendAttachment.dstColorBlendFactor = gf3d_config_parse_blend_factor(
-		sj_object_get_value_as_string(config, "dstColorBlendFactor")
-	);
-	colorBlendAttachment.colorBlendOp = gf3d_config_parse_blend_op(
-		sj_object_get_value_as_string(config, "colorBlendOp")
-	);
-	colorBlendAttachment.srcAlphaBlendFactor = gf3d_config_parse_blend_factor(
-		sj_object_get_value_as_string(config, "srcAlphaBlendFactor")
-	);
-	colorBlendAttachment.dstAlphaBlendFactor = gf3d_config_parse_blend_factor(
-		sj_object_get_value_as_string(config, "dstAlphaBlendFactor")
-	);
+	colorBlendAttachment.srcColorBlendFactor =
+		gf3d_config_parse_blend_factor(sj_object_get_value_as_string(config, "srcColorBlendFactor"));
+	colorBlendAttachment.dstColorBlendFactor =
+		gf3d_config_parse_blend_factor(sj_object_get_value_as_string(config, "dstColorBlendFactor"));
+	colorBlendAttachment.colorBlendOp =
+		gf3d_config_parse_blend_op(sj_object_get_value_as_string(config, "colorBlendOp"));
+	colorBlendAttachment.srcAlphaBlendFactor =
+		gf3d_config_parse_blend_factor(sj_object_get_value_as_string(config, "srcAlphaBlendFactor"));
+	colorBlendAttachment.dstAlphaBlendFactor =
+		gf3d_config_parse_blend_factor(sj_object_get_value_as_string(config, "dstAlphaBlendFactor"));
 	return colorBlendAttachment;
 }
 /*eol@eof*/

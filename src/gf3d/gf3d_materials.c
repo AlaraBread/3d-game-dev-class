@@ -174,9 +174,7 @@ GF3D_Material *gf3d_material_duplicate(GF3D_Material *from) {
 	if(!to) return NULL;
 	memcpy(to, from, sizeof(GF3D_Material));
 	to->_refCount = 1;
-	gfc_string_append(
-		to->name, ".dup"
-	); // to make sure the search item is unique
+	gfc_string_append(to->name, ".dup"); // to make sure the search item is unique
 	return to;
 }
 
@@ -232,8 +230,7 @@ GF3D_Material *gf3d_material_load(const char *filename) {
 	}
 	json = sj_load(filename);
 	if(!json) return NULL;
-	material =
-		gf3d_material_parse_js(sj_object_get_value(json, "material"), filename);
+	material = gf3d_material_parse_js(sj_object_get_value(json, "material"), filename);
 	sj_free(json);
 	return material;
 }

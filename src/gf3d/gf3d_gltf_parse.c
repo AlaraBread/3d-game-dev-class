@@ -117,9 +117,7 @@ const char *gf3d_gltf_get_buffer_data(GLTF *gltf, Uint32 index, size_t offset) {
 	return &data[offset];
 }
 
-Uint8 gf3d_gltf_parse_copy_buffer_data(
-	SJson *gltf, Uint32 index, size_t offset, size_t length, char *output
-) {
+Uint8 gf3d_gltf_parse_copy_buffer_data(SJson *gltf, Uint32 index, size_t offset, size_t length, char *output) {
 	char *data;
 
 	if(!output) {
@@ -133,9 +131,7 @@ Uint8 gf3d_gltf_parse_copy_buffer_data(
 	return 1;
 }
 
-Uint8 gf3d_gltf_get_data_from_buffer(
-	GLTF *gltf, Uint32 buffer, size_t offset, size_t length, char *output
-) {
+Uint8 gf3d_gltf_get_data_from_buffer(GLTF *gltf, Uint32 buffer, size_t offset, size_t length, char *output) {
 	const char *data;
 
 	if(!output) {
@@ -148,9 +144,7 @@ Uint8 gf3d_gltf_get_data_from_buffer(
 	return 1;
 }
 
-void gf3d_gltf_get_buffer_view_data(
-	GLTF *gltf, Uint32 viewIndex, char *buffer
-) {
+void gf3d_gltf_get_buffer_view_data(GLTF *gltf, Uint32 viewIndex, char *buffer) {
 	SJson *bufferView;
 	int index, byteLength, byteOffset;
 	if((!gltf) || (!buffer)) return;
@@ -166,16 +160,12 @@ void gf3d_gltf_get_buffer_view_data(
 }
 
 // TODO: report on componentType so the data can be parsed correctly
-const char *gf3d_gltf_accessor_get_details(
-	GLTF *gltf, Uint32 accessorIndex, int *bufferIndex, int *count
-) {
+const char *gf3d_gltf_accessor_get_details(GLTF *gltf, Uint32 accessorIndex, int *bufferIndex, int *count) {
 	SJson *accessor;
 	if(!gltf) return NULL;
 	accessor = gf3d_gltf_parse_get_accessor(gltf, accessorIndex);
 	if(!accessor) return NULL;
-	if(bufferIndex) {
-		sj_object_get_value_as_int(accessor, "bufferView", bufferIndex);
-	}
+	if(bufferIndex) { sj_object_get_value_as_int(accessor, "bufferView", bufferIndex); }
 	if(count) { sj_object_get_value_as_int(accessor, "count", count); }
 	return sj_object_get_value_as_string(accessor, "type");
 }
@@ -199,16 +189,10 @@ ObjData *gf3d_gltf_parse_primitive(GLTF *gltf, SJson *primitive) {
 	}
 
 	if(sj_object_get_value_as_int(attributes, "POSITION", &index)) {
-		if(gf3d_gltf_accessor_get_details(
-			   gltf, index, &bufferIndex, (int *)&obj->vertex_count
-		   )) {
-			obj->vertices = (GFC_Vector3D *)gfc_allocate_array(
-				sizeof(GFC_Vector3D), obj->vertex_count
-			);
+		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->vertex_count)) {
+			obj->vertices = (GFC_Vector3D *)gfc_allocate_array(sizeof(GFC_Vector3D), obj->vertex_count);
 
-			gf3d_gltf_get_buffer_view_data(
-				gltf, bufferIndex, (char *)obj->vertices
-			);
+			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->vertices);
 
 			accessor = gf3d_gltf_parse_get_accessor(gltf, index);
 			gfc_vector3d_clear(min);
@@ -220,78 +204,49 @@ ObjData *gf3d_gltf_parse_primitive(GLTF *gltf, SJson *primitive) {
 			slog("failed to get accessor detials");
 	}
 	if(sj_object_get_value_as_int(attributes, "NORMAL", &index)) {
-		if(gf3d_gltf_accessor_get_details(
-			   gltf, index, &bufferIndex, (int *)&obj->normal_count
-		   )) {
-			obj->normals = (GFC_Vector3D *)gfc_allocate_array(
-				sizeof(GFC_Vector3D), obj->normal_count
-			);
+		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->normal_count)) {
+			obj->normals = (GFC_Vector3D *)gfc_allocate_array(sizeof(GFC_Vector3D), obj->normal_count);
 
-			gf3d_gltf_get_buffer_view_data(
-				gltf, bufferIndex, (char *)obj->normals
-			);
+			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->normals);
 		} else
 			slog("failed to get accessor detials");
 	}
 
 	if(sj_object_get_value_as_int(attributes, "TEXCOORD_0", &index)) {
-		if(gf3d_gltf_accessor_get_details(
-			   gltf, index, &bufferIndex, (int *)&obj->texel_count
-		   )) {
-			obj->texels = (GFC_Vector2D *)gfc_allocate_array(
-				sizeof(GFC_Vector2D), obj->texel_count
-			);
+		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->texel_count)) {
+			obj->texels = (GFC_Vector2D *)gfc_allocate_array(sizeof(GFC_Vector2D), obj->texel_count);
 
-			gf3d_gltf_get_buffer_view_data(
-				gltf, bufferIndex, (char *)obj->texels
-			);
+			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->texels);
 		} else
 			slog("failed to get accessor detials");
 	}
 
 	// bone indices
 	if(sj_object_get_value_as_int(attributes, "JOINTS_0", &index)) {
-		if(gf3d_gltf_accessor_get_details(
-			   gltf, index, &bufferIndex, (int *)&obj->bone_count
-		   )) {
-			obj->boneIndices = (GFC_Vector4UI8 *)gfc_allocate_array(
-				sizeof(GFC_Vector4UI8), obj->bone_count
-			);
+		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->bone_count)) {
+			obj->boneIndices = (GFC_Vector4UI8 *)gfc_allocate_array(sizeof(GFC_Vector4UI8), obj->bone_count);
 
-			gf3d_gltf_get_buffer_view_data(
-				gltf, bufferIndex, (char *)obj->boneIndices
-			);
+			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->boneIndices);
 
 		} else
 			slog("failed to get accessor detials");
 	}
 	// bone weights
 	if(sj_object_get_value_as_int(attributes, "WEIGHTS_0", &index)) {
-		if(gf3d_gltf_accessor_get_details(
-			   gltf, index, &bufferIndex, (int *)&obj->weight_count
-		   )) {
-			obj->boneWeights = (GFC_Vector4D *)gfc_allocate_array(
-				sizeof(GFC_Vector4D), obj->weight_count
-			);
+		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->weight_count)) {
+			obj->boneWeights = (GFC_Vector4D *)gfc_allocate_array(sizeof(GFC_Vector4D), obj->weight_count);
 
-			gf3d_gltf_get_buffer_view_data(
-				gltf, bufferIndex, (char *)obj->boneWeights
-			);
+			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->boneWeights);
 		} else
 			slog("failed to get accessor detials");
 	}
 
 	if(sj_object_get_value_as_int(primitive, "indices", &index)) {
-		if(gf3d_gltf_accessor_get_details(
-			   gltf, index, &bufferIndex, (int *)&obj->face_count
-		   )) {
+		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->face_count)) {
 			obj->face_count /= 3;
-			obj->outFace =
-				(Face *)gfc_allocate_array(sizeof(Face), obj->face_count);
+			obj->outFace = (Face *)gfc_allocate_array(sizeof(Face), obj->face_count);
 
-			gf3d_gltf_get_buffer_view_data(
-				gltf, bufferIndex, (char *)obj->outFace
-			);
+			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->outFace);
 		} else
 			slog("failed to get accessor detials");
 	}
@@ -305,24 +260,14 @@ void gf3d_gltf_reorg_obj(ObjData *obj) {
 	if(!obj) return;
 
 	obj->face_vert_count = obj->vertex_count;
-	obj->faceVertices =
-		(Vertex *)gfc_allocate_array(sizeof(Vertex), obj->face_vert_count);
+	obj->faceVertices = (Vertex *)gfc_allocate_array(sizeof(Vertex), obj->face_vert_count);
 
 	for(i = 0; i < obj->vertex_count; i++) {
-		if(obj->vertices)
-			gfc_vector3d_copy(obj->faceVertices[i].vertex, obj->vertices[i]);
-		if(obj->normals)
-			gfc_vector3d_copy(obj->faceVertices[i].normal, obj->normals[i]);
-		if(obj->texels)
-			gfc_vector2d_copy(obj->faceVertices[i].texel, obj->texels[i]);
-		if(obj->boneIndices)
-			gfc_vector4d_copy(
-				obj->faceVertices[i].bones, (float)obj->boneIndices[i]
-			);
-		if(obj->boneWeights)
-			gfc_vector4d_copy(
-				obj->faceVertices[i].weights, obj->boneWeights[i]
-			);
+		if(obj->vertices) gfc_vector3d_copy(obj->faceVertices[i].vertex, obj->vertices[i]);
+		if(obj->normals) gfc_vector3d_copy(obj->faceVertices[i].normal, obj->normals[i]);
+		if(obj->texels) gfc_vector2d_copy(obj->faceVertices[i].texel, obj->texels[i]);
+		if(obj->boneIndices) gfc_vector4d_copy(obj->faceVertices[i].bones, (float)obj->boneIndices[i]);
+		if(obj->boneWeights) gfc_vector4d_copy(obj->faceVertices[i].weights, obj->boneWeights[i]);
 	}
 }
 
@@ -406,10 +351,8 @@ Model *gf3d_gltf_parse_model(const char *filename) {
 // https://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
 // ACCESSED: 15/9/2022
 
-char *
-	gfc_base64_encode(const void *input, size_t inputLength, size_t *newSize) {
-	const char base64chars[] =
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+char *gfc_base64_encode(const void *input, size_t inputLength, size_t *newSize) {
+	const char base64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 	char *result;
 	const uint8_t *data = (const uint8_t *)input;
 	size_t resultSize = 0;
@@ -435,10 +378,9 @@ char *
 									   // conversion to uint32_t, resulting to 0
 
 		if((x + 1) < inputLength)
-			n += ((uint32_t)data[x + 1])
-				 << 8; // parenthesis needed, compiler depending on
-					   // flags can do the shifting before
-					   // conversion to uint32_t, resulting to 0
+			n += ((uint32_t)data[x + 1]) << 8; // parenthesis needed, compiler depending on
+											   // flags can do the shifting before
+											   // conversion to uint32_t, resulting to 0
 
 		if((x + 2) < inputLength) n += data[x + 2];
 
@@ -519,20 +461,15 @@ char *
 #define INVALID 66
 
 static const unsigned char d[] = {
-	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 64, 66, 66, 66, 66, 66, 66, 66, 66,
-	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-	66, 66, 66, 66, 66, 62, 66, 66, 66, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60,
-	61, 66, 66, 66, 65, 66, 66, 66, 0,	1,	2,	3,	4,	5,	6,	7,	8,	9,	10,
-	11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 66, 66, 66, 66,
-	66, 66, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
-	43, 44, 45, 46, 47, 48, 49, 50, 51, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
-	66, 66, 66, 66, 66, 66, 66, 66, 66
+	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 64, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 62, 66, 66, 66, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
+	66, 66, 66, 65, 66, 66, 66, 0,	1,	2,	3,	4,	5,	6,	7,	8,	9,	10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+	22, 23, 24, 25, 66, 66, 66, 66, 66, 66, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
+	45, 46, 47, 48, 49, 50, 51, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66,
+	66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66, 66
 };
 
 char *gfc_base64_decode(const char *in, size_t inLen, size_t *outLen) {

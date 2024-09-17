@@ -9,16 +9,13 @@ void gf3d_uniform_buffer_setup(UniformBuffer *buffer, VkDeviceSize bufferSize) {
 	buffer->bufferSize = bufferSize;
 	gf3d_buffer_create(
 		bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		&buffer->uniformBuffer, &buffer->uniformBufferMemory
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer->uniformBuffer,
+		&buffer->uniformBufferMemory
 	);
 }
 
-UniformBufferList *gf3d_uniform_buffer_list_new(
-	VkDevice device, VkDeviceSize bufferSize, Uint32 bufferCount,
-	Uint32 bufferFrames
-) {
+UniformBufferList *
+	gf3d_uniform_buffer_list_new(VkDevice device, VkDeviceSize bufferSize, Uint32 bufferCount, Uint32 bufferFrames) {
 	int i, j;
 	UniformBufferList *bufferList;
 	if((!bufferCount) || (!bufferFrames)) {
@@ -33,8 +30,7 @@ UniformBufferList *gf3d_uniform_buffer_list_new(
 
 	bufferList->device = device;
 
-	bufferList->buffers =
-		gfc_allocate_array(sizeof(UniformBuffer *), bufferFrames);
+	bufferList->buffers = gfc_allocate_array(sizeof(UniformBuffer *), bufferFrames);
 
 	if(!bufferList->buffers) {
 		gf3d_uniform_buffer_list_free(bufferList);
@@ -43,8 +39,7 @@ UniformBufferList *gf3d_uniform_buffer_list_new(
 	}
 
 	for(j = 0; j < bufferFrames; j++) {
-		bufferList->buffers[j] =
-			gfc_allocate_array(sizeof(UniformBuffer), bufferCount);
+		bufferList->buffers[j] = gfc_allocate_array(sizeof(UniformBuffer), bufferCount);
 		if(!bufferList->buffers[j]) {
 			gf3d_uniform_buffer_list_free(bufferList);
 			slog("failed to allocate unform buffers");
@@ -53,10 +48,8 @@ UniformBufferList *gf3d_uniform_buffer_list_new(
 		for(i = 0; i < bufferCount; i++) {
 			gf3d_buffer_create(
 				bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-					VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-				&bufferList->buffers[j][i].uniformBuffer,
-				&bufferList->buffers[j][i].uniformBufferMemory
+				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+				&bufferList->buffers[j][i].uniformBuffer, &bufferList->buffers[j][i].uniformBufferMemory
 			);
 			bufferList->buffers[j][i].bufferSize = bufferSize;
 		}
@@ -73,22 +66,16 @@ void gf3d_uniform_buffer_list_free(UniformBufferList *list) {
 	for(j = 0; j < list->buffer_frames; j++) {
 		for(i = 0; i < list->buffer_count; i++) {
 			if(list->buffers[j][i].uniformBuffer) {
-				vkDestroyBuffer(
-					list->device, list->buffers[j][i].uniformBuffer, NULL
-				);
+				vkDestroyBuffer(list->device, list->buffers[j][i].uniformBuffer, NULL);
 			}
 			if(list->buffers[j][i].uniformBufferMemory) {
-				vkFreeMemory(
-					list->device, list->buffers[j][i].uniformBufferMemory, NULL
-				);
+				vkFreeMemory(list->device, list->buffers[j][i].uniformBufferMemory, NULL);
 			}
 		}
 	}
 }
 
-UniformBuffer *gf3d_uniform_buffer_list_get_nth_buffer(
-	UniformBufferList *list, Uint32 nth, Uint32 bufferFrame
-) {
+UniformBuffer *gf3d_uniform_buffer_list_get_nth_buffer(UniformBufferList *list, Uint32 nth, Uint32 bufferFrame) {
 	if(!list) return NULL;
 	if(bufferFrame >= list->buffer_frames) {
 		slog("buffer frame out of range");
@@ -101,9 +88,7 @@ UniformBuffer *gf3d_uniform_buffer_list_get_nth_buffer(
 	return &list->buffers[bufferFrame][nth];
 }
 
-UniformBuffer *gf3d_uniform_buffer_list_get_buffer(
-	UniformBufferList *list, Uint32 bufferFrame
-) {
+UniformBuffer *gf3d_uniform_buffer_list_get_buffer(UniformBufferList *list, Uint32 bufferFrame) {
 	int i;
 	if(!list) return NULL;
 	if(bufferFrame >= list->buffer_frames) {
@@ -119,9 +104,7 @@ UniformBuffer *gf3d_uniform_buffer_list_get_buffer(
 	return NULL;
 }
 
-void gf3d_uniform_buffer_list_clear(
-	UniformBufferList *list, Uint32 bufferFrame
-) {
+void gf3d_uniform_buffer_list_clear(UniformBufferList *list, Uint32 bufferFrame) {
 	int i;
 	if(!list) return;
 	if(bufferFrame >= list->buffer_frames) {
@@ -129,8 +112,7 @@ void gf3d_uniform_buffer_list_clear(
 		return;
 	}
 	for(i = 0; i < list->buffer_count; i++) {
-		list->buffers[bufferFrame][i]._inuse =
-			0; // just marked free here, cleaned up on assignment
+		list->buffers[bufferFrame][i]._inuse = 0; // just marked free here, cleaned up on assignment
 	}
 }
 

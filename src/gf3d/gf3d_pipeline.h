@@ -16,7 +16,7 @@ typedef struct {
 	VkBuffer vertexBuffer;
 	Uint32 vertexCount;
 	VkBuffer indexBuffer;
-	void *uboData;	  // pointer to corresponding memory in the pipeline uboData
+	void *uboData; // pointer to corresponding memory in the pipeline uboData
 	VkImageView *image1View;
 	VkSampler *image1Sampler;
 	VkImageLayout image1Layout;
@@ -31,14 +31,12 @@ typedef struct {
 	VkPipeline pipeline; /**<pipeline handle*/
 	VkRenderPass renderPass;
 	VkPipelineLayout pipelineLayout;
-	char *vertShader; /**<the shader loaded from disk*/
-	size_t vertSize;  /**<memory size of the shader*/
-	VkShaderModule
-		vertModule;	  /**<the index of the shader module within the device*/
-	char *fragShader; /**<the shader loaded from disk*/
-	size_t fragSize;  /**<memory size of the shader*/
-	VkShaderModule
-		fragModule; /**<the index of the shader module within the device*/
+	char *vertShader;		   /**<the shader loaded from disk*/
+	size_t vertSize;		   /**<memory size of the shader*/
+	VkShaderModule vertModule; /**<the index of the shader module within the device*/
+	char *fragShader;		   /**<the shader loaded from disk*/
+	size_t fragSize;		   /**<memory size of the shader*/
+	VkShaderModule fragModule; /**<the index of the shader module within the device*/
 	VkDevice device;
 	Uint32 *descriptorCursor; /**<keeps track of which descriptors have been
 					 used per frame*/
@@ -51,17 +49,17 @@ typedef struct {
 	PipelineDrawCall *drawCallList; /**<cached draw calls for this frame*/
 	Uint32 drawCallListCount;		/**<how many drawCalls are available*/
 
-	char *uboData;		  /**<pre-allocated cpu side UBO data*/
-	size_t uboBufferSize; /**<how large the whole buffer is*/
-	size_t uboDataSize;	  /**<size of a single UBO for this pipeline*/
+	char *uboData;					 /**<pre-allocated cpu side UBO data*/
+	size_t uboBufferSize;			 /**<how large the whole buffer is*/
+	size_t uboDataSize;				 /**<size of a single UBO for this pipeline*/
 	UniformBufferList *uboBigBuffer; /**<for batched draws.  This is the
 						memory for ALL draws one per frame*/
 
 	VkCommandBuffer commandBuffer; /**<for current command*/
 	VkIndexType indexType;		   /**<size of the indices in the index buffer*/
 
-	void (* preRender) ();
-	void (* postRender) ();
+	void (*preRender)();
+	void (*postRender)();
 } Pipeline;
 
 /**
@@ -85,10 +83,7 @@ void gf3d_pipeline_free(Pipeline *pipe);
  * @param extent the viewport dimensions for this pipeline
  * @returns NULL on error (see logs) or a pointer to a pipeline
  */
-Pipeline *gf3d_pipeline_graphics_load(
-	VkDevice device, const char *vertFile, const char *fragFile,
-	VkExtent2D extent
-);
+Pipeline *gf3d_pipeline_graphics_load(VkDevice device, const char *vertFile, const char *fragFile, VkExtent2D extent);
 
 /**
  * @brief create a pipeline from config
@@ -108,11 +103,10 @@ Pipeline *gf3d_pipeline_graphics_load(
  * @returns NULL on error (see logs) or a pointer to a pipeline
  */
 Pipeline *gf3d_pipeline_create_from_config(
-	VkDevice device, const char *configFile, VkExtent2D extent,
-	Uint32 descriptorCount,
+	VkDevice device, const char *configFile, VkExtent2D extent, Uint32 descriptorCount,
 	const VkVertexInputBindingDescription *vertexInputDescription,
-	const VkVertexInputAttributeDescription *vertextInputAttributeDescriptions,
-	Uint32 vertexAttributeCount, VkDeviceSize bufferSize, VkIndexType indexType
+	const VkVertexInputAttributeDescription *vertextInputAttributeDescriptions, Uint32 vertexAttributeCount,
+	VkDeviceSize bufferSize, VkIndexType indexType
 );
 
 /**
@@ -129,8 +123,7 @@ Pipeline *gf3d_pipeline_create_from_config(
  * @returns NULL on error (see logs) or a pointer to a pipeline
  */
 Pipeline *gf3d_pipeline_basic_sprite_create(
-	VkDevice device, const char *vertFile, const char *fragFile,
-	VkExtent2D extent, Uint32 descriptorCount
+	VkDevice device, const char *vertFile, const char *fragFile, VkExtent2D extent, Uint32 descriptorCount
 );
 
 /**
@@ -161,9 +154,8 @@ void gf3d_pipeline_reset_frame(Pipeline *pipe, Uint32 frame);
  * @param imageSampler [optional] sampler for the provided imageView
  */
 void gf3d_pipeline_queue_render(
-	Pipeline *pipe, VkBuffer vertexBuffer, Uint32 vertexCount,
-	VkBuffer indexBuffer, void *uboData, VkImageView *image1View,
-	VkSampler *image1Sampler, VkImageLayout image1Layout, VkImageView *image2View,
+	Pipeline *pipe, VkBuffer vertexBuffer, Uint32 vertexCount, VkBuffer indexBuffer, void *uboData,
+	VkImageView *image1View, VkSampler *image1Sampler, VkImageLayout image1Layout, VkImageView *image2View,
 	VkSampler *image2Sampler, VkImageLayout image2Layout
 );
 
@@ -171,8 +163,7 @@ void gf3d_pipeline_queue_render(
  * @brief bind a draw call to the current command
  */
 void gf3d_pipeline_call_render(
-	Pipeline *pipe, VkDescriptorSet *descriptorSet, VkBuffer vertexBuffer,
-	Uint32 vertexCount, VkBuffer indexBuffer
+	Pipeline *pipe, VkDescriptorSet *descriptorSet, VkBuffer vertexBuffer, Uint32 vertexCount, VkBuffer indexBuffer
 );
 
 /**

@@ -78,10 +78,8 @@ void gf3d_obj_load_reorg(ObjData *obj);
  * @note gf3d_obj_load_reorg must have been called on both prior to calling this
  * one
  */
-ObjData *gf3d_obj_merge(
-	ObjData *ObjA, GFC_Vector3D offsetA, ObjData *ObjB, GFC_Vector3D offsetB,
-	GFC_Vector3D rotation
-);
+ObjData *
+	gf3d_obj_merge(ObjData *ObjA, GFC_Vector3D offsetA, ObjData *ObjB, GFC_Vector3D offsetB, GFC_Vector3D rotation);
 
 /**
  * @brief free obj data
@@ -99,8 +97,6 @@ void gf3d_obj_free(ObjData *obj);
  * @param e the edge to test with
  * @param contact [optional output] provides the point of impact
  */
-int gf3d_obj_edge_test(
-	ObjData *obj, GFC_Matrix4 offset, GFC_Edge3D e, GFC_Vector3D *contact
-);
+int gf3d_obj_edge_test(ObjData *obj, GFC_Matrix4 offset, GFC_Edge3D e, GFC_Vector3D *contact);
 
 #endif

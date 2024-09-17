@@ -87,9 +87,7 @@ void gf2d_draw_line(GFC_Vector2D p1, GFC_Vector2D p2, GFC_Color color);
  * @param p2 ending point
  * @param color rendering color
  */
-void gf2d_draw_bezier_curve(
-	GFC_Vector2D p0, GFC_Vector2D p1, GFC_Vector2D p2, GFC_Color color
-);
+void gf2d_draw_bezier_curve(GFC_Vector2D p0, GFC_Vector2D p1, GFC_Vector2D p2, GFC_Color color);
 
 /**
  * @brief draw a 4 point bezier curve given two end points and two reference
@@ -100,10 +98,7 @@ void gf2d_draw_bezier_curve(
  * @param r1 second reference point
  * @param color rendering color
  */
-void gf2d_draw_bezier4_curve(
-	GFC_Vector2D p0, GFC_Vector2D r0, GFC_Vector2D r1, GFC_Vector2D p1,
-	GFC_Color color
-);
+void gf2d_draw_bezier4_curve(GFC_Vector2D p0, GFC_Vector2D r0, GFC_Vector2D r1, GFC_Vector2D p1, GFC_Color color);
 
 /**
  * @brief draw a closed polygon described by the list of GFC_Vector2D points

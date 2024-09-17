@@ -29,40 +29,27 @@ void gf3d_extensions_config(const char *config, ExtensionType extType);
 void gf3d_extensions_device_init(VkPhysicalDevice device, const char *config) {
 	Uint32 i;
 
-	vkEnumerateDeviceExtensionProperties(
-		device, NULL, &gf3d_device_extensions.available_extension_count, NULL
-	);
-	if(__DEBUG)
-		slog(
-			"Total available device extensions: %i",
-			gf3d_device_extensions.available_extension_count
-		);
+	vkEnumerateDeviceExtensionProperties(device, NULL, &gf3d_device_extensions.available_extension_count, NULL);
+	if(__DEBUG) slog("Total available device extensions: %i", gf3d_device_extensions.available_extension_count);
 	if(!gf3d_device_extensions.available_extension_count) return;
 
-	gf3d_device_extensions.available_extensions =
-		(VkExtensionProperties *)gfc_allocate_array(
-			sizeof(VkExtensionProperties),
-			gf3d_device_extensions.available_extension_count
-		);
+	gf3d_device_extensions.available_extensions = (VkExtensionProperties *)gfc_allocate_array(
+		sizeof(VkExtensionProperties), gf3d_device_extensions.available_extension_count
+	);
 
 	if(!gf3d_device_extensions.available_extensions) return;
 
-	gf3d_device_extensions.enabled_extension_names = gfc_allocate_array(
-		sizeof(const char *), gf3d_device_extensions.available_extension_count
-	);
+	gf3d_device_extensions.enabled_extension_names =
+		gfc_allocate_array(sizeof(const char *), gf3d_device_extensions.available_extension_count);
 	if(!gf3d_device_extensions.enabled_extension_names) return;
 
 	vkEnumerateDeviceExtensionProperties(
-		device, NULL, &gf3d_device_extensions.available_extension_count,
-		gf3d_device_extensions.available_extensions
+		device, NULL, &gf3d_device_extensions.available_extension_count, gf3d_device_extensions.available_extensions
 	);
 
 	if(__DEBUG) {
 		for(i = 0; i < gf3d_device_extensions.available_extension_count; i++) {
-			slog(
-				"available device extension: %s",
-				gf3d_device_extensions.available_extensions[i].extensionName
-			);
+			slog("available device extension: %s", gf3d_device_extensions.available_extensions[i].extensionName);
 		}
 	}
 	gf3d_extensions_config(config, ET_Device);
@@ -71,12 +58,8 @@ void gf3d_extensions_device_init(VkPhysicalDevice device, const char *config) {
 }
 
 void gf3d_extensions_device_close() {
-	if(gf3d_device_extensions.available_extensions) {
-		free(gf3d_device_extensions.available_extensions);
-	}
-	if(gf3d_device_extensions.enabled_extension_names) {
-		free(gf3d_device_extensions.enabled_extension_names);
-	}
+	if(gf3d_device_extensions.available_extensions) { free(gf3d_device_extensions.available_extensions); }
+	if(gf3d_device_extensions.enabled_extension_names) { free(gf3d_device_extensions.enabled_extension_names); }
 	memset(&gf3d_device_extensions, 0, sizeof(vExtensions));
 	if(__DEBUG) slog("device extensions closed");
 }
@@ -84,40 +67,26 @@ void gf3d_extensions_device_close() {
 void gf3d_extensions_instance_init(const char *config) {
 	int i;
 
-	vkEnumerateInstanceExtensionProperties(
-		NULL, &gf3d_instance_extensions.available_extension_count, NULL
-	);
-	if(__DEBUG)
-		slog(
-			"Total available instance extensions: %i",
-			gf3d_instance_extensions.available_extension_count
-		);
+	vkEnumerateInstanceExtensionProperties(NULL, &gf3d_instance_extensions.available_extension_count, NULL);
+	if(__DEBUG) slog("Total available instance extensions: %i", gf3d_instance_extensions.available_extension_count);
 	if(!gf3d_instance_extensions.available_extension_count) return;
 
-	gf3d_instance_extensions.available_extensions =
-		(VkExtensionProperties *)gfc_allocate_array(
-			sizeof(VkExtensionProperties),
-			gf3d_instance_extensions.available_extension_count
-		);
+	gf3d_instance_extensions.available_extensions = (VkExtensionProperties *)gfc_allocate_array(
+		sizeof(VkExtensionProperties), gf3d_instance_extensions.available_extension_count
+	);
 	if(!gf3d_instance_extensions.available_extensions) return;
 
-	gf3d_instance_extensions.enabled_extension_names = gfc_allocate_array(
-		sizeof(const char *), gf3d_instance_extensions.available_extension_count
-	);
+	gf3d_instance_extensions.enabled_extension_names =
+		gfc_allocate_array(sizeof(const char *), gf3d_instance_extensions.available_extension_count);
 	if(!gf3d_instance_extensions.enabled_extension_names) return;
 
 	vkEnumerateInstanceExtensionProperties(
-		NULL, &gf3d_instance_extensions.available_extension_count,
-		gf3d_instance_extensions.available_extensions
+		NULL, &gf3d_instance_extensions.available_extension_count, gf3d_instance_extensions.available_extensions
 	);
 
 	if(__DEBUG) {
-		for(i = 0; i < gf3d_instance_extensions.available_extension_count;
-			i++) {
-			slog(
-				"available instance extension: %s",
-				gf3d_instance_extensions.available_extensions[i].extensionName
-			);
+		for(i = 0; i < gf3d_instance_extensions.available_extension_count; i++) {
+			slog("available instance extension: %s", gf3d_instance_extensions.available_extensions[i].extensionName);
 		}
 	}
 	gf3d_extensions_config(config, ET_Instance);
@@ -126,28 +95,20 @@ void gf3d_extensions_instance_init(const char *config) {
 }
 
 void gf3d_extensions_instance_close() {
-	if(gf3d_instance_extensions.available_extensions) {
-		free(gf3d_instance_extensions.available_extensions);
-	}
-	if(gf3d_instance_extensions.enabled_extension_names) {
-		free(gf3d_instance_extensions.enabled_extension_names);
-	}
+	if(gf3d_instance_extensions.available_extensions) { free(gf3d_instance_extensions.available_extensions); }
+	if(gf3d_instance_extensions.enabled_extension_names) { free(gf3d_instance_extensions.enabled_extension_names); }
 	memset(&gf3d_instance_extensions, 0, sizeof(vExtensions));
 	if(__DEBUG) slog("instance extentions closed");
 }
 
-Bool gf3d_extensions_check_available(
-	vExtensions *extensions, const char *extensionName, int *index
-) {
+Bool gf3d_extensions_check_available(vExtensions *extensions, const char *extensionName, int *index) {
 	int i;
 
 	if(!extensions) return false;
 	if((!extensionName) || (!strlen(extensionName))) return false;
 
 	for(i = 0; i < extensions->available_extension_count; i++) {
-		if(strcmp(
-			   extensions->available_extensions[i].extensionName, extensionName
-		   ) == 0) {
+		if(strcmp(extensions->available_extensions[i].extensionName, extensionName) == 0) {
 			if(index) *index = i;
 			return true;
 		}
@@ -215,10 +176,8 @@ Bool gf3d_extensions_enable(ExtensionType extType, const char *extensionName) {
 			return false;
 		}
 	}
-	if(!gf3d_extensions_check_available(extensions, extensionName, &index))
-		return false;
-	if(extensions->enabled_extension_count >=
-	   extensions->available_extension_count) {
+	if(!gf3d_extensions_check_available(extensions, extensionName, &index)) return false;
+	if(extensions->enabled_extension_count >= extensions->available_extension_count) {
 		slog("cannot enable extension '%s' no more space", extensionName);
 		return false;
 	}

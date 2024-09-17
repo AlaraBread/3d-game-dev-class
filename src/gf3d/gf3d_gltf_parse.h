@@ -37,9 +37,7 @@ GLTF *gf3d_gltf_load(const char *filename);
  * @param count [output] this will be populated with the number of items
  * @return the name of the type, or NULL if this fails
  */
-const char *gf3d_gltf_accessor_get_details(
-	GLTF *gltf, Uint32 accessorIndex, int *bufferIndex, int *count
-);
+const char *gf3d_gltf_accessor_get_details(GLTF *gltf, Uint32 accessorIndex, int *bufferIndex, int *count);
 
 /**
  * @brief get the data from a buffer view in the gltf

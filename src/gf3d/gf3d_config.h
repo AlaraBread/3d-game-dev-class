@@ -92,8 +92,7 @@ VkImageLayout gf3d_config_image_layer_from_str(const char *str);
  * configured elsewhere
  * @return an empty description on error or a configured on otherwise
  */
-VkAttachmentDescription
-	gf3d_config_attachment_description(SJson *config, VkFormat format);
+VkAttachmentDescription gf3d_config_attachment_description(SJson *config, VkFormat format);
 
 #if defined(VkPipelineDepthStencilStateCreateFlagBits)
 /**
@@ -102,8 +101,7 @@ VkAttachmentDescription
  * @return 0 as default or the proper VK_PIPELINE_DEPTH_STENCIL_STATE_CREATE*
  * otherwise
  */
-VkPipelineDepthStencilStateCreateFlagBits
-	gf3d_config_depth_stencil_create_flag_from_str(const char *str);
+VkPipelineDepthStencilStateCreateFlagBits gf3d_config_depth_stencil_create_flag_from_str(const char *str);
 
 /**
  * @brief parse a list of depth stencil state create flags from a json array of
@@ -115,8 +113,7 @@ VkPipelineDepthStencilStateCreateFlagBits
  * @url
  * https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkPipelineDepthStencilStateCreateFlagBits.html
  */
-VkPipelineDepthStencilStateCreateFlagBits
-	gf3d_config_depth_stencil_create_flags(SJson *flags);
+VkPipelineDepthStencilStateCreateFlagBits gf3d_config_depth_stencil_create_flags(SJson *flags);
 #endif
 
 /**
@@ -138,23 +135,20 @@ VkPrimitiveTopology gf3d_config_primitive_topology_from_str(const char *str);
  * @param config the json containing description information
  * @return an empty struct on error or configured otherwise
  */
-VkPipelineRasterizationStateCreateInfo
-	gf3d_config_pipline_rasterization_state_create_info(SJson *config);
+VkPipelineRasterizationStateCreateInfo gf3d_config_pipline_rasterization_state_create_info(SJson *config);
 
 /**
  * @brief extract VkPipelineMultisampleStateCreateInfo info from a json config
  * @param config the json containing description information
  * @return an empty struct on error or configured otherwise
  */
-VkPipelineMultisampleStateCreateInfo
-	gf3d_config_pipline_multisample_state_create_info(SJson *config);
+VkPipelineMultisampleStateCreateInfo gf3d_config_pipline_multisample_state_create_info(SJson *config);
 
 /**
  * @brief extract VkPipelineColorBlendAttachmentState info from a json config
  * @param config the json containing description information
  * @return an empty struct on error or configured otherwise
  */
-VkPipelineColorBlendAttachmentState
-	gf3d_config_pipeline_color_blend_attachment(SJson *config);
+VkPipelineColorBlendAttachmentState gf3d_config_pipeline_color_blend_attachment(SJson *config);
 
 #endif

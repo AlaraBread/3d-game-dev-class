@@ -20,11 +20,11 @@
 #include "gf3d_camera.h"
 #include "gf3d_draw.h"
 #include "gf3d_model.h"
+#include "gf3d_outline.h"
 #include "gf3d_pipeline.h"
 #include "gf3d_swapchain.h"
 #include "gf3d_texture.h"
 #include "gf3d_vgraphics.h"
-#include "gf3d_outline.h"
 
 extern int __DEBUG;
 
@@ -32,25 +32,16 @@ void parse_arguments(int argc, char *argv[]);
 
 void draw_origin() {
 	gf3d_draw_edge_3d(
-		gfc_edge3d_from_vectors(
-			gfc_vector3d(-100, 0, 0), gfc_vector3d(100, 0, 0)
-		),
-		gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1),
-		0.1, gfc_color(1, 0, 0, 1)
+		gfc_edge3d_from_vectors(gfc_vector3d(-100, 0, 0), gfc_vector3d(100, 0, 0)), gfc_vector3d(0, 0, 0),
+		gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.1, gfc_color(1, 0, 0, 1)
 	);
 	gf3d_draw_edge_3d(
-		gfc_edge3d_from_vectors(
-			gfc_vector3d(0, -100, 0), gfc_vector3d(0, 100, 0)
-		),
-		gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1),
-		0.1, gfc_color(0, 1, 0, 1)
+		gfc_edge3d_from_vectors(gfc_vector3d(0, -100, 0), gfc_vector3d(0, 100, 0)), gfc_vector3d(0, 0, 0),
+		gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.1, gfc_color(0, 1, 0, 1)
 	);
 	gf3d_draw_edge_3d(
-		gfc_edge3d_from_vectors(
-			gfc_vector3d(0, 0, -100), gfc_vector3d(0, 0, 100)
-		),
-		gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1),
-		0.1, gfc_color(0, 0, 1, 1)
+		gfc_edge3d_from_vectors(gfc_vector3d(0, 0, -100), gfc_vector3d(0, 0, 100)), gfc_vector3d(0, 0, 0),
+		gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.1, gfc_color(0, 0, 1, 1)
 	);
 }
 
@@ -118,9 +109,7 @@ int main(int argc, char *argv[]) {
 		render_outlines();
 		// 2D draws
 		gf2d_mouse_draw();
-		gf2d_font_draw_line_tag(
-			"ALT+F4 to exit", FT_H1, GFC_COLOR_WHITE, gfc_vector2d(10, 10)
-		);
+		gf2d_font_draw_line_tag("ALT+F4 to exit", FT_H1, GFC_COLOR_WHITE, gfc_vector2d(10, 10));
 		gf3d_vgraphics_render_end();
 		slog_sync();
 		if(gfc_input_command_down("exit")) done = true; // exit condition
@@ -146,8 +135,8 @@ double calculate_delta_time() {
 	Uint64 then = now;
 	now = SDL_GetTicks64();
 	double delta = (double)(now - then) / 1000.0;
-	//double fps = 1.0/MAX(delta, 0.00001);
-	//slog("fps: %f",fps);
+	// double fps = 1.0/MAX(delta, 0.00001);
+	// slog("fps: %f",fps);
 	return delta;
 }
 

@@ -25,8 +25,7 @@ void gf3d_texture_init(Uint32 max_textures) {
 		slog("cannot initialize texture system for 0 textures");
 		return;
 	}
-	gf3d_texture.texture_list =
-		gfc_allocate_array(sizeof(Texture), max_textures);
+	gf3d_texture.texture_list = gfc_allocate_array(sizeof(Texture), max_textures);
 	if(!gf3d_texture.texture_list) {
 		slog("failed to initialize texture system: not enough memory");
 		return;
@@ -100,16 +99,12 @@ Texture *gf3d_texture_get_by_filename(const char *filename) {
 	if(!filename) return NULL;
 	for(i = 0; i < gf3d_texture.max_textures; i++) {
 		if(!gf3d_texture.texture_list[i]._inuse) continue;
-		if(gfc_line_cmp(gf3d_texture.texture_list[i].filename, filename) == 0) {
-			return &gf3d_texture.texture_list[i];
-		}
+		if(gfc_line_cmp(gf3d_texture.texture_list[i].filename, filename) == 0) { return &gf3d_texture.texture_list[i]; }
 	}
 	return NULL;
 }
 
-void gf3d_texture_copy_buffer_to_image(
-	VkBuffer buffer, VkImage image, uint32_t width, uint32_t height
-) {
+void gf3d_texture_copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
 	VkCommandBuffer commandBuffer;
 	Command *commandPool;
 	VkBufferImageCopy region = {0};
@@ -134,10 +129,7 @@ void gf3d_texture_copy_buffer_to_image(
 	region.imageExtent.height = height;
 	region.imageExtent.depth = 1;
 
-	vkCmdCopyBufferToImage(
-		commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1,
-		&region
-	);
+	vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
 	gf3d_command_end_single_time(commandPool, commandBuffer);
 }
@@ -164,9 +156,7 @@ void gf3d_texture_create_sampler(Texture *tex) {
 	samplerInfo.minLod = 0.0f;
 	samplerInfo.maxLod = 0.0f;
 
-	if(vkCreateSampler(
-		   gf3d_texture.device, &samplerInfo, NULL, &tex->textureSampler
-	   ) != VK_SUCCESS) {
+	if(vkCreateSampler(gf3d_texture.device, &samplerInfo, NULL, &tex->textureSampler) != VK_SUCCESS) {
 		slog("failed to create texture sampler!");
 		return;
 	}
@@ -199,15 +189,11 @@ Texture *gf3d_texture_convert_surface(SDL_Surface *surface) {
 
 	gf3d_buffer_create(
 		imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-		&stagingBuffer, &stagingBufferMemory
+		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory
 	);
 
 	SDL_LockSurface(tex->surface);
-	vkMapMemory(
-		gf3d_texture.device, stagingBufferMemory, 0, imageSize, 0, &data
-	);
+	vkMapMemory(gf3d_texture.device, stagingBufferMemory, 0, imageSize, 0, &data);
 	memcpy(data, tex->surface->pixels, imageSize);
 	vkUnmapMemory(gf3d_texture.device, stagingBufferMemory);
 	SDL_UnlockSurface(tex->surface);
@@ -222,60 +208,44 @@ Texture *gf3d_texture_convert_surface(SDL_Surface *surface) {
 	imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
 	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	imageInfo.usage =
-		VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+	imageInfo.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 	imageInfo.flags = 0; // Optional
 
-	if(vkCreateImage(
-		   gf3d_texture.device, &imageInfo, NULL, &tex->textureImage
-	   ) != VK_SUCCESS) {
+	if(vkCreateImage(gf3d_texture.device, &imageInfo, NULL, &tex->textureImage) != VK_SUCCESS) {
 		slog("failed to create image!");
 		gf3d_texture_delete(tex);
 		SDL_FreeSurface(tex->surface);
 		return NULL;
 	}
-	vkGetImageMemoryRequirements(
-		gf3d_texture.device, tex->textureImage, &memRequirements
-	);
+	vkGetImageMemoryRequirements(gf3d_texture.device, tex->textureImage, &memRequirements);
 
 	allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocInfo.allocationSize = memRequirements.size;
-	allocInfo.memoryTypeIndex = gf3d_vgraphics_find_memory_type(
-		memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-	);
+	allocInfo.memoryTypeIndex =
+		gf3d_vgraphics_find_memory_type(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-	if(vkAllocateMemory(
-		   gf3d_texture.device, &allocInfo, NULL, &tex->textureImageMemory
-	   ) != VK_SUCCESS) {
+	if(vkAllocateMemory(gf3d_texture.device, &allocInfo, NULL, &tex->textureImageMemory) != VK_SUCCESS) {
 		slog("failed to allocate image memory!");
 		gf3d_texture_delete(tex);
 		return NULL;
 	}
 
-	vkBindImageMemory(
-		gf3d_texture.device, tex->textureImage, tex->textureImageMemory, 0
-	);
+	vkBindImageMemory(gf3d_texture.device, tex->textureImage, tex->textureImageMemory, 0);
 
 	gf3d_swapchain_transition_image_layout(
-		tex->textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+		tex->textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
 	);
 
-	gf3d_texture_copy_buffer_to_image(
-		stagingBuffer, tex->textureImage, tex->surface->w, tex->surface->h
-	);
+	gf3d_texture_copy_buffer_to_image(stagingBuffer, tex->textureImage, tex->surface->w, tex->surface->h);
 
 	gf3d_swapchain_transition_image_layout(
-		tex->textureImage, VK_FORMAT_R8G8B8A8_UNORM,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		tex->textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 	);
 
-	tex->textureImageView = gf3d_vgraphics_create_image_view(
-		tex->textureImage, VK_FORMAT_R8G8B8A8_UNORM
-	);
+	tex->textureImageView = gf3d_vgraphics_create_image_view(tex->textureImage, VK_FORMAT_R8G8B8A8_UNORM);
 
 	gf3d_texture_create_sampler(tex);
 

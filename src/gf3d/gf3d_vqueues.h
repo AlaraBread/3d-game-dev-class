@@ -21,8 +21,7 @@ void gf3d_vqueues_init(VkPhysicalDevice device, VkSurfaceKHR surface);
  * returned
  * @returns a pointer to an array of VkDeviceQueueCreateInfo populated
  */
-const VkDeviceQueueCreateInfo *gf3d_vqueues_get_queue_create_info(Uint32 *count
-);
+const VkDeviceQueueCreateInfo *gf3d_vqueues_get_queue_create_info(Uint32 *count);
 
 /**
  * @brief after device creation call this to setup internal queue handles
