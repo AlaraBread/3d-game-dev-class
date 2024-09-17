@@ -246,8 +246,8 @@ void gf3d_camera_set_auto_pan(Bool enable) { gf3d_camera.autoPan = enable; }
 
 Bool gf3d_camera_free_look_enabled() { return gf3d_camera.freeLook; }
 
-void gf3d_camera_controls_update() {
-	float moveSpeed = gf3d_camera.moveStep;
+void gf3d_camera_controls_update(double delta) {
+	float moveSpeed = gf3d_camera.moveStep*delta;
 	GFC_Vector3D position, rotation;
 	const Uint8 *keys;
 
@@ -269,10 +269,10 @@ void gf3d_camera_controls_update() {
 		if(keys[SDL_SCANCODE_SPACE]) gf3d_camera_move_up(moveSpeed);
 		if(keys[SDL_SCANCODE_Z]) gf3d_camera_move_up(-moveSpeed);
 
-		if(keys[SDL_SCANCODE_UP]) gf3d_camera_pitch(-gf3d_camera.rotateStep);
-		if(keys[SDL_SCANCODE_DOWN]) gf3d_camera_pitch(gf3d_camera.rotateStep);
-		if(keys[SDL_SCANCODE_RIGHT]) gf3d_camera_yaw(-gf3d_camera.rotateStep);
-		if(keys[SDL_SCANCODE_LEFT]) gf3d_camera_yaw(gf3d_camera.rotateStep);
+		if(keys[SDL_SCANCODE_UP]) gf3d_camera_pitch(-gf3d_camera.rotateStep*delta);
+		if(keys[SDL_SCANCODE_DOWN]) gf3d_camera_pitch(gf3d_camera.rotateStep*delta);
+		if(keys[SDL_SCANCODE_RIGHT]) gf3d_camera_yaw(-gf3d_camera.rotateStep*delta);
+		if(keys[SDL_SCANCODE_LEFT]) gf3d_camera_yaw(gf3d_camera.rotateStep*delta);
 
 		return;
 	}

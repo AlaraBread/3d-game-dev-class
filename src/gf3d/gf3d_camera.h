@@ -249,7 +249,7 @@ void gf3d_camera_get_view_vectors(
 /**
  * @brief update the camera based on keyboard controls, autopan, and look target
  */
-void gf3d_camera_controls_update();
+void gf3d_camera_controls_update(double delta);
 
 /**
  * @brief set a look target for the camera to point at

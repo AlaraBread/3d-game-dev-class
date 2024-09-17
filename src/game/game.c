@@ -28,14 +28,7 @@
 
 extern int __DEBUG;
 
-static int _done = 0;
-static Uint32 frame_delay = 33;
-static float fps = 0;
-
 void parse_arguments(int argc, char *argv[]);
-void game_frame_delay();
-
-void exitGame() { _done = 1; }
 
 void draw_origin() {
 	gf3d_draw_edge_3d(
@@ -60,6 +53,8 @@ void draw_origin() {
 		0.1, gfc_color(0, 0, 1, 1)
 	);
 }
+
+double calculate_delta_time();
 
 int main(int argc, char *argv[]) {
 	// local variables
@@ -95,19 +90,21 @@ int main(int argc, char *argv[]) {
 	gf3d_camera_set_scale(gfc_vector3d(1, 1, 1));
 	gf3d_camera_set_position(gfc_vector3d(15, -15, 10));
 	gf3d_camera_look_at(gfc_vector3d(0, 0, 0), NULL);
-	gf3d_camera_set_move_step(0.2);
-	gf3d_camera_set_rotate_step(0.05);
+	gf3d_camera_set_move_step(10.0);
+	gf3d_camera_set_rotate_step(2.0);
 
 	gf3d_camera_enable_free_look(1);
 	// windows
 
 	// main game loop
-	while(!_done) {
+	Bool done = false;
+	while(!done) {
 		gfc_input_update();
 		gf2d_mouse_update();
+		double delta = calculate_delta_time();
 		gf2d_font_update();
 		// camera updaes
-		gf3d_camera_controls_update();
+		gf3d_camera_controls_update(delta);
 		gf3d_camera_update_view();
 		gf3d_camera_get_view_mat4(gf3d_vgraphics_get_view_matrix());
 
@@ -125,7 +122,8 @@ int main(int argc, char *argv[]) {
 			"ALT+F4 to exit", FT_H1, GFC_COLOR_WHITE, gfc_vector2d(10, 10)
 		);
 		gf3d_vgraphics_render_end();
-		if(gfc_input_command_down("exit")) _done = 1; // exit condition
+		slog_sync();
+		if(gfc_input_command_down("exit")) done = true; // exit condition
 	}
 	vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());
 	// cleanup
@@ -143,16 +141,14 @@ void parse_arguments(int argc, char *argv[]) {
 	}
 }
 
-void game_frame_delay() {
-	Uint32 diff;
-	static Uint32 now;
-	static Uint32 then;
-	then = now;
-	slog_sync(); // make sure logs get written when we have time to write it
-	now = SDL_GetTicks();
-	diff = (now - then);
-	if(diff < frame_delay) { SDL_Delay(frame_delay - diff); }
-	fps = 1000.0 / MAX(SDL_GetTicks() - then, 0.001);
-	//     slog("fps: %f",fps);
+double calculate_delta_time() {
+	static Uint64 now;
+	Uint64 then = now;
+	now = SDL_GetTicks64();
+	double delta = (double)(now - then) / 1000.0;
+	//double fps = 1.0/MAX(delta, 0.00001);
+	//slog("fps: %f",fps);
+	return delta;
 }
+
 /*eol@eof*/
