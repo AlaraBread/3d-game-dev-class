@@ -44,16 +44,18 @@ void main() {
 	surfaceColor.xyz *= ubo.material.diffuse.xyz;
 	surfaceColor.w *= ubo.material.diffuse.w * ubo.material.transparency;
 
-	float d = dot(normal, normalize(vec3(0.1, 0.1, 1.0)));
-	float bands = 4.0;
-	if(d >= 0.3) {
+	vec3 sunDir = vec3(0, 0, 1);
+	float d = dot(normal, normalize(sunDir));
+	if(d >= 0.99) {
 		// specular
-		if(d >= 0.9) {
-			outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), surfaceColor, 0.6);
-		} else {
-			outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), surfaceColor, 0.8);
-		}
+		outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), surfaceColor, 0.3);
+		normal = -sunDir; // draw outline around specular
+	} else if(d >= 0.3) {
+		// midtone
+		outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), surfaceColor, 0.8);
 	} else {
+		// shadow
+		float bands = 4.0;
 		outColor = (round(clamp((d+2.0)*0.5, 0.0, 1.0)*bands)/bands)*surfaceColor;
 	}
 	outColor.w = 1.0;
