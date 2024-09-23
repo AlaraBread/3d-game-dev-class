@@ -7,16 +7,22 @@
 typedef struct Simplex_s {
 	int numPoints;
 	GFC_Vector3D points[4];
+	GFC_Vector3D aPoints[4];
+	GFC_Vector3D bPoints[4];
 } Simplex;
 
 void freeCollision();
 
 // using static memory to avoid heap allocations for every collision
 static Vector3List *epaVertexList;
+static Vector3List *epaAVertexList;
+static Vector3List *epaBVertexList;
 static IntList *epaFaceList;
 
 void initCollision() {
 	epaVertexList = newVec3List();
+	epaAVertexList = newVec3List();
+	epaBVertexList = newVec3List();
 	epaFaceList = newIntList();
 }
 
@@ -38,21 +44,23 @@ Collision doCollision(PhysicsBody *a, PhysicsBody *b) {
 }
 
 void resetEpa(Simplex *simplex);
-GFC_Triangle3D findClosestTriangle(GFC_Vector3D *direction);
-void addPointToPolytope(GFC_Vector3D point);
-Collision calculateCollision(GFC_Triangle3D triangle);
+GFC_Vector3D findClosestDirection(int idx[3]);
+void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D bSupport);
+Collision calculateCollision(int triangle[3]);
 
 Collision epa(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
 	resetEpa(simplex);
-	GFC_Vector3D closestDirection;
-	GFC_Triangle3D closestTriangle = findClosestTriangle(&closestDirection);
+	int closestTriangle[3];
+	GFC_Vector3D closestDirection = findClosestDirection(closestTriangle);
 	while(1) {
-		closestTriangle = findClosestTriangle(&closestDirection);
-		GFC_Vector3D support = minkowskiPoint(a, b, closestDirection);
+		closestDirection = findClosestDirection(closestTriangle);
+		GFC_Vector3D aSupport;
+		GFC_Vector3D bSupport;
+		GFC_Vector3D support = minkowskiPoint(a, b, closestDirection, &aSupport, &bSupport);
 		if(gfc_vector3d_dot_product(support, closestDirection) < 0.01) {
 			break;
 		}
-		addPointToPolytope(support);
+		addPointToPolytope(support, aSupport, bSupport);
 	}
 	return calculateCollision(closestTriangle);
 }
@@ -65,6 +73,8 @@ void resetEpa(Simplex *simplex) {
 	}
 	for(int i = 0; i < 4; i++) {
 		vec3ListAppend(epaVertexList, simplex->points[i]);
+		vec3ListAppend(epaAVertexList, simplex->aPoints[i]);
+		vec3ListAppend(epaBVertexList, simplex->bPoints[i]);
 	}
 	for(int i = 0; i < 4; i++) {
 		int a = i;
@@ -89,16 +99,39 @@ void resetEpa(Simplex *simplex) {
 	}
 }
 
-GFC_Triangle3D findClosestTriangle(GFC_Vector3D *direction) {
+Collision calculateCollision(int triangleIdx[3]) {
+	GFC_Triangle3D triangle;
+	triangle.a = vec3ListGet(epaVertexList, triangleIdx[0]);
+	triangle.b = vec3ListGet(epaVertexList, triangleIdx[1]);
+	triangle.c = vec3ListGet(epaVertexList, triangleIdx[2]);
+	// project origin onto triangle
+	
+	// keep track of distance we project
+	// convert projected point to barycentric coordinates
+	// use barycentric coordinates on support triangles to calculate contact points
+	GFC_Triangle3D aTriangle;
+	aTriangle.a = vec3ListGet(epaAVertexList, triangleIdx[0]);
+	aTriangle.b = vec3ListGet(epaAVertexList, triangleIdx[1]);
+	aTriangle.c = vec3ListGet(epaAVertexList, triangleIdx[2]);
+	GFC_Triangle3D bTriangle;
+	bTriangle.a = vec3ListGet(epaBVertexList, triangleIdx[0]);
+	bTriangle.b = vec3ListGet(epaBVertexList, triangleIdx[1]);
+	bTriangle.c = vec3ListGet(epaBVertexList, triangleIdx[2]);
+}
+
+GFC_Vector3D findClosestDirection(int idx[3]) {
 	GFC_Vector3D closestNormal;
-	GFC_Triangle3D closestTriangle;
 	float closestDist = INFINITY;
 	int count = intListLength(epaFaceList);
 	for(int i = 0; i < count; i += 3) {
+		int a = intListGet(epaFaceList, i);
+		int b = intListGet(epaFaceList, i+1);
+		int c = intListGet(epaFaceList, i+2);
+
 		GFC_Triangle3D triangle;
-		triangle.a = vec3ListGet(epaVertexList, intListGet(epaFaceList, i));
-		triangle.b = vec3ListGet(epaVertexList, intListGet(epaFaceList, i+1));
-		triangle.c = vec3ListGet(epaVertexList, intListGet(epaFaceList, i+2));
+		triangle.a = vec3ListGet(epaVertexList, a);
+		triangle.b = vec3ListGet(epaVertexList, b);
+		triangle.c = vec3ListGet(epaVertexList, c);
 
 		GFC_Vector3D center = triangleCenter(triangle);
 
@@ -106,17 +139,20 @@ GFC_Triangle3D findClosestTriangle(GFC_Vector3D *direction) {
 		float dist = gfc_vector3d_dot_product(normal, center);
 		if(dist < closestDist) {
 			closestDist = dist;
-			closestTriangle = triangle;
 			closestNormal = normal;
+			idx[0] = a;
+			idx[1] = b;
+			idx[2] = c;
 		}
 	}
-	gfc_vector3d_copy((*direction), closestNormal);
-	return closestTriangle;
+	return closestNormal;
 }
 
-void addPointToPolytope(GFC_Vector3D point) {
-	int newIdx = vec3ListLength(epaVertexList);
+void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D bSupport) {
+	int pointIdx = vec3ListLength(epaVertexList);
 	vec3ListAppend(epaVertexList, point);
+	vec3ListAppend(epaAVertexList, aSupport);
+	vec3ListAppend(epaBVertexList, bSupport);
 	int numPoints = intListLength(epaFaceList);
 	GFC_HashMap *edgeFreq = gfc_hashmap_new();
 	for(int i = 0; i < numPoints; i += 3) {
@@ -149,8 +185,6 @@ void addPointToPolytope(GFC_Vector3D point) {
 			i -= 3;
 		}
 	}
-	vec3ListAppend(epaVertexList, point);
-	int pointIdx = vec3ListLength(epaVertexList)-1;
 	GFC_List *edges = gfc_hashmap_get_all_values(edgeFreq);
 	int numEdges = gfc_list_get_count(edges);
 	for(int i = 0; i < numEdges; i++) {
@@ -190,7 +224,11 @@ Bool gjk(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
 	gfc_vector3d_sub(direction, a->position, b->position);
 	gfc_vector3d_normalize(&direction);
 	while(1) {
-		simplex->points[simplex->numPoints] = minkowskiPoint(a, b, direction);
+		GFC_Vector3D aSupport;
+		GFC_Vector3D bSupport;
+		simplex->points[simplex->numPoints] = minkowskiPoint(a, b, direction, &aSupport, &bSupport);
+		simplex->aPoints[simplex->numPoints] = aSupport;
+		simplex->bPoints[simplex->numPoints] = bSupport;
 		if(gfc_vector3d_dot_product(simplex->points[simplex->numPoints], direction) < 0) {
 			return false;
 		}
@@ -237,7 +275,11 @@ Bool simplexTriangle(Simplex *simplex, GFC_Vector3D *direction) {
 	if(gfc_vector3d_dot_product(abcN, ao) > 0.0) {
 		if(gfc_vector3d_dot_product(ac, ao) > 0.0) {
 			simplex->points[0] = c;
+			simplex->aPoints[0] = simplex->aPoints[0];
+			simplex->bPoints[0] = simplex->bPoints[0];
 			simplex->points[1] = a;
+			simplex->aPoints[1] = simplex->aPoints[2];
+			simplex->bPoints[1] = simplex->bPoints[2];
 			simplex->numPoints = 2;
 			gfc_vector3d_cross_product(&direction, ac, ao);
 			gfc_vector3d_cross_product(&direction, *direction, ac);
@@ -245,7 +287,11 @@ Bool simplexTriangle(Simplex *simplex, GFC_Vector3D *direction) {
 			return false;
 		} else {
 			simplex->points[0] = b;
+			simplex->aPoints[0] = simplex->aPoints[1];
+			simplex->bPoints[0] = simplex->bPoints[1];
 			simplex->points[1] = a;
+			simplex->aPoints[1] = simplex->aPoints[2];
+			simplex->bPoints[1] = simplex->bPoints[2];
 			simplex->numPoints = 2;
 			return simplexLine(simplex, direction);
 		}
@@ -254,7 +300,11 @@ Bool simplexTriangle(Simplex *simplex, GFC_Vector3D *direction) {
 		gfc_vector3d_cross_product(&t, ab, abc);
 		if(gfc_vector3d_dot_product(t, ao) > 0.0) {
 			simplex->points[0] = b;
+			simplex->aPoints[0] = simplex->aPoints[1];
+			simplex->bPoints[0] = simplex->bPoints[1];
 			simplex->points[1] = a;
+			simplex->aPoints[1] = simplex->aPoints[2];
+			simplex->bPoints[1] = simplex->bPoints[2];
 			simplex->numPoints = 2;
 			return simplexLine(simplex, direction);
 		} else {
@@ -265,8 +315,14 @@ Bool simplexTriangle(Simplex *simplex, GFC_Vector3D *direction) {
 				return false;
 			} else {
 				simplex->points[0] = b;
+				simplex->aPoints[0] = simplex->aPoints[1];
+				simplex->bPoints[0] = simplex->bPoints[1];
 				simplex->points[1] = c;
+				simplex->aPoints[1] = simplex->aPoints[0];
+				simplex->bPoints[1] = simplex->bPoints[0];
 				simplex->points[2] = a;
+				simplex->aPoints[2] = simplex->aPoints[2];
+				simplex->bPoints[2] = simplex->bPoints[2];
 				simplex->numPoints = 3;
 				gfc_vector3d_negate(abc, abc);
 				gfc_vector3d_normalize(&abc);
@@ -298,25 +354,44 @@ Bool simplexTetrahedron(Simplex *simplex, GFC_Vector3D *direction) {
 	gfc_vector3d_cross_product(&adb, ad, ab);
 	if(gfc_vector3d_dot_product(abc, ao) > 0.0) {
 		simplex->points[0] = c;
+		simplex->aPoints[0] = simplex->aPoints[1];
+		simplex->bPoints[0] = simplex->bPoints[1];
 		simplex->points[1] = b;
+		simplex->aPoints[1] = simplex->aPoints[2];
+		simplex->bPoints[1] = simplex->bPoints[2];
 		simplex->points[2] = a;
+		simplex->aPoints[2] = simplex->aPoints[3];
+		simplex->bPoints[2] = simplex->bPoints[3];
 		simplex->numPoints = 3;
 		return simplexTriangle(simplex, direction);
 	}
 	if(gfc_vector3d_dot_product(acd, ao) > 0.0) {
 		simplex->points[0] = d;
+		simplex->aPoints[0] = simplex->aPoints[0];
+		simplex->bPoints[0] = simplex->bPoints[0];
 		simplex->points[1] = c;
+		simplex->aPoints[1] = simplex->aPoints[1];
+		simplex->bPoints[1] = simplex->bPoints[1];
 		simplex->points[2] = a;
+		simplex->aPoints[2] = simplex->aPoints[3];
+		simplex->bPoints[2] = simplex->bPoints[3];
 		simplex->numPoints = 3;
 		return simplexTriangle(simplex, direction);
 	}
 	if(gfc_vector3d_dot_product(adb, ao) > 0.0) {
-		simplex->points[0] = a;
+		simplex->points[0] = b;
+		simplex->aPoints[0] = simplex->aPoints[2];
+		simplex->bPoints[0] = simplex->bPoints[2];
 		simplex->points[1] = d;
-		simplex->points[2] = b;
+		simplex->aPoints[1] = simplex->aPoints[0];
+		simplex->bPoints[1] = simplex->bPoints[0];
+		simplex->points[2] = a;
+		simplex->aPoints[2] = simplex->aPoints[3];
+		simplex->bPoints[2] = simplex->bPoints[3];
 		simplex->numPoints = 3;
 		return simplexTriangle(simplex, direction);
 	}
+	return true;
 }
 
 Bool nextSimplex(Simplex *simplex, GFC_Vector3D *direction) {

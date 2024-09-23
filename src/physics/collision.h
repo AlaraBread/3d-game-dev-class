@@ -8,6 +8,7 @@ typedef struct Collision_s {
 	Bool hit;
 	// the closest point to the collision on the surface of a in global coordinates
 	GFC_Vector3D aPosition;
+	GFC_Vector3D bPosition;
 	float penetrationDepth;
 	GFC_Vector3D normal;
 } Collision;

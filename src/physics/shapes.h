@@ -26,6 +26,6 @@ typedef struct Shape_s {
 } Shape;
 
 GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction);
-GFC_Vector3D minkowskiPoint(PhysicsBody *a, PhysicsBody *b, GFC_Vector3D direction);
+GFC_Vector3D minkowskiPoint(PhysicsBody *a, PhysicsBody *b, GFC_Vector3D direction, GFC_Vector3D *aSupport, GFC_Vector3D *bSupport);
 
 #endif
