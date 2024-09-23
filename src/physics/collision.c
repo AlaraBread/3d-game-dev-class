@@ -104,10 +104,16 @@ Collision calculateCollision(int triangleIdx[3]) {
 	triangle.a = vec3ListGet(epaVertexList, triangleIdx[0]);
 	triangle.b = vec3ListGet(epaVertexList, triangleIdx[1]);
 	triangle.c = vec3ListGet(epaVertexList, triangleIdx[2]);
+	GFC_Vector3D center = triangleCenter(triangle);
+	GFC_Vector3D normal = gfc_trigfc_angle_get_normal(triangle);
 	// project origin onto triangle
-	
+	GFC_Vector3D ao; // from a to origin
+	gfc_vector3d_negate(ao, triangle.a);
+	GFC_Vector3D aop = projectVectorOntoPlane(ao, normal); // a to origin, projected onto triangle
 	// keep track of distance we project
+	float dist = gfc_vector3d_magnitude(projectVector(ao, normal));
 	// convert projected point to barycentric coordinates
+	GFC_Vector3D bary = toBarycentric(aop, triangle);
 	// use barycentric coordinates on support triangles to calculate contact points
 	GFC_Triangle3D aTriangle;
 	aTriangle.a = vec3ListGet(epaAVertexList, triangleIdx[0]);
@@ -117,6 +123,17 @@ Collision calculateCollision(int triangleIdx[3]) {
 	bTriangle.a = vec3ListGet(epaBVertexList, triangleIdx[0]);
 	bTriangle.b = vec3ListGet(epaBVertexList, triangleIdx[1]);
 	bTriangle.c = vec3ListGet(epaBVertexList, triangleIdx[2]);
+
+	GFC_Vector3D aContact = fromBarycentric(bary, aTriangle);
+	GFC_Vector3D bContact = fromBarycentric(bary, bTriangle);
+
+	Collision col;
+	col.hit = true;
+	col.aPosition = aContact;
+	col.bPosition = bContact;
+	col.normal = normal;
+	col.penetrationDepth = dist;
+	return col;
 }
 
 GFC_Vector3D findClosestDirection(int idx[3]) {

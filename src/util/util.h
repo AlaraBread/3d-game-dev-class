@@ -24,5 +24,10 @@ void rotate_vector3_by_euler_vector(GFC_Vector3D *vector, GFC_Vector3D eulerVect
 void wrap_euler_vector(GFC_Vector3D *eulerVector);
 void wrap_axis_angle(GFC_Vector4D *axisAngle);
 GFC_Vector3D triangleCenter(GFC_Triangle3D triangle);
+GFC_Vector3D projectVector(GFC_Vector3D v, GFC_Vector3D normal);
+GFC_Vector3D projectVectorOntoPlane(GFC_Vector3D v, GFC_Vector3D normal);
+GFC_Vector3D toBarycentric(GFC_Vector3D p, GFC_Triangle3D triangle);
+GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle);
+GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, float t);
 
 #endif

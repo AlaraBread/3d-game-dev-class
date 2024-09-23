@@ -95,3 +95,53 @@ GFC_Vector3D triangleCenter(GFC_Triangle3D triangle) {
 	gfc_vector3d_scale(triangleCenter, triangleCenter, 1.0/3.0);
 	return triangleCenter;
 }
+
+GFC_Vector3D projectVector(GFC_Vector3D v, GFC_Vector3D normal) {
+	float magnitude = gfc_vector3d_dot_product(v, normal);
+	GFC_Vector3D projected;
+	gfc_vector3d_scale(projected, normal, magnitude);
+	return projected;
+}
+
+GFC_Vector3D projectVectorOntoPlane(GFC_Vector3D v, GFC_Vector3D normal) {
+	GFC_Vector3D p = projectVector(v, normal);
+	GFC_Vector3D r;
+	gfc_vector3d_sub(r, v, p);
+	return r;
+}
+
+// https://gamedev.stackexchange.com/a/23745
+// Compute barycentric coordinates (u, v, w) for
+// point p with respect to triangle (a, b, c)
+GFC_Vector3D toBarycentric(GFC_Vector3D p, GFC_Triangle3D triangle) {
+	GFC_Vector3D v0;
+	gfc_vector3d_sub(v0, triangle.b, triangle.a);
+	GFC_Vector3D v1;
+	gfc_vector3d_sub(v1, triangle.c, triangle.a);
+	GFC_Vector3D v2;
+	gfc_vector3d_sub(v2, p, triangle.a);
+	float d00 = gfc_vector3d_dot_product(v0, v0);
+	float d01 = Dot(v0, v1);
+	float d11 = Dot(v1, v1);
+	float d20 = Dot(v2, v0);
+	float d21 = Dot(v2, v1);
+	float denom = d00 * d11 - d01 * d01;
+	GFC_Vector3D out;
+	out.x = (d11 * d20 - d01 * d21) / denom;
+	out.y = (d00 * d21 - d01 * d20) / denom;
+	out.z = 1.0f - out.y - out.z;
+	return out;
+}
+
+GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle) {
+	GFC_Vector3D ab = vector3DLerp(triangle.a, triangle.b, bary.y/bary.x);
+	return vector3DLerp(ab, triangle.c, bary.z/(bary.x+bary.y));
+}
+
+GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, float t) {
+	gfc_vector3d_scale(a, a, t);
+	gfc_vector3d_scale(b, b, (1.0-t));
+	GFC_Vector3D out;
+	gfc_vector3d_add(out, a, b);
+	return out;
+}
