@@ -1,5 +1,6 @@
 #include "util.h"
 #include "physics.h"
+#include "collision.h"
 
 void physicsStart(int maxPhysicsBodies) {
 	physics.maxPhysicsBodies = maxPhysicsBodies;
@@ -36,8 +37,6 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 	// todo: figure out inertia tensor
 }
 
-void doCollision(PhysicsBody *a, PhysicsBody *b);
-
 void physicsUpdate(float delta) {
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];
@@ -50,13 +49,12 @@ void physicsUpdate(float delta) {
 		GFC_Vector3D angularMove;
 		gfc_vector3d_scale(angularMove, body->angularVelocity, delta);
 		gfc_vector3d_add(body->rotation, body->rotation, angularMove);
+		wrap_euler_vector(&body->rotation);
 		GFC_Vector3D linearMove;
 		gfc_vector3d_scale(linearMove, body->linearVelocity, delta);
-		gfc_vector3d_add(body->rotation, body->rotation, linearMove);
-		gfc_matrix4_from_vectors_q(body->model->matrix, body->position, body->rotation, gfc_vector3d(1, 1, 1));
+		gfc_vector3d_add(body->position, body->position, linearMove);
+		GFC_Vector4D quat;
+		euler_vector_to_quat(&quat, body->rotation);
+		gfc_matrix4_from_vectors_q(body->model->matrix, body->position, quat, gfc_vector3d(1, 1, 1));
 	}
-}
-
-void doCollision(PhysicsBody *a, PhysicsBody *b) {
-	
 }

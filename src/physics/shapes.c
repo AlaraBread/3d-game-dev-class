@@ -1,4 +1,5 @@
 #include "shapes.h"
+#include "util.h"
 
 GFC_Vector3D sphereSupport(Shape *shape, GFC_Vector3D direction) {
 	GFC_Vector3D support;
@@ -11,18 +12,23 @@ GFC_Vector3D convexHullSupport(Shape *shape, GFC_Vector3D direction) {
 	return gfc_vector3d(1, 0, 0);
 }
 
-GFC_Vector3D support(Shape *shape, GFC_Vector3D direction) {
+GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction) {
+	rotate_vector3_by_euler_vector(&direction, body->rotation);
+	GFC_Vector3D support;
+	Shape *shape = &body->shape;
 	switch(shape->shapeType) {
 		case SPHERE:
-			return sphereSupport(shape, direction);
+			support = sphereSupport(shape, direction);
 		break;
 		case CONVEX_HULL:
-			return convexHullSupport(shape, direction);
+			support = convexHullSupport(shape, direction);
 		break;
 	}
+	gfc_vector3d_add(support, support, body->position);
+	return support;
 }
 
-GFC_Vector3D minkowskiPoint(Shape *a, Shape *b, GFC_Vector3D direction) {
+GFC_Vector3D minkowskiPoint(PhysicsBody *a, PhysicsBody *b, GFC_Vector3D direction) {
 	GFC_Vector3D aSupport = support(a, direction);
 	gfc_vector3d_negate(direction, direction);
 	GFC_Vector3D bSupport = support(b, direction);

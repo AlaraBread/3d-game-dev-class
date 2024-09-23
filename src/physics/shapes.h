@@ -1,8 +1,9 @@
-#include "gfc_vector.h"
-#include "gf3d_mesh.h"
-
 #ifndef __ALARA_SHAPES__
 #define __ALARA_SHAPES__
+
+#include "gfc_vector.h"
+#include "gf3d_mesh.h"
+#include "physics.h"
 
 typedef enum ShapeType_e {
 	SPHERE,
@@ -24,7 +25,7 @@ typedef struct Shape_s {
 	} shape;
 } Shape;
 
-GFC_Vector3D support(Shape *shape, GFC_Vector3D direction);
-GFC_Vector3D minkowskiPoint(Shape *a, Shape *b, GFC_Vector3D direction);
+GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction);
+GFC_Vector3D minkowskiPoint(PhysicsBody *a, PhysicsBody *b, GFC_Vector3D direction);
 
 #endif
