@@ -26,6 +26,8 @@
 #include "gf3d_texture.h"
 #include "gf3d_vgraphics.h"
 
+#include "physics.h"
+
 extern int __DEBUG;
 
 void parse_arguments(int argc, char *argv[]);
@@ -46,6 +48,28 @@ void draw_origin() {
 }
 
 double calculate_delta_time();
+
+void controlledThink(PhysicsBody *self) {
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+	if(keys[SDL_SCANCODE_I]) {
+		self->position.x -= 0.3;
+	}
+	if(keys[SDL_SCANCODE_J]) {
+		self->position.y -= 0.3;
+	}
+	if(keys[SDL_SCANCODE_K]) {
+		self->position.x += 0.3;
+	}
+	if(keys[SDL_SCANCODE_L]) {
+		self->position.y += 0.3;
+	}
+	if(keys[SDL_SCANCODE_U]) {
+		self->position.z += 0.3;
+	}
+	if(keys[SDL_SCANCODE_O]) {
+		self->position.z -= 0.3;
+	}
+}
 
 int main(int argc, char *argv[]) {
 	// local variables
@@ -85,6 +109,19 @@ int main(int argc, char *argv[]) {
 	gf3d_camera_set_rotate_step(2.0);
 
 	gf3d_camera_enable_free_look(1);
+	physicsStart(10);
+	Shape s;
+	s.shapeType = SPHERE;
+	s.shape.sphere.radius = 1.0;
+	PhysicsBody *a = physicsCreateBody();
+	a->think = controlledThink;
+	a->shape = s;
+	a->model = dino;
+	PhysicsBody *b = physicsCreateBody();
+	b->shape = s;
+	b->model = dino;
+	b->position.x = 9;
+
 	// windows
 
 	// main game loop
@@ -93,6 +130,7 @@ int main(int argc, char *argv[]) {
 		gfc_input_update();
 		gf2d_mouse_update();
 		double delta = calculate_delta_time();
+		physicsUpdate(delta);
 		gf2d_font_update();
 		// camera updaes
 		gf3d_camera_controls_update(delta);
@@ -102,9 +140,8 @@ int main(int argc, char *argv[]) {
 		gf3d_vgraphics_render_start();
 
 		// 3D draws
-
+		drawPhysicsObjects();
 		gf3d_model_draw_sky(sky, skyMat, GFC_COLOR_WHITE);
-		gf3d_model_draw(dino, dinoMat, GFC_COLOR_WHITE, 0);
 		draw_origin();
 		render_outlines();
 		// 2D draws

@@ -13,6 +13,9 @@ typedef struct Collision_s {
 	GFC_Vector3D normal;
 } Collision;
 
+void initCollision();
+void freeCollision();
+
 Collision doCollision(PhysicsBody *a, PhysicsBody *b);
 
 #endif

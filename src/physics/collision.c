@@ -3,6 +3,7 @@
 #include "lists.h"
 #include "gfc_hashmap.h"
 #include "util.h"
+#include "shapes.h"
 
 typedef struct Simplex_s {
 	int numPoints;
@@ -27,8 +28,10 @@ void initCollision() {
 }
 
 void freeCollision() {
-	triangleListFree(&epaVertexList);
-	intListFree(&epaFaceList);
+	vec3ListFree(epaVertexList);
+	vec3ListFree(epaAVertexList);
+	vec3ListFree(epaBVertexList);
+	intListFree(epaFaceList);
 }
 
 Bool gjk(PhysicsBody *a, PhysicsBody *b, Simplex *simplex);
@@ -66,8 +69,8 @@ Collision epa(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
 }
 
 void resetEpa(Simplex *simplex) {
-	gfc_list_clear(epaFaceList);
-	gfc_list_clear(epaVertexList);
+	intListClear(epaFaceList);
+	vec3ListClear(epaVertexList);
 	if(simplex->numPoints != 4) {
 		slog("something has gone horribly wrong");
 	}
@@ -104,7 +107,6 @@ Collision calculateCollision(int triangleIdx[3]) {
 	triangle.a = vec3ListGet(epaVertexList, triangleIdx[0]);
 	triangle.b = vec3ListGet(epaVertexList, triangleIdx[1]);
 	triangle.c = vec3ListGet(epaVertexList, triangleIdx[2]);
-	GFC_Vector3D center = triangleCenter(triangle);
 	GFC_Vector3D normal = gfc_trigfc_angle_get_normal(triangle);
 	// project origin onto triangle
 	GFC_Vector3D ao; // from a to origin
@@ -193,7 +195,7 @@ void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D 
 				int b = MIN(triangleIdx[t], triangleIdx[(t+1)%3]);
 				*(int *)(&edgeText[0*sizeof(int)]) = a;
 				*(int *)(&edgeText[1*sizeof(int)]) = b;
-				int edgeCount = (int)gfc_hashmap_get(edgeFreq, edgeText);
+				long edgeCount = (long)gfc_hashmap_get(edgeFreq, edgeText);
 				gfc_hashmap_insert(edgeFreq, edgeText, (void *)(edgeCount+1));
 			}
 			intListRemove(epaFaceList, i);
@@ -206,7 +208,7 @@ void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D 
 	int numEdges = gfc_list_get_count(edges);
 	for(int i = 0; i < numEdges; i++) {
 		GFC_HashElement *element = (GFC_HashElement *)gfc_list_get_nth(edges, i);
-		if((int)element->data != 1) {
+		if((long)element->data != 1) {
 			continue;
 		}
 		int a = *(int *)(&element->key[0*sizeof(int)]);
@@ -237,12 +239,18 @@ void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D 
 Bool nextSimplex(Simplex *simplex, GFC_Vector3D *direction);
 
 Bool gjk(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
+	GFC_Vector3D aSupport;
+	GFC_Vector3D bSupport;
+	simplex->numPoints = 1;
+	GFC_Vector3D startVector;
+	gfc_vector3d_sub(startVector, a->position, b->position);
+	startVector = perpendicularVector3(startVector);
+	simplex->points[0] = minkowskiPoint(a, b, startVector, &aSupport, &bSupport);
+	simplex->aPoints[0] = aSupport;
+	simplex->bPoints[0] = bSupport;
 	GFC_Vector3D direction;
-	gfc_vector3d_sub(direction, a->position, b->position);
-	gfc_vector3d_normalize(&direction);
+	gfc_vector3d_negate(direction, simplex->points[0]);
 	while(1) {
-		GFC_Vector3D aSupport;
-		GFC_Vector3D bSupport;
 		simplex->points[simplex->numPoints] = minkowskiPoint(a, b, direction, &aSupport, &bSupport);
 		simplex->aPoints[simplex->numPoints] = aSupport;
 		simplex->bPoints[simplex->numPoints] = bSupport;
@@ -259,15 +267,20 @@ Bool gjk(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
 // borrowed some math from https://winter.dev/articles/gjk-algorithm
 
 Bool simplexLine(Simplex *simplex, GFC_Vector3D *direction) {
+	GFC_Vector3D a = simplex->points[1];
+	GFC_Vector3D b = simplex->points[0];
 	GFC_Vector3D ab;
-	gfc_vector3d_sub(ab, simplex->points[0], simplex->points[1]);
+	gfc_vector3d_sub(ab, b, a);
 	GFC_Vector3D ao;
-	gfc_vector3d_negate(ao, simplex->points[1]);
+	gfc_vector3d_negate(ao, a);
 	if(gfc_vector3d_dot_product(ao, ab) > 0.0) {
 		gfc_vector3d_cross_product(direction, ab, ao);
 		gfc_vector3d_cross_product(direction, *direction, ab);
 		gfc_vector3d_normalize(direction);
 	} else {
+		simplex->points[0] = a;
+		simplex->aPoints[0] = simplex->aPoints[1];
+		simplex->bPoints[0] = simplex->bPoints[1];
 		simplex->numPoints = 1;
 		gfc_vector3d_normalize(&ao);
 		gfc_vector3d_copy((*direction), ao);
@@ -298,9 +311,9 @@ Bool simplexTriangle(Simplex *simplex, GFC_Vector3D *direction) {
 			simplex->aPoints[1] = simplex->aPoints[2];
 			simplex->bPoints[1] = simplex->bPoints[2];
 			simplex->numPoints = 2;
-			gfc_vector3d_cross_product(&direction, ac, ao);
-			gfc_vector3d_cross_product(&direction, *direction, ac);
-			gfc_vector3d_normalize(&direction);
+			gfc_vector3d_cross_product(direction, ac, ao);
+			gfc_vector3d_cross_product(direction, *direction, ac);
+			gfc_vector3d_normalize(direction);
 			return false;
 		} else {
 			simplex->points[0] = b;
@@ -326,7 +339,6 @@ Bool simplexTriangle(Simplex *simplex, GFC_Vector3D *direction) {
 			return simplexLine(simplex, direction);
 		} else {
 			if(gfc_vector3d_dot_product(abc, ao) > 0.0) {
-				simplex->numPoints = 3;
 				gfc_vector3d_normalize(&abc);
 				gfc_vector3d_copy((*direction), abc);
 				return false;
@@ -412,14 +424,6 @@ Bool simplexTetrahedron(Simplex *simplex, GFC_Vector3D *direction) {
 }
 
 Bool nextSimplex(Simplex *simplex, GFC_Vector3D *direction) {
-	if(simplex->numPoints == 0) {
-		return false;
-	}
-	if(simplex->numPoints == 1) {
-		gfc_vector3d_negate((*direction), simplex->points[0]);
-		gfc_vector3d_normalize(direction);
-		return false;
-	}
 	if(simplex->numPoints == 2) {
 		return simplexLine(simplex, direction);
 	}

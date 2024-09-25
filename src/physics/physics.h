@@ -4,9 +4,30 @@
 #include "gfc_vector.h"
 #include "gfc_matrix.h"
 #include "gf3d_model.h"
-#include "shapes.h"
 
-typedef struct PhysicsBody_s {
+typedef struct PhysicsBody_s PhysicsBody;
+
+typedef enum ShapeType_e {
+	SPHERE,
+	CONVEX_HULL,
+} ShapeType;
+
+typedef struct Sphere_s {
+	float radius;
+} Sphere;
+
+typedef struct ConvexHull_s {
+	ObjData *mesh;
+} ConvexHull;
+
+typedef struct Shape_s {
+	ShapeType shapeType;
+	union {
+		Sphere sphere;
+	} shape;
+} Shape;
+
+struct PhysicsBody_s {
 	Bool inuse;
 	float mass;
 	GFC_Vector3D inertia;
@@ -16,16 +37,13 @@ typedef struct PhysicsBody_s {
 	GFC_Vector3D rotation;
 	Model *model;
 	Shape shape;
-} PhysicsBody;
-
-static struct {
-	int maxPhysicsBodies;
-	PhysicsBody *physicsBodies;
-} physics = {0};
+	void (*think) (PhysicsBody *);
+};
 
 void physicsStart(int maxPhysicsBodies);
 void physicsEnd();
 PhysicsBody *physicsCreateBody();
 void physicsUpdate(float delta);
+void drawPhysicsObjects();
 
 #endif

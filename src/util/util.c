@@ -34,6 +34,10 @@ void axis_angle_to_quat(GFC_Vector4D *dst, GFC_Vector4D rotation) {
 // NOT an euler angle, euler vector: https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation
 void euler_vector_to_axis_angle(GFC_Vector4D *dst, GFC_Vector3D eulerVector) {
 	float l = gfc_vector3d_magnitude(eulerVector);
+	if(fabsf(l) < 0.01) {
+		dst->x = dst->y = dst->z = dst->w = 0;
+		return;
+	}
 	gfc_vector3d_scale(eulerVector, eulerVector, (1.0/l));
 	dst->w = l;
 	dst->x = eulerVector.x;
@@ -121,15 +125,15 @@ GFC_Vector3D toBarycentric(GFC_Vector3D p, GFC_Triangle3D triangle) {
 	GFC_Vector3D v2;
 	gfc_vector3d_sub(v2, p, triangle.a);
 	float d00 = gfc_vector3d_dot_product(v0, v0);
-	float d01 = Dot(v0, v1);
-	float d11 = Dot(v1, v1);
-	float d20 = Dot(v2, v0);
-	float d21 = Dot(v2, v1);
+	float d01 = gfc_vector3d_dot_product(v0, v1);
+	float d11 = gfc_vector3d_dot_product(v1, v1);
+	float d20 = gfc_vector3d_dot_product(v2, v0);
+	float d21 = gfc_vector3d_dot_product(v2, v1);
 	float denom = d00 * d11 - d01 * d01;
 	GFC_Vector3D out;
-	out.x = (d11 * d20 - d01 * d21) / denom;
-	out.y = (d00 * d21 - d01 * d20) / denom;
-	out.z = 1.0f - out.y - out.z;
+	out.y = (d11 * d20 - d01 * d21) / denom;
+	out.z = (d00 * d21 - d01 * d20) / denom;
+	out.x = 1.0f - out.y - out.z;
 	return out;
 }
 
@@ -144,4 +148,14 @@ GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, float t) {
 	GFC_Vector3D out;
 	gfc_vector3d_add(out, a, b);
 	return out;
+}
+
+GFC_Vector3D perpendicularVector3(GFC_Vector3D v) {
+	GFC_Vector3D c;
+	gfc_vector3d_cross_product(&c, v, gfc_vector3d(1, 0, 0));
+	if(gfc_vector3d_magnitude_squared(c) <= 0.01) {
+		gfc_vector3d_cross_product(&c, v, gfc_vector3d(0, -1, 0));
+	}
+	gfc_vector3d_normalize(&c);
+	return c;
 }

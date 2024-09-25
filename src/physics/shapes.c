@@ -33,7 +33,7 @@ GFC_Vector3D minkowskiPoint(PhysicsBody *a, PhysicsBody *b, GFC_Vector3D directi
 	gfc_vector3d_negate(direction, direction);
 	GFC_Vector3D bs = support(b, direction);
 	GFC_Vector3D minkowskiPoint;
-	gfc_vector3d_sub(minkowskiPoint, as, bs);
+	gfc_vector3d_sub(minkowskiPoint, bs, as);
 	if(aSupport) *aSupport = as;
 	if(bSupport) *bSupport = bs;
 	return minkowskiPoint;
