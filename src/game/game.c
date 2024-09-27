@@ -50,24 +50,25 @@ void draw_origin() {
 double calculate_delta_time();
 
 void controlledThink(PhysicsBody *self) {
+	float d = 0.1;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	if(keys[SDL_SCANCODE_I]) {
-		self->position.x -= 0.3;
+		self->position.y -= d;
 	}
 	if(keys[SDL_SCANCODE_J]) {
-		self->position.y -= 0.3;
+		self->position.x += d;
 	}
 	if(keys[SDL_SCANCODE_K]) {
-		self->position.x += 0.3;
+		self->position.y += d;
 	}
 	if(keys[SDL_SCANCODE_L]) {
-		self->position.y += 0.3;
+		self->position.x -= d;
 	}
 	if(keys[SDL_SCANCODE_U]) {
-		self->position.z += 0.3;
+		self->position.z += d;
 	}
 	if(keys[SDL_SCANCODE_O]) {
-		self->position.z -= 0.3;
+		self->position.z -= d;
 	}
 }
 
@@ -112,7 +113,7 @@ int main(int argc, char *argv[]) {
 	physicsStart(10);
 	Shape s;
 	s.shapeType = SPHERE;
-	s.shape.sphere.radius = 1.0;
+	s.shape.sphere.radius = 2.0;
 	PhysicsBody *a = physicsCreateBody();
 	a->think = controlledThink;
 	a->shape = s;
@@ -121,6 +122,8 @@ int main(int argc, char *argv[]) {
 	b->shape = s;
 	b->model = dino;
 	b->position.x = 9;
+	//a->angularVelocity = gfc_vector3d(4, 0, 3);
+	//b->angularVelocity = gfc_vector3d(4, 2, 0);
 
 	// windows
 

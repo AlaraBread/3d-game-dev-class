@@ -39,17 +39,13 @@ GFC_Triangle3D triangleListGet(TriangleList *list, int index) {
 }
 
 void intListAppend(IntList *list, int value) {
-	int *p = &value;
-	gfc_list_append((GFC_List *)list, (int *)(&p));
+	gfc_list_append((GFC_List *)list, *(void **)(&value));
 }
 
 void vec3ListAppend(Vector3List *list, GFC_Vector3D vector) {
-	float *x = &vector.x;
-	gfc_list_append((GFC_List *)list, (float *)(&x));
-	float *y = &vector.y;
-	gfc_list_append((GFC_List *)list, (float *)(&y));
-	float *z = &vector.z;
-	gfc_list_append((GFC_List *)list, (float *)(&z));
+	gfc_list_append((GFC_List *)list, *(void **)(&vector.x));
+	gfc_list_append((GFC_List *)list, *(void **)(&vector.y));
+	gfc_list_append((GFC_List *)list, *(void **)(&vector.z));
 }
 
 void triangleListAppend(TriangleList *list, GFC_Triangle3D triangle) {

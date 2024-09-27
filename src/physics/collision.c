@@ -55,7 +55,7 @@ Collision epa(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
 	resetEpa(simplex);
 	int closestTriangle[3];
 	GFC_Vector3D closestDirection = findClosestDirection(closestTriangle);
-	while(1) {
+	for(int i = 0; i < 100; i++) {
 		closestDirection = findClosestDirection(closestTriangle);
 		GFC_Vector3D aSupport;
 		GFC_Vector3D bSupport;
@@ -71,6 +71,8 @@ Collision epa(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
 void resetEpa(Simplex *simplex) {
 	intListClear(epaFaceList);
 	vec3ListClear(epaVertexList);
+	vec3ListClear(epaAVertexList);
+	vec3ListClear(epaBVertexList);
 	if(simplex->numPoints != 4) {
 		slog("something has gone horribly wrong");
 	}
@@ -93,6 +95,7 @@ void resetEpa(Simplex *simplex) {
 			intListAppend(epaFaceList, a);
 			intListAppend(epaFaceList, b);
 			intListAppend(epaFaceList, c);
+
 		} else {
 			// need to swap winding
 			intListAppend(epaFaceList, b);
@@ -107,6 +110,7 @@ Collision calculateCollision(int triangleIdx[3]) {
 	triangle.a = vec3ListGet(epaVertexList, triangleIdx[0]);
 	triangle.b = vec3ListGet(epaVertexList, triangleIdx[1]);
 	triangle.c = vec3ListGet(epaVertexList, triangleIdx[2]);
+	printf("triangle\n%f %f %f\n%f %f %f\n%f %f %f\n", triangle.a.x, triangle.a.y, triangle.a.z, triangle.b.x, triangle.b.y, triangle.b.z, triangle.c.x, triangle.c.y, triangle.c.z);
 	GFC_Vector3D normal = gfc_trigfc_angle_get_normal(triangle);
 	// project origin onto triangle
 	GFC_Vector3D ao; // from a to origin
@@ -114,6 +118,9 @@ Collision calculateCollision(int triangleIdx[3]) {
 	GFC_Vector3D aop = projectVectorOntoPlane(ao, normal); // a to origin, projected onto triangle
 	// keep track of distance we project
 	float dist = gfc_vector3d_magnitude(projectVector(ao, normal));
+	if(dist <= 0.01) {
+		dist = gfc_vector3d_magnitude(ao);
+	}
 	// convert projected point to barycentric coordinates
 	GFC_Vector3D bary = toBarycentric(aop, triangle);
 	// use barycentric coordinates on support triangles to calculate contact points
@@ -135,6 +142,13 @@ Collision calculateCollision(int triangleIdx[3]) {
 	col.bPosition = bContact;
 	col.normal = normal;
 	col.penetrationDepth = dist;
+	printf("penetration depth: %f\n", dist);
+	printf("normal: %f %f %f\n", normal.x, normal.y, normal.z);
+	printf("aContact: %f %f %f\n", aContact.x, aContact.y, aContact.z);
+	printf("bContact: %f %f %f\n", bContact.x, bContact.y, bContact.z);
+	for(int i = 0; i < intListLength(epaFaceList); i++) {
+		printf("facelist: %d\n", intListGet(epaFaceList, i));
+	}
 	return col;
 }
 
@@ -159,6 +173,7 @@ GFC_Vector3D findClosestDirection(int idx[3]) {
 		if(dist < closestDist) {
 			closestDist = dist;
 			closestNormal = normal;
+			printf("found closest triangle: %d %d %d\n", a, b, c);
 			idx[0] = a;
 			idx[1] = b;
 			idx[2] = c;
@@ -172,9 +187,8 @@ void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D 
 	vec3ListAppend(epaVertexList, point);
 	vec3ListAppend(epaAVertexList, aSupport);
 	vec3ListAppend(epaBVertexList, bSupport);
-	int numPoints = intListLength(epaFaceList);
 	GFC_HashMap *edgeFreq = gfc_hashmap_new();
-	for(int i = 0; i < numPoints; i += 3) {
+	for(int i = 0; i < intListLength(epaFaceList); i += 3) {
 		int triangleIdx[3] = {
 			intListGet(epaFaceList, i),
 			intListGet(epaFaceList, i+1),
@@ -193,14 +207,17 @@ void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D 
 				// we have to sort the edge indicies
 				int a = MAX(triangleIdx[t], triangleIdx[(t+1)%3]);
 				int b = MIN(triangleIdx[t], triangleIdx[(t+1)%3]);
-				*(int *)(&edgeText[0*sizeof(int)]) = a;
-				*(int *)(&edgeText[1*sizeof(int)]) = b;
+				*(int *)(&edgeText[0*sizeof(int)]) = a+1;
+				*(int *)(&edgeText[1*sizeof(int)]) = b+1;
 				long edgeCount = (long)gfc_hashmap_get(edgeFreq, edgeText);
+				if(edgeCount != 0) {
+					gfc_hashmap_delete_by_key(edgeFreq, edgeText);
+				}
 				gfc_hashmap_insert(edgeFreq, edgeText, (void *)(edgeCount+1));
 			}
 			intListRemove(epaFaceList, i);
-			intListRemove(epaFaceList, i+1);
-			intListRemove(epaFaceList, i+2);
+			intListRemove(epaFaceList, i);
+			intListRemove(epaFaceList, i);
 			i -= 3;
 		}
 	}
@@ -208,11 +225,11 @@ void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D 
 	int numEdges = gfc_list_get_count(edges);
 	for(int i = 0; i < numEdges; i++) {
 		GFC_HashElement *element = (GFC_HashElement *)gfc_list_get_nth(edges, i);
-		if((long)element->data != 1) {
+		if(((long)element->data)-1 != 1) {
 			continue;
 		}
-		int a = *(int *)(&element->key[0*sizeof(int)]);
-		int b = *(int *)(&element->key[1*sizeof(int)]);
+		int a = *(int *)(&element->key[0*sizeof(int)])-1;
+		int b = *(int *)(&element->key[1*sizeof(int)])-1;
 		GFC_Triangle3D triangle;
 		triangle.a = vec3ListGet(epaVertexList, a);
 		triangle.b = vec3ListGet(epaVertexList, b);
@@ -255,10 +272,12 @@ Bool gjk(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
 		simplex->aPoints[simplex->numPoints] = aSupport;
 		simplex->bPoints[simplex->numPoints] = bSupport;
 		if(gfc_vector3d_dot_product(simplex->points[simplex->numPoints], direction) < 0) {
+			printf("no collision\n");
 			return false;
 		}
 		simplex->numPoints = MIN(4, simplex->numPoints+1);
 		if(nextSimplex(simplex, &direction)) {
+			printf("yes collision\n");
 			return true;
 		}
 	}

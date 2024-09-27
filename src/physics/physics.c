@@ -75,11 +75,12 @@ void drawPhysicsObjects() {
 		euler_vector_to_quat(&quat, body->rotation);
 		GFC_Matrix4 matrix;
 		gfc_matrix4_from_vectors_q(matrix, body->position, quat, gfc_vector3d(1, 1, 1));
-		gf3d_model_draw(body->model, matrix, gfc_color(1, 1, 1, 1), 0);
+		gf3d_model_draw(body->model, matrix, body->think==NULL?gfc_color(1, 1, 1, 1):gfc_color(1, 0, 0, 1), 0);
 	}
 }
 
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
+	return;
 	GFC_Vector3D resolveVector;
 	gfc_vector3d_scale(resolveVector, col.normal, col.penetrationDepth);
 	gfc_vector3d_add(a->position, a->position, resolveVector);
