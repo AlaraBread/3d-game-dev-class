@@ -2,4 +2,7 @@
 
 #./clean.sh
 ./build.sh
-./gf3d
+if [ $? -eq 0 ]
+then
+	./gf3d
+fi

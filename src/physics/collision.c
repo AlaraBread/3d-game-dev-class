@@ -4,454 +4,138 @@
 #include "gfc_hashmap.h"
 #include "util.h"
 #include "shapes.h"
+#include "gf3d_draw.h"
 
-typedef struct Simplex_s {
-	int numPoints;
-	GFC_Vector3D points[4];
-	GFC_Vector3D aPoints[4];
-	GFC_Vector3D bPoints[4];
-} Simplex;
-
-void freeCollision();
-
-// using static memory to avoid heap allocations for every collision
-static Vector3List *epaVertexList;
-static Vector3List *epaAVertexList;
-static Vector3List *epaBVertexList;
-static IntList *epaFaceList;
-
-void initCollision() {
-	epaVertexList = newVec3List();
-	epaAVertexList = newVec3List();
-	epaBVertexList = newVec3List();
-	epaFaceList = newIntList();
-}
-
-void freeCollision() {
-	vec3ListFree(epaVertexList);
-	vec3ListFree(epaAVertexList);
-	vec3ListFree(epaBVertexList);
-	intListFree(epaFaceList);
-}
-
-Bool gjk(PhysicsBody *a, PhysicsBody *b, Simplex *simplex);
-Collision epa(PhysicsBody *a, PhysicsBody *b, Simplex *simplex);
+Collision mpr(PhysicsBody *a, PhysicsBody *b);
 
 Collision doCollision(PhysicsBody *a, PhysicsBody *b) {
-	Simplex simplex = {0};
-	Collision col = {0};
-	if(gjk(a, b, &simplex)) {
-		col = epa(a, b, &simplex);
-	}
-	return col;
+	// todo: analytic solutions for specific shape pairs
+	return mpr(a, b);
 }
 
-void resetEpa(Simplex *simplex);
-GFC_Vector3D findClosestDirection(int idx[3]);
-void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D bSupport);
-Collision calculateCollision(int triangle[3]);
+inline Bool triangleFacingOrigin(GFC_Triangle3D triangle);
 
-Collision epa(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
-	resetEpa(simplex);
-	int closestTriangle[3];
-	GFC_Vector3D closestDirection = findClosestDirection(closestTriangle);
-	for(int i = 0; i < 100; i++) {
-		closestDirection = findClosestDirection(closestTriangle);
-		GFC_Vector3D aSupport;
-		GFC_Vector3D bSupport;
-		GFC_Vector3D support = minkowskiPoint(a, b, closestDirection, &aSupport, &bSupport);
-		if(gfc_vector3d_dot_product(support, closestDirection) < 0.01) {
+// as described in game programming gems 7 by Gary Snethen
+Collision mpr(PhysicsBody *a, PhysicsBody *b) {
+	// find origin ray
+	GFC_Vector3D v0;
+	gfc_vector3d_sub(v0, b->position, a->position);
+	// find candidate portal
+	GFC_Vector3D v0_n = v0;
+	gfc_vector3d_normalize(&v0_n);
+	GFC_Vector3D v1 = minkowskiPoint(a, b, v0_n, NULL, NULL);
+	GFC_Vector3D v1xv0;
+	gfc_vector3d_cross_product(&v1xv0, v1, v0);
+	gfc_vector3d_normalize(&v1xv0);
+	if(gfc_vector3d_magnitude_squared(v1xv0) < 0.01) {
+		v1xv0 = perpendicularVector3(v1);
+	}
+	GFC_Vector3D v2 = minkowskiPoint(a, b, v1xv0, NULL, NULL);
+	GFC_Vector3D v0v2;
+	gfc_vector3d_sub(v0v2, v2, v0);
+	GFC_Vector3D v0v1;
+	gfc_vector3d_sub(v0v1, v1, v0);
+	GFC_Vector3D v0v2xv0v1;
+	gfc_vector3d_cross_product(&v0v2xv0v1, v0v2, v0v1);
+	gfc_vector3d_normalize(&v0v2xv0v1);
+	GFC_Vector3D v3 = minkowskiPoint(a, b, v0v2xv0v1, NULL, NULL);
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+	int i = 0;
+	while(true) {
+		Bool p1 = triangleFacingOrigin(gfc_triangle(v0, v2, v1));
+		Bool p2 = triangleFacingOrigin(gfc_triangle(v0, v3, v2));
+		Bool p3 = triangleFacingOrigin(gfc_triangle(v0, v1, v3));
+		if(p1 && p2 && p3) {
+			// valid candidate
 			break;
 		}
-		addPointToPolytope(support, aSupport, bSupport);
-	}
-	return calculateCollision(closestTriangle);
-}
-
-void resetEpa(Simplex *simplex) {
-	intListClear(epaFaceList);
-	vec3ListClear(epaVertexList);
-	vec3ListClear(epaAVertexList);
-	vec3ListClear(epaBVertexList);
-	if(simplex->numPoints != 4) {
-		slog("something has gone horribly wrong");
-	}
-	for(int i = 0; i < 4; i++) {
-		vec3ListAppend(epaVertexList, simplex->points[i]);
-		vec3ListAppend(epaAVertexList, simplex->aPoints[i]);
-		vec3ListAppend(epaBVertexList, simplex->bPoints[i]);
-	}
-	for(int i = 0; i < 4; i++) {
-		int a = i;
-		int b = (i+1)%4;
-		int c = (i+2)%4;
-		GFC_Triangle3D triangle;
-		triangle.a = vec3ListGet(epaVertexList, a);
-		triangle.b = vec3ListGet(epaVertexList, b);
-		triangle.c = vec3ListGet(epaVertexList, c);
-		GFC_Vector3D center = triangleCenter(triangle);
-		if(gfc_vector3d_dot_product(gfc_trigfc_angle_get_normal(triangle), center) > 0.0) {
-			// dont need to swap winding
-			intListAppend(epaFaceList, a);
-			intListAppend(epaFaceList, b);
-			intListAppend(epaFaceList, c);
-
-		} else {
-			// need to swap winding
-			intListAppend(epaFaceList, b);
-			intListAppend(epaFaceList, a);
-			intListAppend(epaFaceList, c);
+		// choose new candidate
+		if(!p1) {
+			// swap winding to get normal facing away from origin
+			v3 = minkowskiPoint(a, b, gfc_trigfc_angle_get_normal(gfc_triangle(v0, v2, v1)), NULL, NULL);
+			// preserve normal direction
+			GFC_Vector3D tmp = v1;
+			v1 = v2;
+			v2 = tmp;
+		}
+		else if(!p2) {
+			// swap winding to get normal facing away from origin
+			v1 = minkowskiPoint(a, b, gfc_trigfc_angle_get_normal(gfc_triangle(v0, v3, v2)), NULL, NULL);
+			// preserve normal direction
+			GFC_Vector3D tmp = v3;
+			v3 = v2;
+			v2 = tmp;
+		}
+		else if(!p3) {
+			// swap winding to get normal facing away from origin
+			v2 = minkowskiPoint(a, b, gfc_trigfc_angle_get_normal(gfc_triangle(v0, v3, v1)), NULL, NULL);
+			// preserve normal direction
+			GFC_Vector3D tmp = v1;
+			v1 = v3;
+			v3 = tmp;
+		}
+		i++;
+		if(i > 50) {
+			slog("took too long to find portal");
+			Collision col = {0};
+			return col;
 		}
 	}
-}
-
-Collision calculateCollision(int triangleIdx[3]) {
-	GFC_Triangle3D triangle;
-	triangle.a = vec3ListGet(epaVertexList, triangleIdx[0]);
-	triangle.b = vec3ListGet(epaVertexList, triangleIdx[1]);
-	triangle.c = vec3ListGet(epaVertexList, triangleIdx[2]);
-	printf("triangle\n%f %f %f\n%f %f %f\n%f %f %f\n", triangle.a.x, triangle.a.y, triangle.a.z, triangle.b.x, triangle.b.y, triangle.b.z, triangle.c.x, triangle.c.y, triangle.c.z);
-	GFC_Vector3D normal = gfc_trigfc_angle_get_normal(triangle);
-	// project origin onto triangle
-	GFC_Vector3D ao; // from a to origin
-	gfc_vector3d_negate(ao, triangle.a);
-	GFC_Vector3D aop = projectVectorOntoPlane(ao, normal); // a to origin, projected onto triangle
-	// keep track of distance we project
-	float dist = gfc_vector3d_magnitude(projectVector(ao, normal));
-	if(dist <= 0.01) {
-		dist = gfc_vector3d_magnitude(ao);
+	// portal refinement
+	i = 0;
+	while(true) {
+		if(keys[SDL_SCANCODE_1+i]) {
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v0, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1,1,1,1), gfc_color(1,1,1,1));
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v1, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1,0,0,1), gfc_color(1,1,1,1));
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v2, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0,1,0,1), gfc_color(1,1,1,1));
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v3, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0,0,1,1), gfc_color(1,1,1,1));
+		}
+		if(triangleFacingOrigin(gfc_triangle(v1, v2, v3))) {
+			// origin is inside portal
+			slog("Hit!");
+			break;
+		}
+		// find support in direction of portal
+		GFC_Vector3D newNormal = gfc_trigfc_angle_get_normal(gfc_triangle(v1, v2, v3));
+		GFC_Vector3D v4 = minkowskiPoint(a, b, newNormal, NULL, NULL);
+		if(keys[SDL_SCANCODE_1+i]) {
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v4, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1,0,1,1), gfc_color(1,1,1,1));
+		}
+		if(gfc_vector3d_dot_product(newNormal, v4) > 0.0) {
+			// origin lies outside support plane
+			slog("Miss! outside support plane");
+			break;
+		}
+		GFC_Vector3D d;
+		gfc_vector3d_sub(d, v1, v4);
+		d = projectVector(d, newNormal);
+		if(gfc_vector3d_magnitude_squared(d) < 0.01*0.01) {
+			// support plane is too close to portal
+			slog("Miss! too close.");
+			break;
+		}
+		// choose new portal
+		Bool p1 = triangleFacingOrigin(gfc_triangle(v0, v1, v4));
+		Bool p2 = triangleFacingOrigin(gfc_triangle(v0, v2, v4));
+		Bool p3 = triangleFacingOrigin(gfc_triangle(v0, v3, v4));
+		if(p1 && !p2) {
+			v3 = v4;
+		} else if(!p1 && p3) {
+			v2 = v4;
+		} else if(p2 && !p3) {
+			v1 = v4;
+		} else {
+			slog("i dont think this can happen?");
+			break;
+		}
+		i++;
 	}
-	// convert projected point to barycentric coordinates
-	GFC_Vector3D bary = toBarycentric(aop, triangle);
-	// use barycentric coordinates on support triangles to calculate contact points
-	GFC_Triangle3D aTriangle;
-	aTriangle.a = vec3ListGet(epaAVertexList, triangleIdx[0]);
-	aTriangle.b = vec3ListGet(epaAVertexList, triangleIdx[1]);
-	aTriangle.c = vec3ListGet(epaAVertexList, triangleIdx[2]);
-	GFC_Triangle3D bTriangle;
-	bTriangle.a = vec3ListGet(epaBVertexList, triangleIdx[0]);
-	bTriangle.b = vec3ListGet(epaBVertexList, triangleIdx[1]);
-	bTriangle.c = vec3ListGet(epaBVertexList, triangleIdx[2]);
-
-	GFC_Vector3D aContact = fromBarycentric(bary, aTriangle);
-	GFC_Vector3D bContact = fromBarycentric(bary, bTriangle);
-
-	Collision col;
-	col.hit = true;
-	col.aPosition = aContact;
-	col.bPosition = bContact;
-	col.normal = normal;
-	col.penetrationDepth = dist;
-	printf("penetration depth: %f\n", dist);
-	printf("normal: %f %f %f\n", normal.x, normal.y, normal.z);
-	printf("aContact: %f %f %f\n", aContact.x, aContact.y, aContact.z);
-	printf("bContact: %f %f %f\n", bContact.x, bContact.y, bContact.z);
-	for(int i = 0; i < intListLength(epaFaceList); i++) {
-		printf("facelist: %d\n", intListGet(epaFaceList, i));
-	}
+	Collision col = {0};
 	return col;
 }
 
-GFC_Vector3D findClosestDirection(int idx[3]) {
-	GFC_Vector3D closestNormal;
-	float closestDist = INFINITY;
-	int count = intListLength(epaFaceList);
-	for(int i = 0; i < count; i += 3) {
-		int a = intListGet(epaFaceList, i);
-		int b = intListGet(epaFaceList, i+1);
-		int c = intListGet(epaFaceList, i+2);
-
-		GFC_Triangle3D triangle;
-		triangle.a = vec3ListGet(epaVertexList, a);
-		triangle.b = vec3ListGet(epaVertexList, b);
-		triangle.c = vec3ListGet(epaVertexList, c);
-
-		GFC_Vector3D center = triangleCenter(triangle);
-
-		GFC_Vector3D normal = gfc_trigfc_angle_get_normal(triangle);
-		float dist = gfc_vector3d_dot_product(normal, center);
-		if(dist < closestDist) {
-			closestDist = dist;
-			closestNormal = normal;
-			printf("found closest triangle: %d %d %d\n", a, b, c);
-			idx[0] = a;
-			idx[1] = b;
-			idx[2] = c;
-		}
-	}
-	return closestNormal;
-}
-
-void addPointToPolytope(GFC_Vector3D point, GFC_Vector3D aSupport, GFC_Vector3D bSupport) {
-	int pointIdx = vec3ListLength(epaVertexList);
-	vec3ListAppend(epaVertexList, point);
-	vec3ListAppend(epaAVertexList, aSupport);
-	vec3ListAppend(epaBVertexList, bSupport);
-	GFC_HashMap *edgeFreq = gfc_hashmap_new();
-	for(int i = 0; i < intListLength(epaFaceList); i += 3) {
-		int triangleIdx[3] = {
-			intListGet(epaFaceList, i),
-			intListGet(epaFaceList, i+1),
-			intListGet(epaFaceList, i+2),
-		};
-		GFC_Triangle3D triangle;
-		triangle.a = vec3ListGet(epaVertexList, triangleIdx[0]);
-		triangle.b = vec3ListGet(epaVertexList, triangleIdx[1]);
-		triangle.c = vec3ListGet(epaVertexList, triangleIdx[2]);
-
-		GFC_Vector3D normal = gfc_trigfc_angle_get_normal(triangle);
-		if(gfc_vector3d_dot_product(normal, point) > 0.0) {
-			for(int t = 0; t < 3; t++) {
-				char edgeText[2*sizeof(int)+1];
-				edgeText[sizeof(edgeText)-1] = 0;
-				// we have to sort the edge indicies
-				int a = MAX(triangleIdx[t], triangleIdx[(t+1)%3]);
-				int b = MIN(triangleIdx[t], triangleIdx[(t+1)%3]);
-				*(int *)(&edgeText[0*sizeof(int)]) = a+1;
-				*(int *)(&edgeText[1*sizeof(int)]) = b+1;
-				long edgeCount = (long)gfc_hashmap_get(edgeFreq, edgeText);
-				if(edgeCount != 0) {
-					gfc_hashmap_delete_by_key(edgeFreq, edgeText);
-				}
-				gfc_hashmap_insert(edgeFreq, edgeText, (void *)(edgeCount+1));
-			}
-			intListRemove(epaFaceList, i);
-			intListRemove(epaFaceList, i);
-			intListRemove(epaFaceList, i);
-			i -= 3;
-		}
-	}
-	GFC_List *edges = gfc_hashmap_get_all_values(edgeFreq);
-	int numEdges = gfc_list_get_count(edges);
-	for(int i = 0; i < numEdges; i++) {
-		GFC_HashElement *element = (GFC_HashElement *)gfc_list_get_nth(edges, i);
-		if(((long)element->data)-1 != 1) {
-			continue;
-		}
-		int a = *(int *)(&element->key[0*sizeof(int)])-1;
-		int b = *(int *)(&element->key[1*sizeof(int)])-1;
-		GFC_Triangle3D triangle;
-		triangle.a = vec3ListGet(epaVertexList, a);
-		triangle.b = vec3ListGet(epaVertexList, b);
-		triangle.c = point;
-
-		GFC_Vector3D center = triangleCenter(triangle);
-
-		if(gfc_vector3d_dot_product(gfc_trigfc_angle_get_normal(triangle), center) > 0.0) {
-			// normal is in same direction as triangle position
-			// we dont need to change winding
-			intListAppend(epaFaceList, a);
-			intListAppend(epaFaceList, b);
-			intListAppend(epaFaceList, pointIdx);
-		} else {
-			// we need to swap winding order
-			intListAppend(epaFaceList, b);
-			intListAppend(epaFaceList, a);
-			intListAppend(epaFaceList, pointIdx);
-		}
-	}
-	gfc_hashmap_free(edgeFreq);
-}
-
-Bool nextSimplex(Simplex *simplex, GFC_Vector3D *direction);
-
-Bool gjk(PhysicsBody *a, PhysicsBody *b, Simplex *simplex) {
-	GFC_Vector3D aSupport;
-	GFC_Vector3D bSupport;
-	simplex->numPoints = 1;
-	GFC_Vector3D startVector;
-	gfc_vector3d_sub(startVector, a->position, b->position);
-	startVector = perpendicularVector3(startVector);
-	simplex->points[0] = minkowskiPoint(a, b, startVector, &aSupport, &bSupport);
-	simplex->aPoints[0] = aSupport;
-	simplex->bPoints[0] = bSupport;
-	GFC_Vector3D direction;
-	gfc_vector3d_negate(direction, simplex->points[0]);
-	while(1) {
-		simplex->points[simplex->numPoints] = minkowskiPoint(a, b, direction, &aSupport, &bSupport);
-		simplex->aPoints[simplex->numPoints] = aSupport;
-		simplex->bPoints[simplex->numPoints] = bSupport;
-		if(gfc_vector3d_dot_product(simplex->points[simplex->numPoints], direction) < 0) {
-			printf("no collision\n");
-			return false;
-		}
-		simplex->numPoints = MIN(4, simplex->numPoints+1);
-		if(nextSimplex(simplex, &direction)) {
-			printf("yes collision\n");
-			return true;
-		}
-	}
-}
-
-// borrowed some math from https://winter.dev/articles/gjk-algorithm
-
-Bool simplexLine(Simplex *simplex, GFC_Vector3D *direction) {
-	GFC_Vector3D a = simplex->points[1];
-	GFC_Vector3D b = simplex->points[0];
-	GFC_Vector3D ab;
-	gfc_vector3d_sub(ab, b, a);
-	GFC_Vector3D ao;
-	gfc_vector3d_negate(ao, a);
-	if(gfc_vector3d_dot_product(ao, ab) > 0.0) {
-		gfc_vector3d_cross_product(direction, ab, ao);
-		gfc_vector3d_cross_product(direction, *direction, ab);
-		gfc_vector3d_normalize(direction);
-	} else {
-		simplex->points[0] = a;
-		simplex->aPoints[0] = simplex->aPoints[1];
-		simplex->bPoints[0] = simplex->bPoints[1];
-		simplex->numPoints = 1;
-		gfc_vector3d_normalize(&ao);
-		gfc_vector3d_copy((*direction), ao);
-	}
-	return false;
-}
-
-Bool simplexTriangle(Simplex *simplex, GFC_Vector3D *direction) {
-	GFC_Vector3D a = simplex->points[2];
-	GFC_Vector3D b = simplex->points[1];
-	GFC_Vector3D c = simplex->points[0];
-	GFC_Vector3D ab;
-	gfc_vector3d_sub(ab, b, a);
-	GFC_Vector3D ac;
-	gfc_vector3d_sub(ac, c, a);
-	GFC_Vector3D ao;
-	gfc_vector3d_negate(ao, a);
-	GFC_Vector3D abc;
-	gfc_vector3d_cross_product(&abc, ab, ac);
-	GFC_Vector3D abcN;
-	gfc_vector3d_cross_product(&abcN, abc, ac);
-	if(gfc_vector3d_dot_product(abcN, ao) > 0.0) {
-		if(gfc_vector3d_dot_product(ac, ao) > 0.0) {
-			simplex->points[0] = c;
-			simplex->aPoints[0] = simplex->aPoints[0];
-			simplex->bPoints[0] = simplex->bPoints[0];
-			simplex->points[1] = a;
-			simplex->aPoints[1] = simplex->aPoints[2];
-			simplex->bPoints[1] = simplex->bPoints[2];
-			simplex->numPoints = 2;
-			gfc_vector3d_cross_product(direction, ac, ao);
-			gfc_vector3d_cross_product(direction, *direction, ac);
-			gfc_vector3d_normalize(direction);
-			return false;
-		} else {
-			simplex->points[0] = b;
-			simplex->aPoints[0] = simplex->aPoints[1];
-			simplex->bPoints[0] = simplex->bPoints[1];
-			simplex->points[1] = a;
-			simplex->aPoints[1] = simplex->aPoints[2];
-			simplex->bPoints[1] = simplex->bPoints[2];
-			simplex->numPoints = 2;
-			return simplexLine(simplex, direction);
-		}
-	} else {
-		GFC_Vector3D t;
-		gfc_vector3d_cross_product(&t, ab, abc);
-		if(gfc_vector3d_dot_product(t, ao) > 0.0) {
-			simplex->points[0] = b;
-			simplex->aPoints[0] = simplex->aPoints[1];
-			simplex->bPoints[0] = simplex->bPoints[1];
-			simplex->points[1] = a;
-			simplex->aPoints[1] = simplex->aPoints[2];
-			simplex->bPoints[1] = simplex->bPoints[2];
-			simplex->numPoints = 2;
-			return simplexLine(simplex, direction);
-		} else {
-			if(gfc_vector3d_dot_product(abc, ao) > 0.0) {
-				gfc_vector3d_normalize(&abc);
-				gfc_vector3d_copy((*direction), abc);
-				return false;
-			} else {
-				simplex->points[0] = b;
-				simplex->aPoints[0] = simplex->aPoints[1];
-				simplex->bPoints[0] = simplex->bPoints[1];
-				simplex->points[1] = c;
-				simplex->aPoints[1] = simplex->aPoints[0];
-				simplex->bPoints[1] = simplex->bPoints[0];
-				simplex->points[2] = a;
-				simplex->aPoints[2] = simplex->aPoints[2];
-				simplex->bPoints[2] = simplex->bPoints[2];
-				simplex->numPoints = 3;
-				gfc_vector3d_negate(abc, abc);
-				gfc_vector3d_normalize(&abc);
-				gfc_vector3d_copy((*direction), abc);
-				return false;
-			}
-		}
-	}
-}
-
-Bool simplexTetrahedron(Simplex *simplex, GFC_Vector3D *direction) {
-	GFC_Vector3D a = simplex->points[3];
-	GFC_Vector3D b = simplex->points[2];
-	GFC_Vector3D c = simplex->points[1];
-	GFC_Vector3D d = simplex->points[0];
-	GFC_Vector3D ab;
-	gfc_vector3d_sub(ab, b, a);
-	GFC_Vector3D ac;
-	gfc_vector3d_sub(ac, c, a);
-	GFC_Vector3D ad;
-	gfc_vector3d_sub(ad, d, a);
-	GFC_Vector3D ao;
-	gfc_vector3d_negate(ao, a);
-	GFC_Vector3D abc;
-	gfc_vector3d_cross_product(&abc, ab, ac);
-	GFC_Vector3D acd;
-	gfc_vector3d_cross_product(&acd, ac, ad);
-	GFC_Vector3D adb;
-	gfc_vector3d_cross_product(&adb, ad, ab);
-	if(gfc_vector3d_dot_product(abc, ao) > 0.0) {
-		simplex->points[0] = c;
-		simplex->aPoints[0] = simplex->aPoints[1];
-		simplex->bPoints[0] = simplex->bPoints[1];
-		simplex->points[1] = b;
-		simplex->aPoints[1] = simplex->aPoints[2];
-		simplex->bPoints[1] = simplex->bPoints[2];
-		simplex->points[2] = a;
-		simplex->aPoints[2] = simplex->aPoints[3];
-		simplex->bPoints[2] = simplex->bPoints[3];
-		simplex->numPoints = 3;
-		return simplexTriangle(simplex, direction);
-	}
-	if(gfc_vector3d_dot_product(acd, ao) > 0.0) {
-		simplex->points[0] = d;
-		simplex->aPoints[0] = simplex->aPoints[0];
-		simplex->bPoints[0] = simplex->bPoints[0];
-		simplex->points[1] = c;
-		simplex->aPoints[1] = simplex->aPoints[1];
-		simplex->bPoints[1] = simplex->bPoints[1];
-		simplex->points[2] = a;
-		simplex->aPoints[2] = simplex->aPoints[3];
-		simplex->bPoints[2] = simplex->bPoints[3];
-		simplex->numPoints = 3;
-		return simplexTriangle(simplex, direction);
-	}
-	if(gfc_vector3d_dot_product(adb, ao) > 0.0) {
-		simplex->points[0] = b;
-		simplex->aPoints[0] = simplex->aPoints[2];
-		simplex->bPoints[0] = simplex->bPoints[2];
-		simplex->points[1] = d;
-		simplex->aPoints[1] = simplex->aPoints[0];
-		simplex->bPoints[1] = simplex->bPoints[0];
-		simplex->points[2] = a;
-		simplex->aPoints[2] = simplex->aPoints[3];
-		simplex->bPoints[2] = simplex->bPoints[3];
-		simplex->numPoints = 3;
-		return simplexTriangle(simplex, direction);
-	}
-	return true;
-}
-
-Bool nextSimplex(Simplex *simplex, GFC_Vector3D *direction) {
-	if(simplex->numPoints == 2) {
-		return simplexLine(simplex, direction);
-	}
-	if(simplex->numPoints == 3) {
-		return simplexTriangle(simplex, direction);
-	}
-	if(simplex->numPoints == 4) {
-		return simplexTetrahedron(simplex, direction);
-	}
-	slog("This shouldnt happen");
-	return false;
+// return true if triangle's normal is facing the origin
+inline Bool triangleFacingOrigin(GFC_Triangle3D triangle) {
+	GFC_Vector3D normal = gfc_trigfc_angle_get_normal(triangle);
+	return gfc_vector3d_dot_product(normal, triangle.a) <= 0.0;
 }

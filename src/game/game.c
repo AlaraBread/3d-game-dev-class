@@ -113,15 +113,20 @@ int main(int argc, char *argv[]) {
 	physicsStart(10);
 	Shape s;
 	s.shapeType = SPHERE;
-	s.shape.sphere.radius = 2.0;
+	s.shape.sphere.radius = 4.0;
 	PhysicsBody *a = physicsCreateBody();
 	a->think = controlledThink;
 	a->shape = s;
 	a->model = dino;
+	a->position.x = 6.200002;
+	a->position.y = 6.499996;
+	a->position.z = 5.699997;
 	PhysicsBody *b = physicsCreateBody();
 	b->shape = s;
 	b->model = dino;
-	b->position.x = 9;
+	b->position.x = 15;
+	b->position.y = 4;
+	b->position.z = 4;
 	//a->angularVelocity = gfc_vector3d(4, 0, 3);
 	//b->angularVelocity = gfc_vector3d(4, 2, 0);
 
@@ -133,7 +138,6 @@ int main(int argc, char *argv[]) {
 		gfc_input_update();
 		gf2d_mouse_update();
 		double delta = calculate_delta_time();
-		physicsUpdate(delta);
 		gf2d_font_update();
 		// camera updaes
 		gf3d_camera_controls_update(delta);
@@ -141,6 +145,7 @@ int main(int argc, char *argv[]) {
 		gf3d_camera_get_view_mat4(gf3d_vgraphics_get_view_matrix());
 
 		gf3d_vgraphics_render_start();
+		physicsUpdate(delta);
 
 		// 3D draws
 		drawPhysicsObjects();

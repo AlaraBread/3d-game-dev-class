@@ -159,3 +159,9 @@ GFC_Vector3D perpendicularVector3(GFC_Vector3D v) {
 	gfc_vector3d_normalize(&c);
 	return c;
 }
+
+GFC_Vector3D kindaPerpendicularVector3(GFC_Vector3D v) {
+	GFC_Vector3D p = vector3DLerp(perpendicularVector3(v), v, 0.5);
+	gfc_vector3d_normalize(&p);
+	return p;
+}

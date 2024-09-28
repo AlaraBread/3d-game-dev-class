@@ -13,7 +13,9 @@ GFC_Vector3D convexHullSupport(Shape *shape, GFC_Vector3D direction) {
 }
 
 GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction) {
-	rotate_vector3_by_euler_vector(&direction, body->rotation);
+	GFC_Vector3D reverseRotation;
+	gfc_vector3d_negate(reverseRotation, body->rotation);
+	rotate_vector3_by_euler_vector(&direction, reverseRotation);
 	GFC_Vector3D support;
 	Shape *shape = &body->shape;
 	switch(shape->shapeType) {
@@ -24,6 +26,7 @@ GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction) {
 			support = convexHullSupport(shape, direction);
 		break;
 	}
+	rotate_vector3_by_euler_vector(&support, body->rotation);
 	gfc_vector3d_add(support, support, body->position);
 	return support;
 }

@@ -1,6 +1,7 @@
 #include "util.h"
 #include "physics.h"
 #include "collision.h"
+#include "gf3d_draw.h"
 
 static struct {
 	int maxPhysicsBodies;
@@ -8,11 +9,9 @@ static struct {
 } physics = {0};
 
 void physicsStart(int maxPhysicsBodies) {
-	initCollision();
 	physics.maxPhysicsBodies = maxPhysicsBodies;
 	physics.physicsBodies = gfc_allocate_array(sizeof(PhysicsBody), maxPhysicsBodies);
 	atexit(physicsEnd);
-	atexit(freeCollision);
 }
 
 void physicsEnd() {
@@ -52,7 +51,7 @@ void physicsUpdate(float delta) {
 		if(!body->inuse) continue;
 		if(body->think) body->think(body);
 		for(int j = 0; j < physics.maxPhysicsBodies; j++) {
-			if(i == j) continue;
+			if(i <= j) continue;
 			PhysicsBody *otherBody = &physics.physicsBodies[j];
 			if(!otherBody->inuse) continue;
 			reactToCollision(doCollision(body, otherBody), body, otherBody);
@@ -75,7 +74,8 @@ void drawPhysicsObjects() {
 		euler_vector_to_quat(&quat, body->rotation);
 		GFC_Matrix4 matrix;
 		gfc_matrix4_from_vectors_q(matrix, body->position, quat, gfc_vector3d(1, 1, 1));
-		gf3d_model_draw(body->model, matrix, body->think==NULL?gfc_color(1, 1, 1, 1):gfc_color(1, 0, 0, 1), 0);
+		//gf3d_model_draw(body->model, matrix, body->think==NULL?gfc_color(1, 1, 1, 1):gfc_color(1, 0, 0, 1), 0);
+		gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 4), body->position, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), body->think==NULL?gfc_color(1,1,1,0.5):gfc_color(1,1,0,0.5), gfc_color(1,1,1,1));
 	}
 }
 
