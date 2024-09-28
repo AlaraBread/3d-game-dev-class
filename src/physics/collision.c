@@ -4,7 +4,6 @@
 #include "gfc_hashmap.h"
 #include "util.h"
 #include "shapes.h"
-#include "gf3d_draw.h"
 
 Collision mpr(PhysicsBody *a, PhysicsBody *b);
 
@@ -39,7 +38,6 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 	gfc_vector3d_cross_product(&v0v2xv0v1, v0v2, v0v1);
 	gfc_vector3d_normalize(&v0v2xv0v1);
 	GFC_Vector3D v3 = minkowskiPoint(a, b, v0v2xv0v1, NULL, NULL);
-	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	int i = 0;
 	while(true) {
 		Bool p1 = triangleFacingOrigin(gfc_triangle(v0, v2, v1));
@@ -82,36 +80,32 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		}
 	}
 	// portal refinement
-	i = 0;
+	int collisionAccuracy = 3;
 	while(true) {
-		if(keys[SDL_SCANCODE_1+i]) {
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v0, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1,1,1,1), gfc_color(1,1,1,1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v1, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1,0,0,1), gfc_color(1,1,1,1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v2, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0,1,0,1), gfc_color(1,1,1,1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v3, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0,0,1,1), gfc_color(1,1,1,1));
-		}
 		if(triangleFacingOrigin(gfc_triangle(v1, v2, v3))) {
-			// origin is inside portal
-			slog("Hit!");
-			break;
+			// origin is inside portal, hit
+			// keep going for a little bit to get a more accurate normal
+			collisionAccuracy--;
+			if(collisionAccuracy <= 0) {
+				Collision col;
+				col.hit = true;
+				col.normal = gfc_trigfc_angle_get_normal(gfc_triangle(v1, v2, v3));
+				col.penetrationDepth = gfc_vector3d_dot_product(col.normal, v1);
+				return col;
+			}
 		}
 		// find support in direction of portal
 		GFC_Vector3D newNormal = gfc_trigfc_angle_get_normal(gfc_triangle(v1, v2, v3));
 		GFC_Vector3D v4 = minkowskiPoint(a, b, newNormal, NULL, NULL);
-		if(keys[SDL_SCANCODE_1+i]) {
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, .5), v4, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1,0,1,1), gfc_color(1,1,1,1));
-		}
 		if(gfc_vector3d_dot_product(newNormal, v4) > 0.0) {
-			// origin lies outside support plane
-			slog("Miss! outside support plane");
+			// origin lies outside support plane, miss
 			break;
 		}
 		GFC_Vector3D d;
 		gfc_vector3d_sub(d, v1, v4);
 		d = projectVector(d, newNormal);
 		if(gfc_vector3d_magnitude_squared(d) < 0.01*0.01) {
-			// support plane is too close to portal
-			slog("Miss! too close.");
+			// support plane is too close to portal, miss
 			break;
 		}
 		// choose new portal
@@ -126,6 +120,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 			v1 = v4;
 		} else {
 			slog("i dont think this can happen?");
+			printf("p1=%d\np2=%d\np3=%d\n", p1, p2, p3);
 			break;
 		}
 		i++;

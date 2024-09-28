@@ -80,7 +80,9 @@ void drawPhysicsObjects() {
 }
 
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
-	return;
+	if(!col.hit) {
+		return;
+	}
 	GFC_Vector3D resolveVector;
 	gfc_vector3d_scale(resolveVector, col.normal, col.penetrationDepth);
 	gfc_vector3d_add(a->position, a->position, resolveVector);
