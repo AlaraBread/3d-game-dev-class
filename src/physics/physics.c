@@ -122,9 +122,10 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	gfc_vector3d_scale(normalImpulse, normalImpulse, (bounce+1.0)*normalMass);
 	float normalImpulseMagnitude = gfc_vector3d_magnitude(normalImpulse);
 	// tangential impulse
-	float friction = 1.0;
+	float friction = 0.6;
 	GFC_Vector3D tv = projectVectorOntoPlane(dv, col.normal);
-	float tangentImpulseMagnitude = SDL_clamp(gfc_vector3d_magnitude(tv)*tangentMass, -friction*normalImpulseMagnitude, friction*normalImpulseMagnitude);
+	printf("tv = %f %f %f\n", tv.x, tv.y, tv.z);
+	float tangentImpulseMagnitude = SDL_clamp(-gfc_vector3d_magnitude(tv)*tangentMass, -friction*normalImpulseMagnitude, friction*normalImpulseMagnitude);
 	GFC_Vector3D tangentImpulse = tv;
 	gfc_vector3d_normalize(&tangentImpulse);
 	gfc_vector3d_scale(tangentImpulse, tangentImpulse, tangentImpulseMagnitude);
@@ -165,6 +166,6 @@ void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point) {
 	point.z = point.z/body->inertia.z;
 
 	GFC_Vector3D angularImpulse;
-	gfc_vector3d_cross_product(&angularImpulse, point, impulse);
+	gfc_vector3d_cross_product(&angularImpulse, impulse, point);
 	gfc_vector3d_add(body->angularVelocity, body->angularVelocity, angularImpulse);
 }

@@ -18,9 +18,9 @@ void inverse_quat(GFC_Vector4D *quat) {
 
 void quat_mult(GFC_Vector4D *dst, GFC_Vector4D a, GFC_Vector4D b) {
 	dst->w = a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z;
-	dst->x = a.w*b.x - a.x*b.w - a.y*b.z - a.z*b.y;
-	dst->y = a.w*b.y - a.x*b.z - a.y*b.w - a.z*b.x;
-	dst->z = a.w*b.z - a.x*b.y - a.y*b.x - a.z*b.w;
+	dst->x = a.w*b.x + a.x*b.w - a.y*b.z + a.z*b.y;
+	dst->y = a.w*b.y + a.x*b.z + a.y*b.w - a.z*b.x;
+	dst->z = a.w*b.z - a.x*b.y + a.y*b.x + a.z*b.w;
 }
 
 void axis_angle_to_quat(GFC_Vector4D *dst, GFC_Vector4D rotation) {
