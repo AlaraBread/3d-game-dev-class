@@ -127,6 +127,7 @@ int main(int argc, char *argv[]) {
 	b->position.x = 15;
 	b->position.y = 4;
 	b->position.z = 4;
+	b->angularVelocity = gfc_vector3d(0, 10, 0);
 	//a->angularVelocity = gfc_vector3d(4, 0, 3);
 	//b->angularVelocity = gfc_vector3d(4, 2, 0);
 

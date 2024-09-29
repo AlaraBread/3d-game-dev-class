@@ -47,7 +47,7 @@ void main() {
 
 	gl_Position = mvp * vec4(inPosition, 1.0);
 	tempPosition = ubo.mesh.model * vec4(inPosition, 1.0);//now in world space
-	normalMatrix = transpose(inverse(mat3(ubo.mesh.model)));
+	normalMatrix = inverse(mat3(ubo.mesh.model));
 	fragNormal = normalize(inNormal * normalMatrix);
 	position = tempPosition.xyz;
 }
