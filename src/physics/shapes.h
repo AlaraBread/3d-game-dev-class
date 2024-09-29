@@ -5,7 +5,13 @@
 #include "gf3d_mesh.h"
 #include "physics.h"
 
+typedef struct SupportPoint {
+	GFC_Vector3D m;
+	GFC_Vector3D a;
+	GFC_Vector3D b;
+} SupportPoint;
+
 GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction);
-GFC_Vector3D minkowskiPoint(PhysicsBody *a, PhysicsBody *b, GFC_Vector3D direction, GFC_Vector3D *aSupport, GFC_Vector3D *bSupport);
+SupportPoint minkowskiPoint(PhysicsBody *a, PhysicsBody *b, GFC_Vector3D direction);
 
 #endif

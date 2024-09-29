@@ -31,13 +31,11 @@ GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction) {
 	return support;
 }
 
-GFC_Vector3D minkowskiPoint(PhysicsBody *a, PhysicsBody *b, GFC_Vector3D direction, GFC_Vector3D *aSupport, GFC_Vector3D *bSupport) {
-	GFC_Vector3D as = support(a, direction);
+SupportPoint minkowskiPoint(PhysicsBody *a, PhysicsBody *b, GFC_Vector3D direction) {
+	SupportPoint s;
+	s.a = support(a, direction);
 	gfc_vector3d_negate(direction, direction);
-	GFC_Vector3D bs = support(b, direction);
-	GFC_Vector3D minkowskiPoint;
-	gfc_vector3d_sub(minkowskiPoint, bs, as);
-	if(aSupport) *aSupport = as;
-	if(bSupport) *bSupport = bs;
-	return minkowskiPoint;
+	s.b = support(b, direction);
+	gfc_vector3d_sub(s.m, s.b, s.a);
+	return s;
 }
