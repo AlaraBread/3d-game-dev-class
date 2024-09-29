@@ -53,28 +53,28 @@ void controlledThink(PhysicsBody *self) {
 	float d = 0.1;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	if(keys[SDL_SCANCODE_I]) {
-		self->position.y -= d;
+		self->linearVelocity.y -= d;
 	}
 	if(keys[SDL_SCANCODE_J]) {
-		self->position.x += d;
+		self->linearVelocity.x += d;
 	}
 	if(keys[SDL_SCANCODE_K]) {
-		self->position.y += d;
+		self->linearVelocity.y += d;
 	}
 	if(keys[SDL_SCANCODE_L]) {
-		self->position.x -= d;
+		self->linearVelocity.x -= d;
 	}
 	if(keys[SDL_SCANCODE_U]) {
-		self->position.z += d;
+		self->linearVelocity.z += d;
 	}
 	if(keys[SDL_SCANCODE_O]) {
-		self->position.z -= d;
+		self->linearVelocity.z -= d;
 	}
 }
 
 int main(int argc, char *argv[]) {
 	// local variables
-	Model *sky, *dino;
+	Model *sky, *testSphere;
 	GFC_Matrix4 skyMat, dinoMat;
 	// initializtion
 	parse_arguments(argc, argv);
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
 	gf2d_mouse_load("assets/actors/mouse.actor");
 	sky = gf3d_model_load("assets/models/sky.model");
 	gfc_matrix4_identity(skyMat);
-	dino = gf3d_model_load("assets/models/dino.model");
+	testSphere = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
 	gfc_matrix4_identity(dinoMat);
 	// camera
 	gf3d_camera_set_scale(gfc_vector3d(1, 1, 1));
@@ -117,13 +117,13 @@ int main(int argc, char *argv[]) {
 	PhysicsBody *a = physicsCreateBody();
 	a->think = controlledThink;
 	a->shape = s;
-	a->model = dino;
+	a->model = testSphere;
 	a->position.x = 6.200002;
 	a->position.y = 6.499996;
 	a->position.z = 5.699997;
 	PhysicsBody *b = physicsCreateBody();
 	b->shape = s;
-	b->model = dino;
+	b->model = testSphere;
 	b->position.x = 15;
 	b->position.y = 4;
 	b->position.z = 4;

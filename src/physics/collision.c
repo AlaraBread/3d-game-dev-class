@@ -81,7 +81,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		}
 	}
 	// portal refinement
-	int collisionAccuracy = 10;
+	int collisionAccuracy = 6;
 	while(true) {
 		if(triangleFacingOrigin(gfc_triangle(v1.m, v2.m, v3.m))) {
 			// origin is inside portal, hit

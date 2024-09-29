@@ -35,6 +35,7 @@ struct PhysicsBody_s {
 	GFC_Vector3D angularVelocity;
 	GFC_Vector3D position;
 	GFC_Vector3D rotation;
+	GFC_Vector3D centerOfMass;
 	Model *model;
 	Shape shape;
 	void (*think) (PhysicsBody *);
