@@ -46,7 +46,7 @@ void main() {
 
 	vec3 sunDir = vec3(0, 0, 1);
 	float d = dot(normal, normalize(sunDir));
-	if(d >= 0.99) {
+	if(d >= 0.97) {
 		// specular
 		outColor = mix(vec4(1.0, 1.0, 1.0, 1.0), surfaceColor, 0.3);
 		normal = -sunDir; // draw outline around specular

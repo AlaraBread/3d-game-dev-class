@@ -10,6 +10,9 @@ float wrapMinMax(float x, float min, float max) {
 	return min + wrapMax(x - min, max - min);
 }
 
+// using this resource as a reference for quaternion math
+// https://danceswithcode.net/engineeringnotes/quaternions/quaternions.html
+
 void inverse_quat(GFC_Vector4D *quat) {
 	quat->x = -quat->x;
 	quat->y = -quat->y;
@@ -31,11 +34,24 @@ void axis_angle_to_quat(GFC_Vector4D *dst, GFC_Vector4D rotation) {
 	dst->z = rotation.z*s;
 }
 
+void quat_to_axis_angle(GFC_Vector4D *dst, GFC_Vector4D quat) {
+	if(fabsf(quat.w) > 0.999) {
+		*dst = gfc_vector4d(1, 0, 0, 0);
+		return;
+	}
+	float angle = 2.0*acosf(quat.w);
+	float s = sin(angle/2.0);
+	dst->x = quat.x/s;
+	dst->y = quat.y/s;
+	dst->z = quat.z/s;
+	dst->w = angle;
+}
+
 // NOT an euler angle, euler vector: https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation
 void euler_vector_to_axis_angle(GFC_Vector4D *dst, GFC_Vector3D eulerVector) {
 	float l = gfc_vector3d_magnitude(eulerVector);
-	if(fabsf(l) < 0.01) {
-		dst->x = dst->y = dst->z = dst->w = 0;
+	if(fabsf(l) < 0.001) {
+		*dst = gfc_vector4d(1, 0, 0, 0);
 		return;
 	}
 	gfc_vector3d_scale(eulerVector, eulerVector, (1.0/l));
@@ -90,6 +106,25 @@ void wrap_euler_vector(GFC_Vector3D *eulerVector) {
 
 void wrap_axis_angle(GFC_Vector4D *axisAngle) {
 	axisAngle->w = wrapMinMax(axisAngle->w, -M_PI*2, M_PI*2);
+}
+
+GFC_Vector3D compose_euler_vectors(GFC_Vector3D a, GFC_Vector3D b) {
+	GFC_Vector4D aAxisAngle;
+	euler_vector_to_axis_angle(&aAxisAngle, a);
+	GFC_Vector4D bAxisAngle;
+	euler_vector_to_axis_angle(&bAxisAngle, b);
+	GFC_Vector3D composed;
+	axis_angle_to_euler_vector(&composed, compose_axis_angles(aAxisAngle, bAxisAngle));
+	return composed;
+}
+
+GFC_Vector4D compose_axis_angles(GFC_Vector4D a, GFC_Vector4D b) {
+	axis_angle_to_quat(&a, a);
+	axis_angle_to_quat(&b, b);
+	GFC_Vector4D q;
+	quat_mult(&q, a, b);
+	quat_to_axis_angle(&q, q);
+	return q;
 }
 
 GFC_Vector3D triangleCenter(GFC_Triangle3D triangle) {

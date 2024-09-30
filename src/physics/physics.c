@@ -63,16 +63,18 @@ void physicsUpdate(float delta) {
 		gfc_vector3d_sub(body->linearVelocity, body->linearVelocity, linearDampVector);
 		// angular damp
 		GFC_Vector3D angularDampVector;
-		gfc_vector3d_scale(angularDampVector, body->angularVelocity, delta*0.5);
+		gfc_vector3d_scale(angularDampVector, body->angularVelocity, delta*0.01);
 		gfc_vector3d_sub(body->angularVelocity, body->angularVelocity, angularDampVector);
 		// euler integration
 		GFC_Vector3D angularMove;
 		gfc_vector3d_scale(angularMove, body->angularVelocity, delta);
-		gfc_vector3d_add(body->rotation, body->rotation, angularMove);
+		body->rotation = compose_euler_vectors(body->rotation, angularMove);
 		wrap_euler_vector(&body->rotation);
 		GFC_Vector3D linearMove;
 		gfc_vector3d_scale(linearMove, body->linearVelocity, delta);
 		gfc_vector3d_add(body->position, body->position, linearMove);
+		slog("angular velocity: %f %f %f", body->angularVelocity.x, body->angularVelocity.y, body->angularVelocity.z);
+		slog("rotation: %f %f %f", body->rotation.x, body->rotation.y, body->rotation.z);
 	}
 }
 
@@ -84,8 +86,7 @@ void drawPhysicsObjects() {
 		euler_vector_to_quat(&quat, body->rotation);
 		GFC_Matrix4 matrix;
 		gfc_matrix4_from_vectors_q(matrix, body->position, quat, gfc_vector3d(1, 1, 1));
-		gf3d_model_draw(body->model, matrix, body->think==NULL?gfc_color(1, 1, 1, 1):gfc_color(1, 0, 0, 1), 0);
-		//gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 4), body->position, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), body->think==NULL?gfc_color(1,1,1,0.5):gfc_color(1,1,0,0.5), gfc_color(1,1,1,1));
+		gf3d_model_draw(body->model, matrix, body->think==NULL?gfc_color(1, 1, 1, 1):gfc_color(1, 1, 0, 1), 0);
 	}
 }
 
@@ -104,6 +105,8 @@ GFC_Vector3D velocityAtPoint(PhysicsBody *body, GFC_Vector3D point) {
 
 void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point);
 
+// adapted from the 2d version that i wrote for 2d game programming
+// https://github.com/AlaraBread/2d-game-dev-class/blob/main/src/entities/physics.c#L402
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	if(!col.hit) {
 		return;
@@ -135,8 +138,6 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	applyImpulse(a, impulse, col.aPosition);
 	gfc_vector3d_negate(impulse, impulse);
 	applyImpulse(b, impulse, col.bPosition);
-	//a->angularVelocity = gfc_vector3d(0,0,0);
-	//b->angularVelocity = gfc_vector3d(0,0,0);
 	// resolve intersection
 	GFC_Vector3D resolveVector;
 	gfc_vector3d_scale(resolveVector, col.normal, col.penetrationDepth);
