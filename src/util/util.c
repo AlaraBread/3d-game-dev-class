@@ -35,7 +35,7 @@ void axis_angle_to_quat(GFC_Vector4D *dst, GFC_Vector4D rotation) {
 }
 
 void quat_to_axis_angle(GFC_Vector4D *dst, GFC_Vector4D quat) {
-	if(fabsf(quat.w) > 0.999) {
+	if(fabsf(quat.w) == 1.0) {
 		*dst = gfc_vector4d(1, 0, 0, 0);
 		return;
 	}
@@ -50,7 +50,7 @@ void quat_to_axis_angle(GFC_Vector4D *dst, GFC_Vector4D quat) {
 // NOT an euler angle, euler vector: https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation
 void euler_vector_to_axis_angle(GFC_Vector4D *dst, GFC_Vector3D eulerVector) {
 	float l = gfc_vector3d_magnitude(eulerVector);
-	if(fabsf(l) < 0.001) {
+	if(l == 0.0) {
 		*dst = gfc_vector4d(1, 0, 0, 0);
 		return;
 	}

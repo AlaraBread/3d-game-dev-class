@@ -5,11 +5,21 @@
 #include "util.h"
 #include "shapes.h"
 #include "gf3d_draw.h"
+#include "intersection_tests.h"
 
 Collision mpr(PhysicsBody *a, PhysicsBody *b);
 
 Collision doCollision(PhysicsBody *a, PhysicsBody *b) {
-	// todo: analytic solutions for specific shape pairs
+	switch(a->shape.shapeType) {
+		case SPHERE: {
+			switch(b->shape.shapeType) {
+				case SPHERE: return sphereSphereIntersectionTest(a, b);
+				default: break;
+			}
+			break;
+		}
+		default: break;
+	}
 	return mpr(a, b);
 }
 
