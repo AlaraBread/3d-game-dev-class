@@ -1,9 +1,9 @@
 #ifndef __ALARA_LISTS__
 #define __ALARA_LISTS__
 
-#include "gfc_vector.h"
-#include "gfc_primitives.h"
 #include "gfc_list.h"
+#include "gfc_primitives.h"
+#include "gfc_vector.h"
 
 typedef struct GFC_List IntList;
 typedef struct GFC_List Vector3List;

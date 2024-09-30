@@ -11,5 +11,5 @@ void hashmap_test() {
 	gfc_hashmap_insert(map, "a", (void *)2);
 	gfc_hashmap_insert(map, "a", (void *)3);
 	long edgeCount = (long)gfc_hashmap_get(map, "a");
-	gfc_hashmap_insert(map, "a", (void *)(edgeCount+1));
+	gfc_hashmap_insert(map, "a", (void *)(edgeCount + 1));
 }

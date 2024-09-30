@@ -1,8 +1,8 @@
 #ifndef __ALARA_UTIL__
 #define __ALARA_UTIL__
 
-#include "gfc_vector.h"
 #include "gfc_primitives.h"
+#include "gfc_vector.h"
 
 // positive modulus
 #define POSMOD(a, b) (((a) % (b) + (b)) % (b))

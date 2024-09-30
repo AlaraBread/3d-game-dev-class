@@ -8,7 +8,7 @@ GFC_Vector3D sphereSupport(Shape *shape, GFC_Vector3D direction) {
 }
 
 GFC_Vector3D convexHullSupport(Shape *shape, GFC_Vector3D direction) {
-	//todo
+	// todo
 	return gfc_vector3d(1, 0, 0);
 }
 
@@ -21,10 +21,10 @@ GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction) {
 	switch(shape->shapeType) {
 		case SPHERE:
 			support = sphereSupport(shape, direction);
-		break;
+			break;
 		case CONVEX_HULL:
 			support = convexHullSupport(shape, direction);
-		break;
+			break;
 	}
 	rotate_vector3_by_euler_vector(&support, body->rotation);
 	gfc_vector3d_add(support, support, body->position);

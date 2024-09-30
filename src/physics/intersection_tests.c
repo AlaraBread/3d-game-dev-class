@@ -8,9 +8,7 @@ Collision sphereSphereIntersectionTest(PhysicsBody *a, PhysicsBody *b) {
 	float radius = aRadius + bRadius;
 	float distance = gfc_vector3d_magnitude(ab);
 	Collision col = {0};
-	if(distance > radius) {
-		return col;
-	}
+	if(distance > radius) { return col; }
 	col.hit = true;
 	gfc_vector3d_normalize(&ab);
 	gfc_vector3d_scale(col.aPosition, ab, aRadius);
@@ -19,6 +17,6 @@ Collision sphereSphereIntersectionTest(PhysicsBody *a, PhysicsBody *b) {
 	gfc_vector3d_scale(col.bPosition, ab, bRadius);
 	gfc_vector3d_add(col.bPosition, col.bPosition, b->position);
 	col.normal = ab;
-	col.penetrationDepth = radius-distance;
+	col.penetrationDepth = radius - distance;
 	return col;
 }

@@ -1,8 +1,8 @@
 #ifndef __ALARA_SHAPES__
 #define __ALARA_SHAPES__
 
-#include "gfc_vector.h"
 #include "gf3d_mesh.h"
+#include "gfc_vector.h"
 #include "physics.h"
 
 typedef struct SupportPoint {

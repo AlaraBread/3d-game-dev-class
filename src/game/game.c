@@ -52,24 +52,12 @@ double calculate_delta_time();
 void controlledThink(PhysicsBody *self) {
 	float d = 0.1;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
-	if(keys[SDL_SCANCODE_I]) {
-		self->linearVelocity.y -= d;
-	}
-	if(keys[SDL_SCANCODE_J]) {
-		self->linearVelocity.x += d;
-	}
-	if(keys[SDL_SCANCODE_K]) {
-		self->linearVelocity.y += d;
-	}
-	if(keys[SDL_SCANCODE_L]) {
-		self->linearVelocity.x -= d;
-	}
-	if(keys[SDL_SCANCODE_U]) {
-		self->linearVelocity.z += d;
-	}
-	if(keys[SDL_SCANCODE_O]) {
-		self->linearVelocity.z -= d;
-	}
+	if(keys[SDL_SCANCODE_I]) { self->linearVelocity.y -= d; }
+	if(keys[SDL_SCANCODE_J]) { self->linearVelocity.x += d; }
+	if(keys[SDL_SCANCODE_K]) { self->linearVelocity.y += d; }
+	if(keys[SDL_SCANCODE_L]) { self->linearVelocity.x -= d; }
+	if(keys[SDL_SCANCODE_U]) { self->linearVelocity.z += d; }
+	if(keys[SDL_SCANCODE_O]) { self->linearVelocity.z -= d; }
 }
 
 int main(int argc, char *argv[]) {

@@ -2,13 +2,9 @@
 
 // https://stackoverflow.com/a/29871193
 
-float wrapMax(float x, float max) {
-	return fmod(max + fmod(x, max), max);
-}
+float wrapMax(float x, float max) { return fmod(max + fmod(x, max), max); }
 
-float wrapMinMax(float x, float min, float max) {
-	return min + wrapMax(x - min, max - min);
-}
+float wrapMinMax(float x, float min, float max) { return min + wrapMax(x - min, max - min); }
 
 // using this resource as a reference for quaternion math
 // https://danceswithcode.net/engineeringnotes/quaternions/quaternions.html
@@ -20,18 +16,18 @@ void inverse_quat(GFC_Vector4D *quat) {
 }
 
 void quat_mult(GFC_Vector4D *dst, GFC_Vector4D a, GFC_Vector4D b) {
-	dst->w = a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z;
-	dst->x = a.w*b.x + a.x*b.w - a.y*b.z + a.z*b.y;
-	dst->y = a.w*b.y + a.x*b.z + a.y*b.w - a.z*b.x;
-	dst->z = a.w*b.z - a.x*b.y + a.y*b.x + a.z*b.w;
+	dst->w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
+	dst->x = a.w * b.x + a.x * b.w - a.y * b.z + a.z * b.y;
+	dst->y = a.w * b.y + a.x * b.z + a.y * b.w - a.z * b.x;
+	dst->z = a.w * b.z - a.x * b.y + a.y * b.x + a.z * b.w;
 }
 
 void axis_angle_to_quat(GFC_Vector4D *dst, GFC_Vector4D rotation) {
-	dst->w = cosf(rotation.w/2.0);
-	float s = sinf(rotation.w/2.0);
-	dst->x = rotation.x*s;
-	dst->y = rotation.y*s;
-	dst->z = rotation.z*s;
+	dst->w = cosf(rotation.w / 2.0);
+	float s = sinf(rotation.w / 2.0);
+	dst->x = rotation.x * s;
+	dst->y = rotation.y * s;
+	dst->z = rotation.z * s;
 }
 
 void quat_to_axis_angle(GFC_Vector4D *dst, GFC_Vector4D quat) {
@@ -39,11 +35,11 @@ void quat_to_axis_angle(GFC_Vector4D *dst, GFC_Vector4D quat) {
 		*dst = gfc_vector4d(1, 0, 0, 0);
 		return;
 	}
-	float angle = 2.0*acosf(quat.w);
-	float s = sin(angle/2.0);
-	dst->x = quat.x/s;
-	dst->y = quat.y/s;
-	dst->z = quat.z/s;
+	float angle = 2.0 * acosf(quat.w);
+	float s = sin(angle / 2.0);
+	dst->x = quat.x / s;
+	dst->y = quat.y / s;
+	dst->z = quat.z / s;
 	dst->w = angle;
 }
 
@@ -54,7 +50,7 @@ void euler_vector_to_axis_angle(GFC_Vector4D *dst, GFC_Vector3D eulerVector) {
 		*dst = gfc_vector4d(1, 0, 0, 0);
 		return;
 	}
-	gfc_vector3d_scale(eulerVector, eulerVector, (1.0/l));
+	gfc_vector3d_scale(eulerVector, eulerVector, (1.0 / l));
 	dst->w = l;
 	dst->x = eulerVector.x;
 	dst->y = eulerVector.y;
@@ -62,9 +58,9 @@ void euler_vector_to_axis_angle(GFC_Vector4D *dst, GFC_Vector3D eulerVector) {
 }
 
 void axis_angle_to_euler_vector(GFC_Vector3D *dst, GFC_Vector4D axisAngle) {
-	dst->x = axisAngle.x*axisAngle.w;
-	dst->y = axisAngle.y*axisAngle.w;
-	dst->z = axisAngle.z*axisAngle.w;
+	dst->x = axisAngle.x * axisAngle.w;
+	dst->y = axisAngle.y * axisAngle.w;
+	dst->z = axisAngle.z * axisAngle.w;
 }
 
 void euler_vector_to_quat(GFC_Vector4D *dst, GFC_Vector3D eulerVector) {
@@ -104,9 +100,7 @@ void wrap_euler_vector(GFC_Vector3D *eulerVector) {
 	axis_angle_to_euler_vector(eulerVector, axisAngle);
 }
 
-void wrap_axis_angle(GFC_Vector4D *axisAngle) {
-	axisAngle->w = wrapMinMax(axisAngle->w, -M_PI*2, M_PI*2);
-}
+void wrap_axis_angle(GFC_Vector4D *axisAngle) { axisAngle->w = wrapMinMax(axisAngle->w, -M_PI * 2, M_PI * 2); }
 
 GFC_Vector3D compose_euler_vectors(GFC_Vector3D a, GFC_Vector3D b) {
 	GFC_Vector4D aAxisAngle;
@@ -131,7 +125,7 @@ GFC_Vector3D triangleCenter(GFC_Triangle3D triangle) {
 	GFC_Vector3D triangleCenter;
 	gfc_vector3d_add(triangleCenter, triangle.a, triangle.b);
 	gfc_vector3d_add(triangleCenter, triangleCenter, triangle.c);
-	gfc_vector3d_scale(triangleCenter, triangleCenter, 1.0/3.0);
+	gfc_vector3d_scale(triangleCenter, triangleCenter, 1.0 / 3.0);
 	return triangleCenter;
 }
 
@@ -173,13 +167,13 @@ GFC_Vector3D toBarycentric(GFC_Vector3D p, GFC_Triangle3D triangle) {
 }
 
 GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle) {
-	GFC_Vector3D ab = vector3DLerp(triangle.a, triangle.b, bary.y/bary.x);
-	return vector3DLerp(ab, triangle.c, bary.z/(bary.x+bary.y));
+	GFC_Vector3D ab = vector3DLerp(triangle.a, triangle.b, bary.y / bary.x);
+	return vector3DLerp(ab, triangle.c, bary.z / (bary.x + bary.y));
 }
 
 GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, float t) {
 	gfc_vector3d_scale(a, a, t);
-	gfc_vector3d_scale(b, b, (1.0-t));
+	gfc_vector3d_scale(b, b, (1.0 - t));
 	GFC_Vector3D out;
 	gfc_vector3d_add(out, a, b);
 	return out;
@@ -188,9 +182,7 @@ GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, float t) {
 GFC_Vector3D perpendicularVector3(GFC_Vector3D v) {
 	GFC_Vector3D c;
 	gfc_vector3d_cross_product(&c, v, gfc_vector3d(1, 0, 0));
-	if(gfc_vector3d_magnitude_squared(c) <= 0.01) {
-		gfc_vector3d_cross_product(&c, v, gfc_vector3d(0, -1, 0));
-	}
+	if(gfc_vector3d_magnitude_squared(c) <= 0.01) { gfc_vector3d_cross_product(&c, v, gfc_vector3d(0, -1, 0)); }
 	gfc_vector3d_normalize(&c);
 	return c;
 }

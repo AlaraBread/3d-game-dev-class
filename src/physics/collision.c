@@ -1,11 +1,11 @@
-#include "simple_logger.h"
 #include "collision.h"
-#include "lists.h"
-#include "gfc_hashmap.h"
-#include "util.h"
-#include "shapes.h"
 #include "gf3d_draw.h"
+#include "gfc_hashmap.h"
 #include "intersection_tests.h"
+#include "lists.h"
+#include "shapes.h"
+#include "simple_logger.h"
+#include "util.h"
 
 Collision mpr(PhysicsBody *a, PhysicsBody *b);
 
@@ -13,12 +13,15 @@ Collision doCollision(PhysicsBody *a, PhysicsBody *b) {
 	switch(a->shape.shapeType) {
 		case SPHERE: {
 			switch(b->shape.shapeType) {
-				case SPHERE: return sphereSphereIntersectionTest(a, b);
-				default: break;
+				case SPHERE:
+					return sphereSphereIntersectionTest(a, b);
+				default:
+					break;
 			}
 			break;
 		}
-		default: break;
+		default:
+			break;
 	}
 	return mpr(a, b);
 }
@@ -37,9 +40,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 	GFC_Vector3D v1xv0;
 	gfc_vector3d_cross_product(&v1xv0, v1.m, v0);
 	gfc_vector3d_normalize(&v1xv0);
-	if(gfc_vector3d_magnitude_squared(v1xv0) < 0.01) {
-		v1xv0 = perpendicularVector3(v1.m);
-	}
+	if(gfc_vector3d_magnitude_squared(v1xv0) < 0.01) { v1xv0 = perpendicularVector3(v1.m); }
 	SupportPoint v2 = minkowskiPoint(a, b, v1xv0);
 	GFC_Vector3D v0v2;
 	gfc_vector3d_sub(v0v2, v2.m, v0);
@@ -66,16 +67,14 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 			SupportPoint tmp = v1;
 			v1 = v2;
 			v2 = tmp;
-		}
-		else if(!p2) {
+		} else if(!p2) {
 			// swap winding to get normal facing away from origin
 			v1 = minkowskiPoint(a, b, gfc_trigfc_angle_get_normal(gfc_triangle(v0, v3.m, v2.m)));
 			// preserve normal direction
 			SupportPoint tmp = v3;
 			v3 = v2;
 			v2 = tmp;
-		}
-		else if(!p3) {
+		} else if(!p3) {
 			// swap winding to get normal facing away from origin
 			v2 = minkowskiPoint(a, b, gfc_trigfc_angle_get_normal(gfc_triangle(v0, v3.m, v1.m)));
 			// preserve normal direction
@@ -109,8 +108,14 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 				GFC_Vector3D bary = toBarycentric(aop, mTriangle);
 				col.aPosition = fromBarycentric(bary, gfc_triangle(v1.a, v2.a, v3.a));
 				col.bPosition = fromBarycentric(bary, gfc_triangle(v1.b, v2.b, v3.b));
-				gf3d_draw_sphere_solid(gfc_sphere(0,0,0,0.5), col.aPosition, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1,0,0,1), gfc_color(1,1,1,1));
-				gf3d_draw_sphere_solid(gfc_sphere(0,0,0,0.5), col.bPosition, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0,0,1,1), gfc_color(1,1,1,1));
+				gf3d_draw_sphere_solid(
+					gfc_sphere(0, 0, 0, 0.5), col.aPosition, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1),
+					gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1)
+				);
+				gf3d_draw_sphere_solid(
+					gfc_sphere(0, 0, 0, 0.5), col.bPosition, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1),
+					gfc_color(0, 0, 1, 1), gfc_color(1, 1, 1, 1)
+				);
 				return col;
 			}
 		}
@@ -124,7 +129,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		GFC_Vector3D d;
 		gfc_vector3d_sub(d, v1.m, v4.m);
 		d = projectVector(d, newNormal);
-		if(gfc_vector3d_magnitude_squared(d) < 0.01*0.01) {
+		if(gfc_vector3d_magnitude_squared(d) < 0.01 * 0.01) {
 			// support plane is too close to portal, miss
 			break;
 		}

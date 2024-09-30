@@ -1,9 +1,9 @@
 #ifndef __ALARA_PHYSICS__
 #define __ALARA_PHYSICS__
 
-#include "gfc_vector.h"
-#include "gfc_matrix.h"
 #include "gf3d_model.h"
+#include "gfc_matrix.h"
+#include "gfc_vector.h"
 
 typedef struct PhysicsBody_s PhysicsBody;
 
@@ -38,7 +38,7 @@ struct PhysicsBody_s {
 	GFC_Vector3D centerOfMass;
 	Model *model;
 	Shape shape;
-	void (*think) (PhysicsBody *);
+	void (*think)(PhysicsBody *);
 };
 
 void physicsStart(int maxPhysicsBodies);
