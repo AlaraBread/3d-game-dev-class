@@ -3,8 +3,13 @@
 
 GFC_Vector3D sphereSupport(Shape *shape, GFC_Vector3D direction) {
 	GFC_Vector3D support;
-	gfc_vector3d_scale(support, direction, shape->shape.sphere.radius);
+	gfc_vector3d_scale(support, direction, -shape->shape.sphere.radius);
 	return support;
+}
+
+GFC_Vector3D boxSupport(Shape *shape, GFC_Vector3D direction) {
+	GFC_Vector3D extents = shape->shape.box.extents;
+	return gfc_vector3d(-extents.x*SIGN(direction.x), -extents.y*SIGN(direction.y), -extents.z*SIGN(direction.z));
 }
 
 GFC_Vector3D convexHullSupport(Shape *shape, GFC_Vector3D direction) {
@@ -21,6 +26,9 @@ GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction) {
 	switch(shape->shapeType) {
 		case SPHERE:
 			support = sphereSupport(shape, direction);
+			break;
+		case BOX:
+			support = boxSupport(shape, direction);
 			break;
 		case CONVEX_HULL:
 			support = convexHullSupport(shape, direction);

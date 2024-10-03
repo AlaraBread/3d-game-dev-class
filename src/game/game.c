@@ -50,7 +50,7 @@ void draw_origin() {
 double calculate_delta_time();
 
 void controlledThink(PhysicsBody *self) {
-	float d = 0.1;
+	float d = 1.0;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	if(keys[SDL_SCANCODE_I]) { self->linearVelocity.y -= d; }
 	if(keys[SDL_SCANCODE_J]) { self->linearVelocity.x += d; }
@@ -65,7 +65,7 @@ void controlledThink(PhysicsBody *self) {
 
 int main(int argc, char *argv[]) {
 	// local variables
-	Model *sky, *testSphere;
+	Model *sky;
 	GFC_Matrix4 skyMat, dinoMat;
 	// initializtion
 	parse_arguments(argc, argv);
@@ -91,7 +91,8 @@ int main(int argc, char *argv[]) {
 	gf2d_mouse_load("assets/actors/mouse.actor");
 	sky = gf3d_model_load("assets/models/sky.model");
 	gfc_matrix4_identity(skyMat);
-	testSphere = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
+	Model *boxModel = gf3d_model_load("assets/models/test_cube/test_cube.model");
+	Model *sphereModel = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
 	gfc_matrix4_identity(dinoMat);
 	// camera
 	gf3d_camera_set_scale(gfc_vector3d(1, 1, 1));
@@ -103,18 +104,63 @@ int main(int argc, char *argv[]) {
 	gf3d_camera_enable_free_look(1);
 	physicsStart(10);
 	Shape s;
+	//s.shapeType = BOX;
+	//s.shape.box.extents = gfc_vector3d(1, 1, 1);
 	s.shapeType = SPHERE;
 	s.shape.sphere.radius = 4.0;
 	PhysicsBody *a = physicsCreateBody();
 	a->think = controlledThink;
 	a->shape = s;
-	a->model = testSphere;
+	a->model = sphereModel;
+	a->position = gfc_vector3d(0.1, 0.1, 0.1);
+	/*
 	PhysicsBody *b = physicsCreateBody();
 	b->shape = s;
-	b->model = testSphere;
+	b->model = sphereModel;
 	b->position.x = 10;
-	// b->angularVelocity = gfc_vector3d(0, 1, 0);
-	// a->angularVelocity = gfc_vector3d(4, 0, 3);
+	b->position.y = 1;
+	b->position.z = 3;
+	*/
+	PhysicsBody *floor = physicsCreateBody();
+	Shape floorShape;
+	floorShape.shapeType = BOX;
+	float floorSize = 50;
+	floorShape.shape.box.extents = gfc_vector3d(floorSize, floorSize, 1);
+	floor->shape = floorShape;
+	floor->model = boxModel;
+	floor->visualScale = gfc_vector3d(floorSize, floorSize, 1);
+	floor->position.z = -10;
+	floor->motionType = STATIC;
+	for(int i = 0; i < 4; i++) {
+		PhysicsBody *wall = physicsCreateBody();
+		wall->shape = floorShape;
+		wall->model = boxModel;
+		wall->visualScale = gfc_vector3d(floorSize, floorSize, 1);
+		wall->position.z = -10;
+		switch(i) {
+			case 0:
+				wall->position.x = floorSize;
+				wall->position.y = 0;
+				wall->rotation.y = M_PI/2.0;
+			break;
+			case 1:
+				wall->position.x = -floorSize;
+				wall->position.y = 0;
+				wall->rotation.y = M_PI/2.0;
+			break;
+			case 2:
+				wall->position.x = 0;
+				wall->position.y = floorSize;
+				wall->rotation.x = M_PI/2.0;
+			break;
+			case 3:
+				wall->position.x = 0;
+				wall->position.y = -floorSize;
+				wall->rotation.x = M_PI/2.0;
+			break;
+		}
+		wall->motionType = STATIC;
+	}
 
 	// windows
 

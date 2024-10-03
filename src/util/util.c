@@ -167,8 +167,14 @@ GFC_Vector3D toBarycentric(GFC_Vector3D p, GFC_Triangle3D triangle) {
 }
 
 GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle) {
-	GFC_Vector3D ab = vector3DLerp(triangle.a, triangle.b, bary.y / bary.x);
-	return vector3DLerp(ab, triangle.c, bary.z / (bary.x + bary.y));
+	GFC_Vector3D a, b, c;
+	gfc_vector3d_scale(a, triangle.a, bary.x);
+	gfc_vector3d_scale(b, triangle.b, bary.y);
+	gfc_vector3d_scale(c, triangle.c, bary.z);
+	GFC_Vector3D out;
+	gfc_vector3d_add(out, a, b);
+	gfc_vector3d_add(out, out, c);
+	return out;
 }
 
 GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, float t) {

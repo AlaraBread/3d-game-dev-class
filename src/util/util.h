@@ -7,6 +7,8 @@
 // positive modulus
 #define POSMOD(a, b) (((a) % (b) + (b)) % (b))
 
+#define SIGN(x) (x > 0 ? 1 : (x < 0 ? -1 : 0))
+
 // wrap x -> [0,max)
 float wrapMax(float x, float max);
 // wrap x -> [min,max)

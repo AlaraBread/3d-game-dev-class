@@ -9,12 +9,17 @@ typedef struct PhysicsBody_s PhysicsBody;
 
 typedef enum ShapeType_e {
 	SPHERE,
+	BOX,
 	CONVEX_HULL,
 } ShapeType;
 
 typedef struct Sphere_s {
 	float radius;
 } Sphere;
+
+typedef struct Box_s {
+	GFC_Vector3D extents;
+} Box;
 
 typedef struct ConvexHull_s {
 	ObjData *mesh;
@@ -24,11 +29,19 @@ typedef struct Shape_s {
 	ShapeType shapeType;
 	union {
 		Sphere sphere;
+		Box box;
+		ConvexHull convexHull;
 	} shape;
 } Shape;
 
+typedef enum {
+	DYNAMIC,
+	STATIC,
+} MotionType;
+
 struct PhysicsBody_s {
 	Bool inuse;
+	MotionType motionType;
 	float mass;
 	GFC_Vector3D inertia;
 	GFC_Vector3D linearVelocity;
@@ -36,6 +49,7 @@ struct PhysicsBody_s {
 	GFC_Vector3D position;
 	GFC_Vector3D rotation;
 	GFC_Vector3D centerOfMass;
+	GFC_Vector3D visualScale;
 	Model *model;
 	Shape shape;
 	void (*think)(PhysicsBody *);

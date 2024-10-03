@@ -1,0 +1,12 @@
+{
+    "model":
+    {
+        "obj":"assets/models/primitives/cube.obj",
+        "texture":"assets/textures/checker.png",
+        "material":
+        {
+            "name":"primitive_material",
+            "emit":[255,255,255,255]
+        }
+    }
+}

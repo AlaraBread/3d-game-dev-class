@@ -42,6 +42,7 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 	body->inuse = true;
 	body->mass = 1.0;
 	body->inertia = gfc_vector3d(10, 10, 10);
+	body->visualScale = gfc_vector3d(1, 1, 1);
 }
 
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b);
@@ -51,6 +52,10 @@ void physicsUpdate(float delta) {
 		PhysicsBody *body = &physics.physicsBodies[i];
 		if(!body->inuse) continue;
 		if(body->think) body->think(body);
+		// gravity
+		if(body->motionType == DYNAMIC) {
+			body->linearVelocity.z -= delta*100;
+		}
 		for(int j = 0; j < physics.maxPhysicsBodies; j++) {
 			if(i <= j) continue;
 			PhysicsBody *otherBody = &physics.physicsBodies[j];
@@ -83,7 +88,7 @@ void drawPhysicsObjects() {
 		GFC_Vector4D quat;
 		euler_vector_to_quat(&quat, body->rotation);
 		GFC_Matrix4 matrix;
-		gfc_matrix4_from_vectors_q(matrix, body->position, quat, gfc_vector3d(1, 1, 1));
+		gfc_matrix4_from_vectors_q(matrix, body->position, quat, body->visualScale);
 		gf3d_model_draw(body->model, matrix, body->think == NULL ? gfc_color(1, 1, 1, 1) : gfc_color(1, 1, 0, 1), 0);
 	}
 }
@@ -147,15 +152,23 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	// total impulse
 	GFC_Vector3D impulse;
 	gfc_vector3d_add(impulse, normalImpulse, tangentImpulse);
-	applyImpulse(a, impulse, col.aPosition);
+	if(a->motionType == DYNAMIC) {
+		applyImpulse(a, impulse, col.aPosition);
+	}
 	gfc_vector3d_negate(impulse, impulse);
-	applyImpulse(b, impulse, col.bPosition);
+	if(b->motionType == DYNAMIC) {
+		applyImpulse(b, impulse, col.bPosition);
+	}
 	// resolve intersection
 	GFC_Vector3D resolveVector;
 	gfc_vector3d_scale(resolveVector, col.normal, col.penetrationDepth);
-	gfc_vector3d_add(a->position, a->position, resolveVector);
+	if(a->motionType == DYNAMIC) {
+		gfc_vector3d_add(a->position, a->position, resolveVector);
+	}
 	gfc_vector3d_negate(resolveVector, resolveVector);
-	gfc_vector3d_add(b->position, b->position, resolveVector);
+	if(b->motionType == DYNAMIC) {
+		gfc_vector3d_add(b->position, b->position, resolveVector);
+	}
 }
 
 void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point) {

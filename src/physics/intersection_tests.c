@@ -1,4 +1,5 @@
 #include "intersection_tests.h"
+#include "simple_logger.h"
 
 Collision sphereSphereIntersectionTest(PhysicsBody *a, PhysicsBody *b) {
 	GFC_Vector3D ab;
