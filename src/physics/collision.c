@@ -99,23 +99,15 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 			if(collisionAccuracy <= 0) {
 				Collision col;
 				col.hit = true;
-				GFC_Triangle3D mTriangle = gfc_triangle(v1.m, v2.m, v3.m);
+				GFC_Triangle3D mTriangle = gfc_triangle(v1.m, v3.m, v2.m);
 				col.normal = gfc_trigfc_angle_get_normal(mTriangle);
-				col.penetrationDepth = gfc_vector3d_dot_product(col.normal, v1.m);
+				col.penetrationDepth = gfc_vector3d_dot_product(col.normal, v1.m) + 0.0625;
 				GFC_Vector3D ao; // from a to origin
 				gfc_vector3d_negate(ao, mTriangle.a);
 				GFC_Vector3D aop = projectVectorOntoPlane(ao, col.normal); // a to origin, projected onto triangle
 				GFC_Vector3D bary = toBarycentric(aop, mTriangle);
 				col.aPosition = fromBarycentric(bary, gfc_triangle(v1.a, v2.a, v3.a));
 				col.bPosition = fromBarycentric(bary, gfc_triangle(v1.b, v2.b, v3.b));
-				gf3d_draw_sphere_solid(
-					gfc_sphere(0, 0, 0, 0.5), col.aPosition, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1),
-					gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1)
-				);
-				gf3d_draw_sphere_solid(
-					gfc_sphere(0, 0, 0, 0.5), col.bPosition, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1),
-					gfc_color(0, 0, 1, 1), gfc_color(1, 1, 1, 1)
-				);
 				return col;
 			}
 		}

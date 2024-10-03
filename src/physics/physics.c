@@ -63,7 +63,7 @@ void physicsUpdate(float delta) {
 		gfc_vector3d_sub(body->linearVelocity, body->linearVelocity, linearDampVector);
 		// angular damp
 		GFC_Vector3D angularDampVector;
-		gfc_vector3d_scale(angularDampVector, body->angularVelocity, delta * 0.1);
+		gfc_vector3d_scale(angularDampVector, body->angularVelocity, delta * 0.5);
 		gfc_vector3d_sub(body->angularVelocity, body->angularVelocity, angularDampVector);
 		// euler integration
 		GFC_Vector3D angularMove;
@@ -88,6 +88,22 @@ void drawPhysicsObjects() {
 	}
 }
 
+GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local) {
+	GFC_Vector3D global = local;
+	rotate_vector3_by_euler_vector(&global, body->rotation);
+	gfc_vector3d_add(global, global, body->position);
+	return global;
+}
+
+GFC_Vector3D physicsBodyGlobalToLocal(PhysicsBody *body, GFC_Vector3D global) {
+	GFC_Vector3D local = global;
+	gfc_vector3d_sub(local, local, body->position);
+	GFC_Vector3D invRotation = body->rotation;
+	gfc_vector3d_negate(invRotation, invRotation);
+	rotate_vector3_by_euler_vector(&global, invRotation);
+	return local;
+}
+
 GFC_Vector3D velocityAtPoint(PhysicsBody *body, GFC_Vector3D point) {
 	GFC_Vector3D diff;
 	gfc_vector3d_sub(diff, point, body->position);
@@ -106,27 +122,25 @@ void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point);
 // adapted from the 2d version that i wrote for 2d game programming
 // https://github.com/AlaraBread/2d-game-dev-class/blob/main/src/entities/physics.c#L402
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
-	if(!col.hit) { return; }
+	if(!col.hit) return;
 	// react to collision
-	float normalMass = 1.0;
+	float normalMass = a->mass + b->mass;
 	float tangentMass = 1.0;
 	// normal impulse
-	float bounce = 0.5;
+	float bounce = 0.0;
 	GFC_Vector3D av = velocityAtPoint(a, col.aPosition);
 	GFC_Vector3D bv = velocityAtPoint(b, col.bPosition);
 	GFC_Vector3D dv;
 	gfc_vector3d_sub(dv, bv, av);
-	slog("dv = %f %f %f", dv.x, dv.y, dv.z);
 	GFC_Vector3D normalImpulse = projectVector(dv, col.normal);
 	gfc_vector3d_scale(normalImpulse, normalImpulse, (bounce + 1.0) * normalMass);
 	float normalImpulseMagnitude = gfc_vector3d_magnitude(normalImpulse);
 	// tangential impulse
-	float friction = 0.6;
+	float friction = 1.0;
 	GFC_Vector3D tv = projectVectorOntoPlane(dv, col.normal);
-	printf("tv = %f %f %f\n", tv.x, tv.y, tv.z);
-	float tangentImpulseMagnitude = SDL_clamp(
-		-gfc_vector3d_magnitude(tv) * tangentMass, -friction * normalImpulseMagnitude, friction * normalImpulseMagnitude
-	);
+	float tvMagnitude = gfc_vector3d_magnitude(tv);
+	float tangentImpulseMagnitude =
+		SDL_clamp(-tvMagnitude * tangentMass, -friction * normalImpulseMagnitude, friction * normalImpulseMagnitude);
 	GFC_Vector3D tangentImpulse = tv;
 	gfc_vector3d_normalize(&tangentImpulse);
 	gfc_vector3d_scale(tangentImpulse, tangentImpulse, tangentImpulseMagnitude);
@@ -144,22 +158,16 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	gfc_vector3d_add(b->position, b->position, resolveVector);
 }
 
-GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local) {
-	GFC_Vector3D global = local;
-	rotate_vector3_by_euler_vector(&global, body->rotation);
-	gfc_vector3d_add(global, global, body->position);
-	return global;
-}
-
 void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point) {
 	GFC_Vector3D linearImpulse;
 	gfc_vector3d_scale(linearImpulse, impulse, 1.0 / body->mass);
 	gfc_vector3d_add(body->linearVelocity, body->linearVelocity, linearImpulse);
 
-	GFC_Vector3D com = physicsBodyLocalToGlobal(body, body->centerOfMass);
-	gfc_vector3d_sub(point, point, com);
-	rotate_vector3_by_euler_vector(&point, body->rotation);
-	// point is now in local space
+	gfc_vector3d_sub(point, point, body->position);
+	GFC_Vector3D com = body->centerOfMass;
+	rotate_vector3_by_euler_vector(&com, body->rotation);
+	gfc_vector3d_add(point, point, com);
+	// point is now in global space relative to com
 	point.x = point.x / body->inertia.x;
 	point.y = point.y / body->inertia.y;
 	point.z = point.z / body->inertia.z;
