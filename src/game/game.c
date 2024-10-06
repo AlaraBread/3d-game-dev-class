@@ -49,18 +49,19 @@ void draw_origin() {
 
 double calculate_delta_time();
 
-void controlledThink(PhysicsBody *self) {
-	float d = 1.0;
+void controlledThink(PhysicsBody *self, float delta) {
+	float d = 10*delta;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	if(keys[SDL_SCANCODE_I]) { self->linearVelocity.y -= d; }
 	if(keys[SDL_SCANCODE_J]) { self->linearVelocity.x += d; }
 	if(keys[SDL_SCANCODE_K]) { self->linearVelocity.y += d; }
 	if(keys[SDL_SCANCODE_L]) { self->linearVelocity.x -= d; }
-	if(keys[SDL_SCANCODE_U]) { self->linearVelocity.z += d; }
-	if(keys[SDL_SCANCODE_O]) { self->linearVelocity.z -= d; }
-	if(keys[SDL_SCANCODE_B]) { self->angularVelocity.x += 0.05; }
-	if(keys[SDL_SCANCODE_N]) { self->angularVelocity.y += 0.05; }
-	if(keys[SDL_SCANCODE_M]) { self->angularVelocity.z += 0.05; }
+	if(keys[SDL_SCANCODE_U]) { self->linearVelocity.z += d*20; }
+	if(keys[SDL_SCANCODE_O]) { self->linearVelocity.z -= d*20; }
+	if(keys[SDL_SCANCODE_T]) self->angularVelocity.x += d*2;
+	if(keys[SDL_SCANCODE_G]) self->angularVelocity.x -= d*2;
+	if(keys[SDL_SCANCODE_F]) self->angularVelocity.y += d*2;
+	if(keys[SDL_SCANCODE_H]) self->angularVelocity.y -= d*2;
 }
 
 int main(int argc, char *argv[]) {
@@ -112,7 +113,8 @@ int main(int argc, char *argv[]) {
 	a->think = controlledThink;
 	a->shape = s;
 	a->model = sphereModel;
-	a->position = gfc_vector3d(0.1, 0.1, 0.1);
+	a->position = gfc_vector3d(0, 0, 10);
+	a->mass = 0.1;
 	/*
 	PhysicsBody *b = physicsCreateBody();
 	b->shape = s;
@@ -131,10 +133,14 @@ int main(int argc, char *argv[]) {
 	floor->visualScale = gfc_vector3d(floorSize, floorSize, 1);
 	floor->position.z = -10;
 	floor->motionType = STATIC;
+	floor->inertia = gfc_vector3d(100000,100000,100000);
+	floor->mass = 100000;
 	for(int i = 0; i < 4; i++) {
 		PhysicsBody *wall = physicsCreateBody();
 		wall->shape = floorShape;
 		wall->model = boxModel;
+		wall->inertia = gfc_vector3d(100000,100000,100000);
+		wall->mass = 100000;
 		wall->visualScale = gfc_vector3d(floorSize, floorSize, 1);
 		wall->position.z = -10;
 		switch(i) {

@@ -9,6 +9,8 @@
 
 #define SIGN(x) (x > 0 ? 1 : (x < 0 ? -1 : 0))
 
+#define VEC3ISNAN(v) (isnan(v.x) || isnan(v.y) || isnan(v.z))
+
 // wrap x -> [0,max)
 float wrapMax(float x, float max);
 // wrap x -> [min,max)
@@ -28,6 +30,7 @@ void wrap_euler_vector(GFC_Vector3D *eulerVector);
 void wrap_axis_angle(GFC_Vector4D *axisAngle);
 GFC_Vector3D compose_euler_vectors(GFC_Vector3D a, GFC_Vector3D b);
 GFC_Vector4D compose_axis_angles(GFC_Vector4D a, GFC_Vector4D b);
+void quatToRotationMatrix(GFC_Matrix3 out, GFC_Vector4D q);
 GFC_Vector3D triangleCenter(GFC_Triangle3D triangle);
 GFC_Vector3D projectVector(GFC_Vector3D v, GFC_Vector3D normal);
 GFC_Vector3D projectVectorOntoPlane(GFC_Vector3D v, GFC_Vector3D normal);
@@ -36,5 +39,7 @@ GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle);
 GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, float t);
 GFC_Vector3D perpendicularVector3(GFC_Vector3D v);
 GFC_Vector3D kindaPerpendicularVector3(GFC_Vector3D v);
+void transposeMat3(GFC_Matrix3 mat);
+void scaleMat3(GFC_Matrix3 mat, GFC_Vector3D scale);
 
 #endif

@@ -150,7 +150,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		}
 		i++;
 		if(i > 50) {
-			slog("took too long to find portal");
+			if(DEBUG_MPR_EXPANSION) slog("took too long to find portal");
 			Collision col = {0};
 			return col;
 		}
@@ -169,18 +169,15 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 			// keep going for a little bit to get more accurate collision
 			collisionAccuracy--;
 			if(collisionAccuracy <= 0) {
-				slog("hit!");
+				if(DEBUG_MPR_REFINEMENT) slog("hit!");
 				Collision col;
 				col.hit = true;
 				GFC_Triangle3D mTriangle = gfc_triangle(v1.m, v3.m, v2.m);
 				col.normal = gfc_trigfc_angle_get_normal(mTriangle);
 				col.penetrationDepth = gfc_vector3d_dot_product(col.normal, v1.m);
-				GFC_Vector3D ao; // from a to origin
-				gfc_vector3d_negate(ao, mTriangle.a);
-				GFC_Vector3D aop = projectVectorOntoPlane(ao, col.normal); // a to origin, projected onto triangle
-				GFC_Vector3D bary = toBarycentric(aop, mTriangle);
-				col.aPosition = fromBarycentric(bary, gfc_triangle(v1.a, v2.a, v3.a));
-				col.bPosition = fromBarycentric(bary, gfc_triangle(v1.b, v2.b, v3.b));
+				GFC_Vector3D bary = toBarycentric(gfc_vector3d(0,0,0), mTriangle);
+				col.aPosition = fromBarycentric(bary, gfc_triangle(v1.a, v3.a, v2.a));
+				col.bPosition = fromBarycentric(bary, gfc_triangle(v1.b, v3.b, v2.b));
 				return col;
 			}
 		}
@@ -195,15 +192,34 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v2.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 0, 1), gfc_color(1, 1, 1, 1));
 			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v3.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 0, 1, 1), gfc_color(1, 1, 1, 1));
 			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v4.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 1, 1), gfc_color(1, 1, 1, 1));
+
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v1.a, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v2.a, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 0, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v3.a, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 0, 1, 1), gfc_color(1, 1, 1, 1));
+
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v1.b, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v2.b, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 0, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v3.b, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 0, 1, 1), gfc_color(1, 1, 1, 1));
+
 			gf3d_draw_edge_3d(gfc_edge3d(0,0,0, v0.x, v0.y, v0.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,1,0,1));
 			gf3d_draw_edge_3d(gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v2.m.x, v2.m.y, v2.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,0,1));
 			gf3d_draw_edge_3d(gfc_edge3d(v2.m.x, v2.m.y, v2.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,0,1));
 			gf3d_draw_edge_3d(gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,0,1));
+
+			//GFC_Vector3D v1o; // from v1 to origin
+			//gfc_vector3d_negate(v1o, v1.m);
+			GFC_Triangle3D t = gfc_triangle(v1.m, v3.m, v2.m);
+			//GFC_Vector3D v1op = projectVectorOntoPlane(v1o, gfc_trigfc_angle_get_normal(t)); // a to origin, projected onto triangle
+			GFC_Vector3D bary = toBarycentric(gfc_vector3d(0,0,0), t);
+			GFC_Vector3D aContact = fromBarycentric(bary, gfc_triangle(v1.a, v3.a, v2.a));
+			GFC_Vector3D bContact = fromBarycentric(bary, gfc_triangle(v1.b, v3.b, v2.b));
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), aContact, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 1, 0, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), bContact, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 1, 1), gfc_color(1, 1, 1, 1));
 		}
 #endif
 		if(gfc_vector3d_dot_product(newNormal, v4.m) < 0.0) {
 			// origin lies outside support plane, miss
-			slog("origin lies outside support plane, miss");
+			if(DEBUG_MPR_REFINEMENT) slog("origin lies outside support plane, miss");
 			break;
 		}
 		GFC_Vector3D d;
@@ -228,13 +244,13 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		} else {
 			// floating point imprecision caused an invalid state
 			// nothing we can do here, just return a miss
-			slog("floating point imprecision caused an invalid state");
+			if(DEBUG_MPR_REFINEMENT) slog("floating point imprecision caused an invalid state");
 			printf("p1=%d\np2=%d\np3=%d\n", p1, p2, p3);
 			break;
 		}
 		i++;
 		if(i > 40) {
-			slog("refined for too long");
+			if(DEBUG_MPR_REFINEMENT) slog("refined for too long");
 			break;
 		}
 	}

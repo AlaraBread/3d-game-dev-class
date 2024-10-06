@@ -121,6 +121,21 @@ GFC_Vector4D compose_axis_angles(GFC_Vector4D a, GFC_Vector4D b) {
 	return q;
 }
 
+void quatToRotationMatrix(GFC_Matrix3 out, GFC_Vector4D q) {
+	float xx = q.x*q.x;
+	float yy = q.y*q.y;
+	float zz = q.z*q.z;
+	out[0][0] = 1.0 - 2.0*yy - 2.0*zz;
+	out[0][1] = 2.0*q.x*q.y - 2.0*q.w*q.z;
+	out[0][2] = 2.0*q.x*q.z + 2.0*q.w*q.y;
+	out[1][0] = 2.0*q.x*q.y + 2.0*q.w*q.z;
+	out[1][1] = 1.0 - 2.0*xx - 2.0*zz;
+	out[1][2] = 2.0*q.y*q.z - 2.0*q.w*q.x;
+	out[2][0] = 2.0*q.x*q.z - 2.0*q.w*q.y;
+	out[2][1] = 2.0*q.y*q.z + 2.0*q.w*q.x;
+	out[2][2] = 1.0 - 2.0*xx - 2.0*yy;
+}
+
 GFC_Vector3D triangleCenter(GFC_Triangle3D triangle) {
 	GFC_Vector3D triangleCenter;
 	gfc_vector3d_add(triangleCenter, triangle.a, triangle.b);
@@ -166,6 +181,7 @@ GFC_Vector3D toBarycentric(GFC_Vector3D p, GFC_Triangle3D triangle) {
 	return out;
 }
 
+// https://en.wikipedia.org/wiki/Barycentric_coordinate_system#Conversion_between_barycentric_and_Cartesian_coordinates
 GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle) {
 	GFC_Vector3D a, b, c;
 	gfc_vector3d_scale(a, triangle.a, bary.x);
@@ -197,4 +213,30 @@ GFC_Vector3D kindaPerpendicularVector3(GFC_Vector3D v) {
 	GFC_Vector3D p = vector3DLerp(perpendicularVector3(v), v, 0.5);
 	gfc_vector3d_normalize(&p);
 	return p;
+}
+
+void transposeMat3(GFC_Matrix3 mat) {
+	float swap = mat[1][0];
+	mat[1][0] = mat[0][1];
+	mat[0][1] = swap;
+	swap = mat[2][0];
+	mat[2][0] = mat[0][2];
+	mat[0][2] = swap;
+	swap = mat[2][1];
+	mat[2][1] = mat[1][2];
+	mat[1][2] = swap;
+}
+
+void scaleMat3(GFC_Matrix3 mat, GFC_Vector3D scale) {
+	mat[0][0] *= scale.x;
+	mat[0][1] *= scale.x;
+	mat[0][2] *= scale.x;
+
+	mat[1][0] *= scale.y;
+	mat[1][1] *= scale.y;
+	mat[1][2] *= scale.y;
+
+	mat[2][0] *= scale.z;
+	mat[2][1] *= scale.z;
+	mat[2][2] *= scale.z;
 }

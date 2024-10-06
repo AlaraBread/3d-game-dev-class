@@ -44,6 +44,7 @@ struct PhysicsBody_s {
 	MotionType motionType;
 	float mass;
 	GFC_Vector3D inertia;
+	GFC_Matrix3 invInertiaTensor;
 	GFC_Vector3D linearVelocity;
 	GFC_Vector3D angularVelocity;
 	GFC_Vector3D position;
@@ -52,7 +53,7 @@ struct PhysicsBody_s {
 	GFC_Vector3D visualScale;
 	Model *model;
 	Shape shape;
-	void (*think)(PhysicsBody *);
+	void (*think)(PhysicsBody *, float);
 };
 
 void physicsStart(int maxPhysicsBodies);
@@ -60,5 +61,7 @@ void physicsEnd();
 PhysicsBody *physicsCreateBody();
 void physicsUpdate(float delta);
 void drawPhysicsObjects();
+GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local);
+GFC_Vector3D physicsBodyGlobalToLocal(PhysicsBody *body, GFC_Vector3D global);
 
 #endif
