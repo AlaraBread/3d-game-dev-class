@@ -115,14 +115,13 @@ int main(int argc, char *argv[]) {
 	a->model = sphereModel;
 	a->position = gfc_vector3d(0, 0, 10);
 	a->mass = 0.1;
-	/*
 	PhysicsBody *b = physicsCreateBody();
 	b->shape = s;
 	b->model = sphereModel;
 	b->position.x = 10;
 	b->position.y = 1;
 	b->position.z = 3;
-	*/
+	b->mass = 0.01;
 	PhysicsBody *floor = physicsCreateBody();
 	Shape floorShape;
 	floorShape.shapeType = BOX;

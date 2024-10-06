@@ -3,9 +3,12 @@
 
 layout(binding = 0) uniform UniformBufferObject {
 	vec3 color;
+	float padding;
 	vec2 extents;
 	float zNear;
 	float zFar;
+	mat4 proj;
+	mat4 view;
 } ubo;
 layout(binding = 1) uniform sampler2D normalTexture;
 layout(binding = 2) uniform sampler2D depthTexture;
@@ -31,12 +34,27 @@ vec3 readNormal(vec2 UV) {
 	return v;
 }
 
-float linearizeDepth(float d, float zNear, float zFar) {
-	return zNear * zFar / (zFar + d * (zNear - zFar));
+float linearizeDepth(float d) {
+	return ubo.zNear * ubo.zFar / (ubo.zFar + d * (ubo.zNear - ubo.zFar));
 }
 
 float readDepth(vec2 UV) {
-	return linearizeDepth(texture(depthTexture, UV).x, 0.1, 100000);
+	return texture(depthTexture, UV).x;
+}
+
+// https://stackoverflow.com/a/32246825
+vec3 getWorldPos(vec2 texCoord, float depth) {
+	float z = depth * 2.0 - 1.0;
+
+	vec4 clipSpacePosition = vec4(texCoord * 2.0 - 1.0, z, 1.0);
+	vec4 viewSpacePosition = inverse(ubo.proj) * clipSpacePosition;
+
+	// Perspective division
+	viewSpacePosition /= viewSpacePosition.w;
+
+	vec4 worldSpacePosition = inverse(ubo.view) * viewSpacePosition;
+
+	return worldSpacePosition.xyz;
 }
 
 vec2 get_pixel_offset(int i) {
@@ -69,24 +87,27 @@ vec2 get_pixel_offset(int i) {
 	}
 }
 
+// loosely based on "(SIGGRAPH 2020) That's a wrap: a Manifold Garden Rendering Retrospective"
+// https://youtu.be/5VozHerlOQw?si=8NVWZDlQIwnCcFet&t=686
 void main() {
 	vec3 curNormal = readNormal(fragTexCoord);
 	float curDepth = readDepth(fragTexCoord);
-	vec2 pixel_size = 1.0/vec2(1280, 720);
+	vec3 curWorldPos = getWorldPos(fragTexCoord, curDepth);
+	vec2 pixel_size = 1.0/ubo.extents;
 	outColor.xyz = ubo.color;
 	float edginess = 0;
-	if(curDepth == 1.0) {
-		return;
-	}
 	for(int i = 0; i < 20; i++) {
 		vec2 offset = get_pixel_offset(i);
 		vec2 uv = offset*pixel_size+fragTexCoord;
 		vec3 n = readNormal(uv);
 		float d = readDepth(uv);
-		if(d == 1.0) {
+		if(d == 1.0 && curDepth == 1.0) {
 			continue;
 		}
-		if(dot(n, curNormal) < 0.4 || abs(d-curDepth) > 0.1) {
+		vec3 w = getWorldPos(uv, d);
+		float normalDist = dot(n, curNormal);
+		float planeDist = abs(dot(curNormal, w - curWorldPos));
+		if(normalDist < 0.4 || planeDist > 0.1) {
 			edginess += 1.0/20.0;
 		}
 	}

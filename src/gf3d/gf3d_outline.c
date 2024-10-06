@@ -17,9 +17,12 @@ typedef struct {
 
 typedef struct {
 	GFC_Vector3D color;
+	float padding;
 	GFC_Vector2D extents;
 	float zNear;
 	float zFar;
+	GFC_Matrix4 proj;
+	GFC_Matrix4 view;
 } OutlineUBO;
 
 static struct {
@@ -134,6 +137,9 @@ void render_outlines() {
 	gf3d_outline.ubo.color.z = 0.0;
 	gf3d_outline.ubo.zNear = 0.1;
 	gf3d_outline.ubo.zFar = 100000.0;
+	ModelViewProjection mvp = gf3d_vgraphics_get_mvp();
+	gfc_matrix4_copy(gf3d_outline.ubo.view, mvp.view);
+	gfc_matrix4_copy(gf3d_outline.ubo.proj, mvp.proj);
 
 	gf3d_pipeline_queue_render(
 		gf3d_outline.pipe, gf3d_outline.vertexBuffer,
