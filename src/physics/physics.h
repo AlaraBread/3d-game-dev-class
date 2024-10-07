@@ -43,6 +43,8 @@ struct PhysicsBody_s {
 	Bool inuse;
 	MotionType motionType;
 	float mass;
+	float bounce;
+	float friction;
 	GFC_Vector3D inertia;
 	GFC_Matrix3 invInertiaTensor;
 	GFC_Vector3D linearVelocity;

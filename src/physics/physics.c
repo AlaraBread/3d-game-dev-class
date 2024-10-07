@@ -44,6 +44,8 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 	body->inertia = gfc_vector3d(1, 1, 1);
 	body->visualScale = gfc_vector3d(1, 1, 1);
 	body->linearVelocity = gfc_vector3d(0.1, 0.1, 0.1);
+	body->friction = 1.0;
+	body->bounce = 1.0;
 }
 
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b);
@@ -173,7 +175,7 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 			gfc_vector3d_dot_product(col.normal, bInertia));
 	slog("normalMass = %f", normalMass);
 	// normal impulse
-	float bounce = 0.9;
+	float bounce = SDL_clamp(a->bounce*b->bounce, 0.0, 1.0);
 	GFC_Vector3D av = velocityAtPoint(a, col.aPosition);
 	GFC_Vector3D bv = velocityAtPoint(b, col.bPosition);
 	GFC_Vector3D dv;
@@ -183,7 +185,7 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	float normalImpulseMagnitude = gfc_vector3d_magnitude(normalImpulse);
 	// tangential impulse
 	// https://github.com/godotengine/godot/blob/master/modules/godot_physics_3d/godot_body_pair_3d.cpp#L566
-	float friction = 1.0;
+	float friction = SDL_clamp(a->friction*b->friction, 0.0, 1.0);
 	GFC_Vector3D tv = projectVectorOntoPlane(dv, col.normal);
 	slog("dtv: %f %f %f", tv.x, tv.y, tv.z);
 	float tvl = gfc_vector3d_magnitude(tv);
