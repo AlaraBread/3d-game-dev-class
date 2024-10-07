@@ -27,6 +27,7 @@
 #include "gf3d_vgraphics.h"
 
 #include "physics.h"
+#include "moments_of_inertia.h"
 
 extern int __DEBUG;
 
@@ -115,13 +116,19 @@ int main(int argc, char *argv[]) {
 	a->model = sphereModel;
 	a->position = gfc_vector3d(0, 0, 10);
 	a->mass = 0.1;
+	calculateInertiaForBody(a);
 	PhysicsBody *b = physicsCreateBody();
-	b->shape = s;
-	b->model = sphereModel;
+	Shape boxShape;
+	boxShape.shapeType = BOX;
+	boxShape.shape.box.extents = gfc_vector3d(4, 4, 4);
+	b->shape = boxShape;
+	b->model = boxModel;
 	b->position.x = 10;
 	b->position.y = 1;
-	b->position.z = 3;
+	b->position.z = 30;
 	b->mass = 0.01;
+	calculateInertiaForBody(b);
+	b->visualScale = gfc_vector3d(4, 4, 4);
 	PhysicsBody *floor = physicsCreateBody();
 	Shape floorShape;
 	floorShape.shapeType = BOX;
