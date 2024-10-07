@@ -28,6 +28,7 @@
 
 #include "physics.h"
 #include "moments_of_inertia.h"
+#include "player.h"
 
 extern int __DEBUG;
 
@@ -49,21 +50,6 @@ void draw_origin() {
 }
 
 double calculate_delta_time();
-
-void controlledThink(PhysicsBody *self, float delta) {
-	float d = 10*delta;
-	const Uint8 *keys = SDL_GetKeyboardState(NULL);
-	if(keys[SDL_SCANCODE_I]) { self->linearVelocity.y -= d; }
-	if(keys[SDL_SCANCODE_J]) { self->linearVelocity.x += d; }
-	if(keys[SDL_SCANCODE_K]) { self->linearVelocity.y += d; }
-	if(keys[SDL_SCANCODE_L]) { self->linearVelocity.x -= d; }
-	if(keys[SDL_SCANCODE_U]) { self->linearVelocity.z += d*20; }
-	if(keys[SDL_SCANCODE_O]) { self->linearVelocity.z -= d*20; }
-	if(keys[SDL_SCANCODE_T]) self->angularVelocity.x += d*2;
-	if(keys[SDL_SCANCODE_G]) self->angularVelocity.x -= d*2;
-	if(keys[SDL_SCANCODE_F]) self->angularVelocity.y += d*2;
-	if(keys[SDL_SCANCODE_H]) self->angularVelocity.y -= d*2;
-}
 
 int main(int argc, char *argv[]) {
 	// local variables
@@ -94,7 +80,6 @@ int main(int argc, char *argv[]) {
 	sky = gf3d_model_load("assets/models/sky.model");
 	gfc_matrix4_identity(skyMat);
 	Model *boxModel = gf3d_model_load("assets/models/test_cube/test_cube.model");
-	Model *sphereModel = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
 	gfc_matrix4_identity(dinoMat);
 	// camera
 	gf3d_camera_set_scale(gfc_vector3d(1, 1, 1));
@@ -105,18 +90,7 @@ int main(int argc, char *argv[]) {
 
 	gf3d_camera_enable_free_look(1);
 	physicsStart(10);
-	Shape s;
-	//s.shapeType = BOX;
-	//s.shape.box.extents = gfc_vector3d(1, 1, 1);
-	s.shapeType = SPHERE;
-	s.shape.sphere.radius = 4.0;
-	PhysicsBody *a = physicsCreateBody();
-	a->think = controlledThink;
-	a->shape = s;
-	a->model = sphereModel;
-	a->position = gfc_vector3d(0, 0, 10);
-	a->mass = 0.1;
-	calculateInertiaForBody(a);
+	createPlayer();
 	PhysicsBody *b = physicsCreateBody();
 	Shape boxShape;
 	boxShape.shapeType = BOX;
@@ -181,12 +155,20 @@ int main(int argc, char *argv[]) {
 	// main game loop
 	Bool done = false;
 	while(!done) {
+		SDL_PumpEvents();
+		SDL_Event event;
+		while(SDL_PollEvent(&event)) {
+			if (event.type == SDL_WINDOWEVENT) {
+				if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+					exit(0);
+				}
+			}
+		}
 		gfc_input_update();
-		gf2d_mouse_update();
 		double delta = calculate_delta_time();
 		gf2d_font_update();
 		// camera updaes
-		gf3d_camera_controls_update(delta);
+		//gf3d_camera_controls_update(delta);
 		gf3d_camera_update_view();
 		gf3d_camera_get_view_mat4(gf3d_vgraphics_get_view_matrix());
 

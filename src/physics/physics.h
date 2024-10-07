@@ -56,6 +56,8 @@ struct PhysicsBody_s {
 	Model *model;
 	Shape shape;
 	void (*think)(PhysicsBody *, float);
+	// player specific
+	float yaw, pitch;
 };
 
 void physicsStart(int maxPhysicsBodies);
