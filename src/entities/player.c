@@ -9,7 +9,7 @@ void playerThink(PhysicsBody *self, float delta) {
 	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
 	self->pitch -= mouseMotion.y*0.01;
 	self->yaw -= mouseMotion.x*0.01;
-	self->pitch = SDL_clamp(self->pitch, -M_PI/2.0, M_PI/2.0);
+	self->pitch = SDL_clamp(self->pitch, -M_PI/3.0, M_PI/3.0);
 	// position camera
 	GFC_Vector3D cameraPos = gfc_vector3d(30, 0, 0);
 	gfc_vector3d_rotate_about_y(&cameraPos, self->pitch);
@@ -35,7 +35,7 @@ void playerThink(PhysicsBody *self, float delta) {
 		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, forward);
 	}
 	if(gfc_input_command_pressed("jump")) {
-		GFC_Vector3D jump = gfc_vector3d(0, 0, 100);
+		GFC_Vector3D jump = gfc_vector3d(0, 0, 30);
 		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, jump);
 	}
 }
@@ -50,6 +50,7 @@ PhysicsBody *createPlayer() {
 	player->model = sphereModel;
 	player->position = gfc_vector3d(0, 0, 10);
 	player->mass = 0.01;
+	player->bounce = 0.6;
 	calculateInertiaForBody(player);
 	player->think = playerThink;
 	SDL_SetRelativeMouseMode(true);

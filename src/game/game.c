@@ -14,7 +14,6 @@
 #include "gf2d_actor.h"
 #include "gf2d_draw.h"
 #include "gf2d_font.h"
-#include "gf2d_mouse.h"
 #include "gf2d_sprite.h"
 
 #include "gf3d_camera.h"
@@ -76,7 +75,6 @@ int main(int argc, char *argv[]) {
 	slog_sync();
 
 	// game setup
-	gf2d_mouse_load("assets/actors/mouse.actor");
 	sky = gf3d_model_load("assets/models/sky.model");
 	gfc_matrix4_identity(skyMat);
 	Model *boxModel = gf3d_model_load("assets/models/test_cube/test_cube.model");
@@ -156,11 +154,9 @@ int main(int argc, char *argv[]) {
 	Bool done = false;
 	while(!done) {
 		gfc_input_update();
-		gf2d_mouse_update();
 		double delta = calculate_delta_time();
 		gf2d_font_update();
 		// camera updaes
-		//gf3d_camera_controls_update(delta);
 		gf3d_camera_update_view();
 		gf3d_camera_get_view_mat4(gf3d_vgraphics_get_view_matrix());
 
@@ -173,7 +169,6 @@ int main(int argc, char *argv[]) {
 		draw_origin();
 		render_outlines();
 		// 2D draws
-		gf2d_mouse_draw();
 		gf2d_font_draw_line_tag("ALT+F4 to exit", FT_H1, GFC_COLOR_WHITE, gfc_vector2d(10, 10));
 		gf3d_vgraphics_render_end();
 		slog_sync();

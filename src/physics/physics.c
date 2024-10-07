@@ -73,7 +73,7 @@ void physicsUpdate(float delta) {
 		gfc_vector3d_sub(body->linearVelocity, body->linearVelocity, linearDampVector);
 		// angular damp
 		GFC_Vector3D angularDampVector;
-		gfc_vector3d_scale(angularDampVector, body->angularVelocity, delta * 0.1);
+		gfc_vector3d_scale(angularDampVector, body->angularVelocity, delta * 0.4);
 		gfc_vector3d_sub(body->angularVelocity, body->angularVelocity, angularDampVector);
 		// euler integration
 		GFC_Vector3D angularMove;
