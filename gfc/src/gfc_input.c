@@ -688,6 +688,9 @@ GFC_List *gfc_input_get_by_scancode(SDL_Scancode keysym)
     return keylist;
 }
 
+static GFC_Vector2D mousePosition;
+static GFC_Vector2D mouseMotion;
+
 void gfc_input_update()
 {
     Input *in = NULL;
@@ -720,6 +723,7 @@ void gfc_input_update()
         if (!in)continue;
         gfc_input_update_command(in);
     }
+	mouseMotion = gfc_vector2d(0, 0);
     while(SDL_PollEvent(&event))
     {
         if (event.type == SDL_WINDOWEVENT)
@@ -753,8 +757,23 @@ void gfc_input_update()
                 gfc_input_data.mouse_wheel_x = -1;
             }
         }
+		if(event.type == SDL_MOUSEMOTION)
+		{
+			mousePosition.x = (float)event.motion.x;
+			mousePosition.y = (float)event.motion.y;
+			mouseMotion.x = (float)event.motion.xrel;
+			mouseMotion.y = (float)event.motion.yrel;
+		}
     }
 
+}
+
+GFC_Vector2D gfc_input_get_mouse_motion() {
+	return mouseMotion;
+}
+
+GFC_Vector2D gfc_input_get_mouse_position() {
+	return mousePosition;
 }
 
 GFC_InputModKey gfc_input_key_mod_check(const char * buffer)

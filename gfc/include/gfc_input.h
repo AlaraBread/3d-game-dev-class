@@ -109,6 +109,9 @@ Uint8 gfc_input_mouse_wheel_down();
 Uint8 gfc_input_mouse_wheel_left();
 Uint8 gfc_input_mouse_wheel_right();
 
+GFC_Vector2D gfc_input_get_mouse_motion();
+GFC_Vector2D gfc_input_get_mouse_position();
+
 /**
  * @brief check the state of a controller's button
  * @param controller the controller index to check

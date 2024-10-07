@@ -155,16 +155,8 @@ int main(int argc, char *argv[]) {
 	// main game loop
 	Bool done = false;
 	while(!done) {
-		SDL_PumpEvents();
-		SDL_Event event;
-		while(SDL_PollEvent(&event)) {
-			if (event.type == SDL_WINDOWEVENT) {
-				if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
-					exit(0);
-				}
-			}
-		}
 		gfc_input_update();
+		gf2d_mouse_update();
 		double delta = calculate_delta_time();
 		gf2d_font_update();
 		// camera updaes

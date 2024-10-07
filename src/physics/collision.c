@@ -244,8 +244,10 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		} else {
 			// floating point imprecision caused an invalid state
 			// nothing we can do here, just return a miss
-			if(DEBUG_MPR_REFINEMENT) slog("floating point imprecision caused an invalid state");
-			printf("p1=%d\np2=%d\np3=%d\n", p1, p2, p3);
+			if(DEBUG_MPR_REFINEMENT) {
+				slog("floating point imprecision caused an invalid state");
+				printf("p1=%d\np2=%d\np3=%d\n", p1, p2, p3);
+			}
 			break;
 		}
 		i++;
