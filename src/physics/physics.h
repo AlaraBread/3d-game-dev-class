@@ -4,8 +4,7 @@
 #include "gf3d_model.h"
 #include "gfc_matrix.h"
 #include "gfc_vector.h"
-
-typedef struct PhysicsBody_s PhysicsBody;
+#include "collision.h"
 
 typedef enum ShapeType_e {
 	SPHERE,
@@ -39,6 +38,8 @@ typedef enum {
 	STATIC,
 } MotionType;
 
+#define MAX_REPORTED_COLLISIONS 3
+
 struct PhysicsBody_s {
 	Bool inuse;
 	MotionType motionType;
@@ -55,9 +56,13 @@ struct PhysicsBody_s {
 	GFC_Vector3D visualScale;
 	Model *model;
 	Shape shape;
+	int numReportedCollisions;
+	Collision reportedCollisions[MAX_REPORTED_COLLISIONS];
 	void (*think)(PhysicsBody *, float);
 	// player specific
 	float yaw, pitch;
+	float jumpBufferTimer, coyoteTimer;
+	Collision coyoteCollision;
 };
 
 void physicsStart(int maxPhysicsBodies);
@@ -67,5 +72,6 @@ void physicsUpdate(float delta);
 void drawPhysicsObjects();
 GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local);
 GFC_Vector3D physicsBodyGlobalToLocal(PhysicsBody *body, GFC_Vector3D global);
+void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point);
 
 #endif

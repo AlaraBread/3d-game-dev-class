@@ -56,7 +56,12 @@ void physicsUpdate(float delta) {
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];
 		if(!body->inuse) continue;
-		if(body->think) body->think(body, delta);
+		body->numReportedCollisions = 0;
+		memset(body->reportedCollisions, 0, sizeof(Collision)*MAX_REPORTED_COLLISIONS);
+	}
+	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
+		PhysicsBody *body = &physics.physicsBodies[i];
+		if(!body->inuse) continue;
 		// gravity
 		if(body->motionType == DYNAMIC) {
 			body->linearVelocity.z -= delta*100;
@@ -65,7 +70,19 @@ void physicsUpdate(float delta) {
 			if(i <= j) continue;
 			PhysicsBody *otherBody = &physics.physicsBodies[j];
 			if(!otherBody->inuse) continue;
-			reactToCollision(doCollision(body, otherBody), body, otherBody);
+			Collision col = doCollision(body, otherBody);
+			if(!col.hit) continue;
+			col.a = body;
+			col.b = otherBody;
+			reactToCollision(col, body, otherBody);
+			if(body->numReportedCollisions < MAX_REPORTED_COLLISIONS) {
+				body->reportedCollisions[body->numReportedCollisions] = col;
+				body->numReportedCollisions++;
+			}
+			if(otherBody->numReportedCollisions < MAX_REPORTED_COLLISIONS) {
+				otherBody->reportedCollisions[otherBody->numReportedCollisions] = col;
+				otherBody->numReportedCollisions++;
+			}
 		}
 		// linear damp
 		GFC_Vector3D linearDampVector;
@@ -84,6 +101,11 @@ void physicsUpdate(float delta) {
 		gfc_vector3d_scale(linearMove, body->linearVelocity, delta);
 		gfc_vector3d_add(body->position, body->position, linearMove);
 		physicsBodyUpdateInertiaTensor(body);
+	}
+	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
+		PhysicsBody *body = &physics.physicsBodies[i];
+		if(!body->inuse) continue;
+		if(body->think) body->think(body, delta);
 	}
 }
 
@@ -148,12 +170,9 @@ GFC_Vector3D velocityAtPoint(PhysicsBody *body, GFC_Vector3D point) {
 	return v;
 }
 
-void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point);
-
 // adapted from the 2d version that i wrote for 2d game programming
 // https://github.com/AlaraBread/2d-game-dev-class/blob/main/src/entities/physics.c#L402
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
-	if(!col.hit) return;
 	// react to collision
 	GFC_Vector3D ra;
 	GFC_Vector3D aCom = physicsBodyLocalToGlobal(a, a->centerOfMass);
@@ -230,6 +249,9 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 }
 
 void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point) {
+	if(body->motionType != DYNAMIC) {
+		return;
+	}
 	GFC_Vector3D linearImpulse;
 	gfc_vector3d_scale(linearImpulse, impulse, 1.0 / body->mass);
 	gfc_vector3d_add(body->linearVelocity, body->linearVelocity, linearImpulse);

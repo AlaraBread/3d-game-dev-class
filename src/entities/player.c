@@ -1,8 +1,18 @@
+#include "simple_logger.h"
 #include "util.h"
+#include "collision.h"
+#include "physics.h"
 #include "player.h"
 #include "gf3d_camera.h"
 #include "moments_of_inertia.h"
 #include "gfc_input.h"
+
+#define JUMP_BUFFER 0.25
+#define COYOTE_TIME 0.25
+#define AIR_CONTROL 2
+#define ANGULAR_SPEED 20
+
+void jump(Collision col);
 
 void playerThink(PhysicsBody *self, float delta) {
 	// camera movement
@@ -17,27 +27,75 @@ void playerThink(PhysicsBody *self, float delta) {
 	gfc_vector3d_add(cameraPos, self->position, cameraPos);
 	gf3d_camera_look_at(self->position, &cameraPos);
 	// ball movement
-	float speed = delta*20.0;
-	GFC_Vector3D forward = gfc_vector3d(speed, 0, 0);
-	GFC_Vector3D left = gfc_vector3d(0, speed, 0);
+	float speed = delta*ANGULAR_SPEED;
+	GFC_Vector3D forward = gfc_vector3d(-speed, 0, 0);
+	GFC_Vector3D left = gfc_vector3d(0, -speed, 0);
 	gfc_vector3d_rotate_about_z(&forward, self->yaw);
 	gfc_vector3d_rotate_about_z(&left, self->yaw);
+	GFC_Vector3D airControl;
 	if(gfc_input_command_held("forward")) {
-		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, left);
+		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
+		gfc_vector3d_scale(airControl, forward, AIR_CONTROL);
+		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
 	if(gfc_input_command_held("back")) {
-		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
+		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, left);
+		gfc_vector3d_scale(airControl, forward, -AIR_CONTROL);
+		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
 	if(gfc_input_command_held("left")) {
-		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, forward);
+		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, forward);
+		gfc_vector3d_scale(airControl, left, AIR_CONTROL);
+		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
 	if(gfc_input_command_held("right")) {
-		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, forward);
+		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, forward);
+		gfc_vector3d_scale(airControl, left, -AIR_CONTROL);
+		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
+	self->jumpBufferTimer -= delta;
+	self->jumpBufferTimer = MAX(self->jumpBufferTimer, 0);
+	self->coyoteTimer -= delta;
+	self->coyoteTimer = MAX(self->coyoteTimer, 0);
 	if(gfc_input_command_pressed("jump")) {
-		GFC_Vector3D jump = gfc_vector3d(0, 0, 30);
-		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, jump);
+		if(self->reportedCollisions[0].hit) {
+			jump(self->reportedCollisions[0]);
+			self->jumpBufferTimer = 0;
+			self->coyoteTimer = 0;
+		} else {
+			// pressed jump without touching surface
+			if(self->coyoteCollision.hit && self->coyoteTimer > 0.01 && self->coyoteCollision.hit) {
+				// coyote jump
+				jump(self->coyoteCollision);
+				self->jumpBufferTimer = 0;
+				self->coyoteTimer = 0;
+				self->coyoteCollision.hit = false;
+			} else {
+				// buffer jump
+				self->jumpBufferTimer = JUMP_BUFFER;
+			}
+		}
+	} else if(self->reportedCollisions[0].hit) {
+		// didnt press jump, but touching surface
+		if(self->jumpBufferTimer > 0.01) {
+			// we pressed jump recently, so jump
+			jump(self->reportedCollisions[0]);
+			self->jumpBufferTimer = 0;
+			self->coyoteTimer = 0;
+		} else {
+			// save collision for coyote time
+			self->coyoteCollision = self->reportedCollisions[0];
+			self->coyoteTimer = COYOTE_TIME;
+		}
 	}
+}
+
+void jump(Collision col) {
+	GFC_Vector3D jump;
+	gfc_vector3d_scale(jump, col.normal, 0.5);
+	applyImpulse(col.a, jump, col.aPosition);
+	gfc_vector3d_negate(jump, jump);
+	applyImpulse(col.b, jump, col.bPosition);
 }
 
 PhysicsBody *createPlayer() {
@@ -50,7 +108,8 @@ PhysicsBody *createPlayer() {
 	player->model = sphereModel;
 	player->position = gfc_vector3d(0, 0, 10);
 	player->mass = 0.01;
-	player->bounce = 0.6;
+	player->bounce = 0.5;
+	player->friction = 1.0;
 	calculateInertiaForBody(player);
 	player->think = playerThink;
 	SDL_SetRelativeMouseMode(true);

@@ -1,7 +1,9 @@
-#ifndef __ALARA_GJK__
-#define __ALARA_GJK__
+#ifndef __ALARA_COLLISION__
+#define __ALARA_COLLISION__
 
-#include "physics.h"
+#include "gfc_vector.h"
+
+typedef struct PhysicsBody_s PhysicsBody;
 
 typedef struct Collision_s {
 	// true if we detected a collision
@@ -11,6 +13,7 @@ typedef struct Collision_s {
 	GFC_Vector3D bPosition;
 	float penetrationDepth;
 	GFC_Vector3D normal;
+	PhysicsBody *a, *b;
 } Collision;
 
 Collision doCollision(PhysicsBody *a, PhysicsBody *b);

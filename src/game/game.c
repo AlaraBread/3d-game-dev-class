@@ -98,8 +98,8 @@ int main(int argc, char *argv[]) {
 	b->position.x = 10;
 	b->position.y = 1;
 	b->position.z = 30;
-	b->mass = 0.01;
-	b->friction = 0.2;
+	b->mass = 0.003;
+	b->friction = 0.8;
 	b->bounce = 0.4;
 	calculateInertiaForBody(b);
 	b->visualScale = boxShape.shape.box.extents;
