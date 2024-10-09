@@ -17,6 +17,8 @@ layout(location = 1) in vec2 fragTexCoord;
 
 layout(location = 0) out vec4 outColor;
 
+#define PI 3.1415926538
+
 float cubicIn(float t) {
   return t * t * t;
 }
@@ -107,7 +109,7 @@ void main() {
 		vec3 w = getWorldPos(uv, d);
 		float normalDist = dot(n, curNormal);
 		float planeDist = abs(dot(curNormal, w - curWorldPos));
-		if(normalDist < 0.4 || planeDist > 0.1) {
+		if(normalDist < cos(PI/4) || planeDist > 0.1) {
 			edginess += 1.0/20.0;
 		}
 	}
