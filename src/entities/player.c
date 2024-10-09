@@ -18,21 +18,21 @@ void jump(Collision cols[MAX_REPORTED_COLLISIONS]);
 void playerThink(PhysicsBody *self, float delta) {
 	// camera movement
 	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
-	self->pitch -= mouseMotion.y*0.01;
-	self->yaw -= mouseMotion.x*0.01;
-	self->pitch = SDL_clamp(self->pitch, -M_PI/3.0, M_PI/3.0);
+	self->entity.player.pitch -= mouseMotion.y*0.01;
+	self->entity.player.yaw -= mouseMotion.x*0.01;
+	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI/3.0, M_PI/3.0);
 	// position camera
 	GFC_Vector3D cameraPos = gfc_vector3d(30, 0, 0);
-	gfc_vector3d_rotate_about_y(&cameraPos, self->pitch);
-	gfc_vector3d_rotate_about_z(&cameraPos, self->yaw);
+	gfc_vector3d_rotate_about_y(&cameraPos, self->entity.player.pitch);
+	gfc_vector3d_rotate_about_z(&cameraPos, self->entity.player.yaw);
 	gfc_vector3d_add(cameraPos, self->position, cameraPos);
 	gf3d_camera_look_at(self->position, &cameraPos);
 	// ball movement
 	float speed = delta*ANGULAR_SPEED;
 	GFC_Vector3D forward = gfc_vector3d(-speed, 0, 0);
 	GFC_Vector3D left = gfc_vector3d(0, -speed, 0);
-	gfc_vector3d_rotate_about_z(&forward, self->yaw);
-	gfc_vector3d_rotate_about_z(&left, self->yaw);
+	gfc_vector3d_rotate_about_z(&forward, self->entity.player.yaw);
+	gfc_vector3d_rotate_about_z(&left, self->entity.player.yaw);
 	GFC_Vector3D airControl;
 	if(gfc_input_command_held("forward")) {
 		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
@@ -54,39 +54,39 @@ void playerThink(PhysicsBody *self, float delta) {
 		gfc_vector3d_scale(airControl, left, -AIR_CONTROL);
 		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
-	self->jumpBufferTimer -= delta;
-	self->jumpBufferTimer = MAX(self->jumpBufferTimer, 0);
-	self->coyoteTimer -= delta;
-	self->coyoteTimer = MAX(self->coyoteTimer, 0);
+	self->entity.player.jumpBufferTimer -= delta;
+	self->entity.player.jumpBufferTimer = MAX(self->entity.player.jumpBufferTimer, 0);
+	self->entity.player.coyoteTimer -= delta;
+	self->entity.player.coyoteTimer = MAX(self->entity.player.coyoteTimer, 0);
 	if(gfc_input_command_pressed("jump")) {
 		if(self->reportedCollisions[0].hit) {
 			jump(self->reportedCollisions);
-			self->jumpBufferTimer = 0;
-			self->coyoteTimer = 0;
+			self->entity.player.jumpBufferTimer = 0;
+			self->entity.player.coyoteTimer = 0;
 		} else {
 			// pressed jump without touching surface
-			if(self->coyoteCollisions[0].hit && self->coyoteTimer > 0.01) {
+			if(self->entity.player.coyoteCollisions[0].hit && self->entity.player.coyoteTimer > 0.01) {
 				// coyote jump
-				jump(self->coyoteCollisions);
-				self->jumpBufferTimer = 0;
-				self->coyoteTimer = 0;
-				self->coyoteCollisions[0].hit = false;
+				jump(self->entity.player.coyoteCollisions);
+				self->entity.player.jumpBufferTimer = 0;
+				self->entity.player.coyoteTimer = 0;
+				self->entity.player.coyoteCollisions[0].hit = false;
 			} else {
 				// buffer jump
-				self->jumpBufferTimer = JUMP_BUFFER;
+				self->entity.player.jumpBufferTimer = JUMP_BUFFER;
 			}
 		}
 	} else if(self->reportedCollisions[0].hit) {
 		// didnt press jump, but touching surface
-		if(self->jumpBufferTimer > 0.01) {
+		if(self->entity.player.jumpBufferTimer > 0.01) {
 			// we pressed jump recently, so jump
 			jump(self->reportedCollisions);
-			self->jumpBufferTimer = 0;
-			self->coyoteTimer = 0;
+			self->entity.player.jumpBufferTimer = 0;
+			self->entity.player.coyoteTimer = 0;
 		} else {
 			// save collision for coyote time
-			memcpy(self->coyoteCollisions, self->reportedCollisions, sizeof(Collision)*MAX_REPORTED_COLLISIONS);
-			self->coyoteTimer = COYOTE_TIME;
+			memcpy(self->entity.player.coyoteCollisions, self->reportedCollisions, sizeof(Collision)*MAX_REPORTED_COLLISIONS);
+			self->entity.player.coyoteTimer = COYOTE_TIME;
 		}
 	}
 }
@@ -120,5 +120,6 @@ PhysicsBody *createPlayer() {
 	calculateInertiaForBody(player);
 	player->think = playerThink;
 	SDL_SetRelativeMouseMode(true);
+	player->entityType = PLAYER;
 	return player;
 }

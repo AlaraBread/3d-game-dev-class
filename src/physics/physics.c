@@ -93,13 +93,15 @@ void physicsUpdate(float delta) {
 		gfc_vector3d_scale(angularDampVector, body->angularVelocity, delta * 0.4);
 		gfc_vector3d_sub(body->angularVelocity, body->angularVelocity, angularDampVector);
 		// euler integration
-		GFC_Vector3D angularMove;
-		gfc_vector3d_scale(angularMove, body->angularVelocity, delta);
-		body->rotation = compose_euler_vectors(body->rotation, angularMove);
-		wrap_euler_vector(&body->rotation);
-		GFC_Vector3D linearMove;
-		gfc_vector3d_scale(linearMove, body->linearVelocity, delta);
-		gfc_vector3d_add(body->position, body->position, linearMove);
+		if(body->motionType == DYNAMIC) {
+			GFC_Vector3D angularMove;
+			gfc_vector3d_scale(angularMove, body->angularVelocity, delta);
+			body->rotation = compose_euler_vectors(body->rotation, angularMove);
+			wrap_euler_vector(&body->rotation);
+			GFC_Vector3D linearMove;
+			gfc_vector3d_scale(linearMove, body->linearVelocity, delta);
+			gfc_vector3d_add(body->position, body->position, linearMove);
+		}
 		physicsBodyUpdateInertiaTensor(body);
 	}
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {

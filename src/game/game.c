@@ -30,6 +30,7 @@
 #include "player.h"
 #include "box.h"
 #include "floor.h"
+#include "moving_platform.h"
 
 extern int __DEBUG;
 
@@ -104,6 +105,7 @@ int main(int argc, char *argv[]) {
 	createFloor(gfc_vector3d(0, floorSize, 0), gfc_vector3d(M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(0, -floorSize, 0), gfc_vector3d(-M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 
+	createMovingPlatform(gfc_vector3d(4, 4, -1), gfc_vector3d(-32, 0, 0), 10);
 	// windows
 
 	// main game loop

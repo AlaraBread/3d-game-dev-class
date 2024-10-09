@@ -40,6 +40,12 @@ typedef enum {
 
 #define MAX_REPORTED_COLLISIONS 3
 
+typedef enum {
+	NONE,
+	PLAYER,
+	PLATFORM,
+} EntityType;
+
 struct PhysicsBody_s {
 	Bool inuse;
 	MotionType motionType;
@@ -59,10 +65,18 @@ struct PhysicsBody_s {
 	int numReportedCollisions;
 	Collision reportedCollisions[MAX_REPORTED_COLLISIONS];
 	void (*think)(PhysicsBody *, float);
-	// player specific
-	float yaw, pitch;
-	float jumpBufferTimer, coyoteTimer;
-	Collision coyoteCollisions[MAX_REPORTED_COLLISIONS];
+	EntityType entityType;
+	union {
+		struct {
+			float yaw, pitch;
+			float jumpBufferTimer, coyoteTimer;
+			Collision coyoteCollisions[MAX_REPORTED_COLLISIONS];
+		} player;
+		struct {
+			GFC_Vector3D movementStart, movementEnd;
+			float movementSpeed, direction, moveRatio;
+		} platform;
+	} entity;
 };
 
 void physicsStart(int maxPhysicsBodies);
