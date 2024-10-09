@@ -11,8 +11,9 @@
 #define COYOTE_TIME 0.25
 #define AIR_CONTROL 2
 #define ANGULAR_SPEED 20
+#define JUMP_IMPULSE 0.5
 
-void jump(Collision col);
+void jump(Collision cols[MAX_REPORTED_COLLISIONS]);
 
 void playerThink(PhysicsBody *self, float delta) {
 	// camera movement
@@ -59,17 +60,17 @@ void playerThink(PhysicsBody *self, float delta) {
 	self->coyoteTimer = MAX(self->coyoteTimer, 0);
 	if(gfc_input_command_pressed("jump")) {
 		if(self->reportedCollisions[0].hit) {
-			jump(self->reportedCollisions[0]);
+			jump(self->reportedCollisions);
 			self->jumpBufferTimer = 0;
 			self->coyoteTimer = 0;
 		} else {
 			// pressed jump without touching surface
-			if(self->coyoteCollision.hit && self->coyoteTimer > 0.01 && self->coyoteCollision.hit) {
+			if(self->coyoteCollisions[0].hit && self->coyoteTimer > 0.01) {
 				// coyote jump
-				jump(self->coyoteCollision);
+				jump(self->coyoteCollisions);
 				self->jumpBufferTimer = 0;
 				self->coyoteTimer = 0;
-				self->coyoteCollision.hit = false;
+				self->coyoteCollisions[0].hit = false;
 			} else {
 				// buffer jump
 				self->jumpBufferTimer = JUMP_BUFFER;
@@ -79,23 +80,29 @@ void playerThink(PhysicsBody *self, float delta) {
 		// didnt press jump, but touching surface
 		if(self->jumpBufferTimer > 0.01) {
 			// we pressed jump recently, so jump
-			jump(self->reportedCollisions[0]);
+			jump(self->reportedCollisions);
 			self->jumpBufferTimer = 0;
 			self->coyoteTimer = 0;
 		} else {
 			// save collision for coyote time
-			self->coyoteCollision = self->reportedCollisions[0];
+			memcpy(self->coyoteCollisions, self->reportedCollisions, sizeof(Collision)*MAX_REPORTED_COLLISIONS);
 			self->coyoteTimer = COYOTE_TIME;
 		}
 	}
 }
 
-void jump(Collision col) {
-	GFC_Vector3D jump;
-	gfc_vector3d_scale(jump, col.normal, 0.5);
-	applyImpulse(col.a, jump, col.aPosition);
-	gfc_vector3d_negate(jump, jump);
-	applyImpulse(col.b, jump, col.bPosition);
+void jump(Collision cols[MAX_REPORTED_COLLISIONS]) {
+	int numCollisions = 0;
+	while(numCollisions < MAX_REPORTED_COLLISIONS && cols[numCollisions].hit) numCollisions++;
+	float jumpAmount = JUMP_IMPULSE/numCollisions;
+	for(int i = 0; i < numCollisions; i++) {
+		Collision *col = &cols[i];
+		GFC_Vector3D jump;
+		gfc_vector3d_scale(jump, col->normal, jumpAmount);
+		applyImpulse(col->a, jump, col->aPosition);
+		gfc_vector3d_negate(jump, jump);
+		applyImpulse(col->b, jump, col->bPosition);
+	}
 }
 
 PhysicsBody *createPlayer() {

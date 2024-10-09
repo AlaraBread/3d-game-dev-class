@@ -6,6 +6,7 @@
 #include "shapes.h"
 #include "simple_logger.h"
 #include "util.h"
+#include "gfc_vector.h"
 
 Collision mpr(PhysicsBody *a, PhysicsBody *b);
 

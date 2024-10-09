@@ -3,6 +3,6 @@
 
 #include "physics.h"
 
-GFC_Vector3D calculateInertiaForBody(PhysicsBody *body);
+void calculateInertiaForBody(PhysicsBody *body);
 
 #endif

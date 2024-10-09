@@ -62,7 +62,7 @@ struct PhysicsBody_s {
 	// player specific
 	float yaw, pitch;
 	float jumpBufferTimer, coyoteTimer;
-	Collision coyoteCollision;
+	Collision coyoteCollisions[MAX_REPORTED_COLLISIONS];
 };
 
 void physicsStart(int maxPhysicsBodies);

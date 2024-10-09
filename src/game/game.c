@@ -28,6 +28,8 @@
 #include "physics.h"
 #include "moments_of_inertia.h"
 #include "player.h"
+#include "box.h"
+#include "floor.h"
 
 extern int __DEBUG;
 
@@ -49,6 +51,8 @@ void draw_origin() {
 }
 
 double calculate_delta_time();
+
+#define FIXED_TIMESTEP (1.0/120.0)
 
 int main(int argc, char *argv[]) {
 	// local variables
@@ -77,7 +81,6 @@ int main(int argc, char *argv[]) {
 	// game setup
 	sky = gf3d_model_load("assets/models/sky.model");
 	gfc_matrix4_identity(skyMat);
-	Model *boxModel = gf3d_model_load("assets/models/test_cube/test_cube.model");
 	gfc_matrix4_identity(dinoMat);
 	// camera
 	gf3d_camera_set_scale(gfc_vector3d(1, 1, 1));
@@ -89,64 +92,17 @@ int main(int argc, char *argv[]) {
 	gf3d_camera_enable_free_look(1);
 	physicsStart(10);
 	createPlayer();
-	PhysicsBody *b = physicsCreateBody();
-	Shape boxShape;
-	boxShape.shapeType = BOX;
-	boxShape.shape.box.extents = gfc_vector3d(8, 4, 4);
-	b->shape = boxShape;
-	b->model = boxModel;
-	b->position.x = 10;
-	b->position.y = 1;
-	b->position.z = 30;
-	b->mass = 0.003;
-	b->friction = 0.8;
-	b->bounce = 0.4;
-	calculateInertiaForBody(b);
-	b->visualScale = boxShape.shape.box.extents;
-	PhysicsBody *floor = physicsCreateBody();
-	Shape floorShape;
-	floorShape.shapeType = BOX;
+	createBox()->position = gfc_vector3d(0, 0, 10);
+	createBox()->position = gfc_vector3d(0, 0, 20);
+
 	float floorSize = 50;
-	floorShape.shape.box.extents = gfc_vector3d(floorSize, floorSize, 1);
-	floor->shape = floorShape;
-	floor->model = boxModel;
-	floor->visualScale = gfc_vector3d(floorSize, floorSize, 1);
-	floor->position.z = -10;
-	floor->motionType = STATIC;
-	floor->inertia = gfc_vector3d(100000,100000,100000);
-	floor->mass = 100000;
-	for(int i = 0; i < 4; i++) {
-		PhysicsBody *wall = physicsCreateBody();
-		wall->shape = floorShape;
-		wall->model = boxModel;
-		wall->inertia = gfc_vector3d(100000,100000,100000);
-		wall->mass = 100000;
-		wall->visualScale = gfc_vector3d(floorSize, floorSize, 1);
-		wall->position.z = -10;
-		switch(i) {
-			case 0:
-				wall->position.x = floorSize;
-				wall->position.y = 0;
-				wall->rotation.y = M_PI/2.0;
-			break;
-			case 1:
-				wall->position.x = -floorSize;
-				wall->position.y = 0;
-				wall->rotation.y = M_PI/2.0;
-			break;
-			case 2:
-				wall->position.x = 0;
-				wall->position.y = floorSize;
-				wall->rotation.x = M_PI/2.0;
-			break;
-			case 3:
-				wall->position.x = 0;
-				wall->position.y = -floorSize;
-				wall->rotation.x = M_PI/2.0;
-			break;
-		}
-		wall->motionType = STATIC;
-	}
+	float floorThickness = 5;
+	createFloor(gfc_vector3d(0, 0, -floorSize/2), gfc_vector3d(0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
+
+	createFloor(gfc_vector3d(floorSize, 0, 0), gfc_vector3d(0, -M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
+	createFloor(gfc_vector3d(-floorSize, 0, 0), gfc_vector3d(0, M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
+	createFloor(gfc_vector3d(0, floorSize, 0), gfc_vector3d(M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
+	createFloor(gfc_vector3d(0, -floorSize, 0), gfc_vector3d(-M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 
 	// windows
 
@@ -161,7 +117,13 @@ int main(int argc, char *argv[]) {
 		gf3d_camera_get_view_mat4(gf3d_vgraphics_get_view_matrix());
 
 		gf3d_vgraphics_render_start();
-		physicsUpdate(delta);
+
+		static float physicsDelta = 0;
+		physicsDelta += delta;
+		while(physicsDelta > FIXED_TIMESTEP) {
+			physicsUpdate(FIXED_TIMESTEP);
+			physicsDelta -= FIXED_TIMESTEP;
+		}
 
 		// 3D draws
 		drawPhysicsObjects();
