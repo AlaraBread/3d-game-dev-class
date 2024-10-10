@@ -15,18 +15,7 @@
 
 void jump(Collision cols[MAX_REPORTED_COLLISIONS]);
 
-void playerThink(PhysicsBody *self, float delta) {
-	// camera movement
-	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
-	self->entity.player.pitch -= mouseMotion.y*0.01;
-	self->entity.player.yaw -= mouseMotion.x*0.01;
-	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI/3.0, M_PI/3.0);
-	// position camera
-	GFC_Vector3D cameraPos = gfc_vector3d(30, 0, 0);
-	gfc_vector3d_rotate_about_y(&cameraPos, self->entity.player.pitch);
-	gfc_vector3d_rotate_about_z(&cameraPos, self->entity.player.yaw);
-	gfc_vector3d_add(cameraPos, self->position, cameraPos);
-	gf3d_camera_look_at(self->position, &cameraPos);
+void playerPhysicsProcess(PhysicsBody *self, float delta) {
 	// ball movement
 	float speed = delta*ANGULAR_SPEED;
 	GFC_Vector3D forward = gfc_vector3d(-speed, 0, 0);
@@ -105,6 +94,20 @@ void jump(Collision cols[MAX_REPORTED_COLLISIONS]) {
 	}
 }
 
+void playerFrameProcess(PhysicsBody *self, float delta) {
+	// camera movement
+	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
+	self->entity.player.pitch -= mouseMotion.y*0.01;
+	self->entity.player.yaw -= mouseMotion.x*0.01;
+	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI/3.0, M_PI/3.0);
+	// position camera
+	GFC_Vector3D cameraPos = gfc_vector3d(30, 0, 0);
+	gfc_vector3d_rotate_about_y(&cameraPos, self->entity.player.pitch);
+	gfc_vector3d_rotate_about_z(&cameraPos, self->entity.player.yaw);
+	gfc_vector3d_add(cameraPos, self->position, cameraPos);
+	gf3d_camera_look_at(self->position, &cameraPos);
+}
+
 PhysicsBody *createPlayer() {
 	Shape s;
 	s.shapeType = SPHERE;
@@ -118,7 +121,8 @@ PhysicsBody *createPlayer() {
 	player->bounce = 0.5;
 	player->friction = 1.0;
 	calculateInertiaForBody(player);
-	player->think = playerThink;
+	player->physicsProcess = playerPhysicsProcess;
+	player->frameProcess = playerFrameProcess;
 	SDL_SetRelativeMouseMode(true);
 	player->entityType = PLAYER;
 	return player;

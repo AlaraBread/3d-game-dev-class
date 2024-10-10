@@ -2,7 +2,7 @@
 #include "physics.h"
 #include "moments_of_inertia.h"
 
-void movingPlatformThink(PhysicsBody *self, float delta) {
+void movingPlatformPhysicsProcess(PhysicsBody *self, float delta) {
 	float ratio = self->entity.platform.moveRatio;
 	ratio += self->entity.platform.direction*self->entity.platform.movementSpeed*delta;
 	if(ratio > 1.0) {
@@ -36,7 +36,7 @@ PhysicsBody *createMovingPlatform(GFC_Vector3D position, GFC_Vector3D movement, 
 	platform->shape = s;
 	platform->model = gf3d_model_load("assets/models/test_cube/test_cube.model");
 	platform->visualScale = platform->shape.shape.box.extents;
-	platform->think = movingPlatformThink;
+	platform->physicsProcess = movingPlatformPhysicsProcess;
 	platform->motionType = STATIC;
 	platform->friction = 1.0;
 	calculateInertiaForBody(platform);

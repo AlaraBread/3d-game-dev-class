@@ -64,7 +64,8 @@ struct PhysicsBody_s {
 	Shape shape;
 	int numReportedCollisions;
 	Collision reportedCollisions[MAX_REPORTED_COLLISIONS];
-	void (*think)(PhysicsBody *, float);
+	void (*physicsProcess)(PhysicsBody *, float);
+	void (*frameProcess)(PhysicsBody *, float);
 	EntityType entityType;
 	union {
 		struct {
@@ -82,7 +83,7 @@ struct PhysicsBody_s {
 void physicsStart(int maxPhysicsBodies);
 void physicsEnd();
 PhysicsBody *physicsCreateBody();
-void physicsUpdate(float delta);
+void physicsFrame(float delta);
 void drawPhysicsObjects();
 GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local);
 GFC_Vector3D physicsBodyGlobalToLocal(PhysicsBody *body, GFC_Vector3D global);

@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
 	createFloor(gfc_vector3d(0, floorSize, 0), gfc_vector3d(M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(0, -floorSize, 0), gfc_vector3d(-M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 
-	createMovingPlatform(gfc_vector3d(4, 4, -1), gfc_vector3d(-32, 0, 0), 10);
+	createMovingPlatform(gfc_vector3d(32, 4, -1), gfc_vector3d(-64, 0, 0), 10);
 	// windows
 
 	// main game loop
@@ -120,12 +120,7 @@ int main(int argc, char *argv[]) {
 
 		gf3d_vgraphics_render_start();
 
-		static float physicsDelta = 0;
-		physicsDelta += delta;
-		while(physicsDelta > FIXED_TIMESTEP) {
-			physicsUpdate(FIXED_TIMESTEP);
-			physicsDelta -= FIXED_TIMESTEP;
-		}
+		physicsFrame(delta);
 
 		// 3D draws
 		drawPhysicsObjects();

@@ -48,6 +48,23 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 	body->bounce = 1.0;
 }
 
+void physicsUpdate(float delta);
+
+#define FIXED_TIMESTEP (1.0/120.0)
+void physicsFrame(float delta) {
+	static float physicsDelta = 0;
+	physicsDelta += delta;
+	while(physicsDelta > FIXED_TIMESTEP) {
+		physicsUpdate(FIXED_TIMESTEP);
+		physicsDelta -= FIXED_TIMESTEP;
+	}
+	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
+		PhysicsBody *body = &physics.physicsBodies[i];
+		if(!body->inuse) continue;
+		if(body->frameProcess) body->frameProcess(body, delta);
+	}
+}
+
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b);
 
 void physicsBodyUpdateInertiaTensor(PhysicsBody *body);
@@ -86,7 +103,7 @@ void physicsUpdate(float delta) {
 		}
 		// linear damp
 		GFC_Vector3D linearDampVector;
-		gfc_vector3d_scale(linearDampVector, body->linearVelocity, delta * 0.5);
+		gfc_vector3d_scale(linearDampVector, body->linearVelocity, delta * 0.1);
 		gfc_vector3d_sub(body->linearVelocity, body->linearVelocity, linearDampVector);
 		// angular damp
 		GFC_Vector3D angularDampVector;
@@ -107,7 +124,7 @@ void physicsUpdate(float delta) {
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];
 		if(!body->inuse) continue;
-		if(body->think) body->think(body, delta);
+		if(body->physicsProcess) body->physicsProcess(body, delta);
 	}
 }
 
@@ -119,7 +136,7 @@ void drawPhysicsObjects() {
 		euler_vector_to_quat(&quat, body->rotation);
 		GFC_Matrix4 matrix;
 		gfc_matrix4_from_vectors_q(matrix, body->position, quat, body->visualScale);
-		gf3d_model_draw(body->model, matrix, body->think == NULL ? gfc_color(1, 1, 1, 1) : gfc_color(1, 1, 0, 1), 0);
+		gf3d_model_draw(body->model, matrix, gfc_color(1, 1, 1, 1), 0);
 	}
 }
 
