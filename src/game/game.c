@@ -1,3 +1,4 @@
+#include <time.h>
 #include <SDL.h>
 
 #include "simple_json.h"
@@ -29,6 +30,7 @@
 #include "moments_of_inertia.h"
 #include "player.h"
 #include "box.h"
+#include "ball.h"
 #include "floor.h"
 #include "moving_platform.h"
 
@@ -36,29 +38,11 @@ extern int __DEBUG;
 
 void parse_arguments(int argc, char *argv[]);
 
-void draw_origin() {
-	gf3d_draw_edge_3d(
-		gfc_edge3d_from_vectors(gfc_vector3d(-100, 0, 0), gfc_vector3d(100, 0, 0)), gfc_vector3d(0, 0, 0),
-		gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.1, gfc_color(1, 0, 0, 1)
-	);
-	gf3d_draw_edge_3d(
-		gfc_edge3d_from_vectors(gfc_vector3d(0, -100, 0), gfc_vector3d(0, 100, 0)), gfc_vector3d(0, 0, 0),
-		gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.1, gfc_color(0, 1, 0, 1)
-	);
-	gf3d_draw_edge_3d(
-		gfc_edge3d_from_vectors(gfc_vector3d(0, 0, -100), gfc_vector3d(0, 0, 100)), gfc_vector3d(0, 0, 0),
-		gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.1, gfc_color(0, 0, 1, 1)
-	);
-}
-
 double calculate_delta_time();
 
 #define FIXED_TIMESTEP (1.0/120.0)
 
 int main(int argc, char *argv[]) {
-	// local variables
-	Model *sky;
-	GFC_Matrix4 skyMat, dinoMat;
 	// initializtion
 	parse_arguments(argc, argv);
 	init_logger("gf3d.log", 0);
@@ -76,13 +60,13 @@ int main(int argc, char *argv[]) {
 	gf2d_draw_manager_init(1000); // 2D
 
 	// game init
-	srand(SDL_GetTicks());
+	srand(time(NULL));
 	slog_sync();
 
 	// game setup
-	sky = gf3d_model_load("assets/models/sky.model");
+	Model *sky = gf3d_model_load("assets/models/sky.model");
+	GFC_Matrix4 skyMat;
 	gfc_matrix4_identity(skyMat);
-	gfc_matrix4_identity(dinoMat);
 	// camera
 	gf3d_camera_set_scale(gfc_vector3d(1, 1, 1));
 	gf3d_camera_set_position(gfc_vector3d(15, -15, 10));
@@ -95,17 +79,18 @@ int main(int argc, char *argv[]) {
 	createPlayer();
 	createBox()->position = gfc_vector3d(0, 0, 10);
 	createBox()->position = gfc_vector3d(0, 0, 20);
+	createBall(gfc_vector3d(5, 10, 0));
 
 	float floorSize = 50;
 	float floorThickness = 5;
-	createFloor(gfc_vector3d(0, 0, -floorSize/2), gfc_vector3d(0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
+	createFloor(gfc_vector3d(0, 0, -floorSize/2), gfc_vector3d(0, 0, 0), gfc_vector3d(floorSize*4, floorSize*4, floorThickness));
 
-	createFloor(gfc_vector3d(floorSize, 0, 0), gfc_vector3d(0, -M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
+	//createFloor(gfc_vector3d(floorSize, 0, 0), gfc_vector3d(0, -M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(-floorSize, 0, 0), gfc_vector3d(0, M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(0, floorSize, 0), gfc_vector3d(M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(0, -floorSize, 0), gfc_vector3d(-M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 
-	createMovingPlatform(gfc_vector3d(32, 4, -1), gfc_vector3d(-64, 0, 0), 10);
+	createMovingPlatform(gfc_vector3d(-32, 4, -1), gfc_vector3d(256, 0, 0), 10);
 	// windows
 
 	// main game loop
@@ -125,7 +110,6 @@ int main(int argc, char *argv[]) {
 		// 3D draws
 		drawPhysicsObjects();
 		gf3d_model_draw_sky(sky, skyMat, GFC_COLOR_WHITE);
-		draw_origin();
 		render_outlines();
 		// 2D draws
 		gf2d_font_draw_line_tag("ALT+F4 to exit", FT_H1, GFC_COLOR_WHITE, gfc_vector2d(10, 10));

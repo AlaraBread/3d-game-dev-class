@@ -116,6 +116,7 @@ PhysicsBody *createPlayer() {
 	player->shape = s;
 	Model *sphereModel = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
 	player->model = sphereModel;
+	player->visualScale = gfc_vector3d(s.shape.sphere.radius, s.shape.sphere.radius, s.shape.sphere.radius);
 	player->position = gfc_vector3d(0, 0, 10);
 	player->mass = 0.01;
 	player->bounce = 0.5;
