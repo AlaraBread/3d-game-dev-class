@@ -3,13 +3,14 @@
 
 #include "gfc_primitives.h"
 
-typedef struct RayCollision {
+typedef struct PhysicsBody_s PhysicsBody;
+
+typedef struct RayCollision_s {
 	Bool hit;
 	float dist;
 	GFC_Vector3D position;
+	PhysicsBody *body;
 } RayCollision;
-
-#include "physics.h"
 
 RayCollision rayTest(GFC_Edge3D ray, PhysicsBody *body);
 

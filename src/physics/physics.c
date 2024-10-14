@@ -308,6 +308,7 @@ RayCollision castRay(GFC_Edge3D ray, PhysicsBody *exclude) {
 		PhysicsBody *body = &physics.physicsBodies[i];
 		if(!body->inuse || exclude == body) continue;
 		RayCollision col = rayTest(ray, body);
+		col.body = body;
 		if(!col.hit || col.dist > maxDist) continue;
 		if(col.dist < closest) {
 			closest = col.dist;

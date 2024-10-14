@@ -29,6 +29,7 @@
 #include "physics.h"
 #include "moments_of_inertia.h"
 #include "player.h"
+#include "car.h"
 #include "box.h"
 #include "ball.h"
 #include "floor.h"
@@ -74,10 +75,10 @@ int main(int argc, char *argv[]) {
 
 	gf3d_camera_enable_free_look(1);
 	physicsStart(50);
-	createPlayer();
-	createBox()->position = gfc_vector3d(0, 0, 10);
-	createBox()->position = gfc_vector3d(0, 0, 20);
-	createBall(gfc_vector3d(5, 10, 0));
+	createCarPlayer();
+	//createBox()->position = gfc_vector3d(0, 0, 10);
+	//createBox()->position = gfc_vector3d(0, 0, 20);
+	//createBall(gfc_vector3d(5, 10, 0));
 
 	float floorSize = 50;
 	float floorThickness = 5;

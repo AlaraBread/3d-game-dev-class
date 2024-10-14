@@ -88,6 +88,7 @@ void physicsFrame(float delta);
 void drawPhysicsObjects();
 GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local);
 GFC_Vector3D physicsBodyGlobalToLocal(PhysicsBody *body, GFC_Vector3D global);
+GFC_Vector3D velocityAtPoint(PhysicsBody *body, GFC_Vector3D point);
 void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point);
 RayCollision castRay(GFC_Edge3D ray, PhysicsBody *exclude);
 

@@ -1,5 +1,6 @@
 #include "gfc_vector.h"
 #include "util.h"
+#include "physics.h"
 #include "raycast.h"
 
 // from "Real Time Collision Detection" by Christer Ericson
