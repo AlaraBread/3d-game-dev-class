@@ -1,3 +1,4 @@
+#include "gf3d_draw.h"
 #include "shapes.h"
 #include "util.h"
 

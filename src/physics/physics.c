@@ -3,6 +3,7 @@
 #include "gf3d_draw.h"
 #include "simple_logger.h"
 #include "util.h"
+#include "raycast.h"
 
 static struct {
 	int maxPhysicsBodies;
@@ -34,6 +35,7 @@ PhysicsBody *physicsCreateBody() {
 			return body;
 		}
 	}
+	slog("not enough room for physics bodies");
 	return NULL;
 }
 
@@ -51,12 +53,20 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 void physicsUpdate(float delta);
 
 #define FIXED_TIMESTEP (1.0/120.0)
+#define MAX_TIMESTEPS_PER_FRAME 5
 void physicsFrame(float delta) {
 	static float physicsDelta = 0;
 	physicsDelta += delta;
+	int i = 0;
 	while(physicsDelta > FIXED_TIMESTEP) {
 		physicsUpdate(FIXED_TIMESTEP);
 		physicsDelta -= FIXED_TIMESTEP;
+		i++;
+		if(i > MAX_TIMESTEPS_PER_FRAME) {
+			slog("frame taking too long");
+			physicsDelta = 0;
+			break;
+		}
 	}
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];
@@ -118,6 +128,13 @@ void physicsUpdate(float delta) {
 			GFC_Vector3D linearMove;
 			gfc_vector3d_scale(linearMove, body->linearVelocity, delta);
 			gfc_vector3d_add(body->position, body->position, linearMove);
+		}
+		// world boundary
+		if(body->motionType == DYNAMIC && body->position.z < -50) {
+			body->position = gfc_vector3d(1, 0, 10);
+			body->linearVelocity = gfc_vector3d(0, 0, 0);
+			body->angularVelocity = gfc_vector3d(0, 0, 0);
+			body->rotation = gfc_vector3d(0, 0, 0);
 		}
 		physicsBodyUpdateInertiaTensor(body);
 	}
@@ -281,4 +298,21 @@ void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point) {
 	gfc_vector3d_cross_product(&angularImpulse, point, impulse);
 	gfc_matrix3_v_multiply(&angularImpulse, angularImpulse, body->invInertiaTensor);
 	gfc_vector3d_add(body->angularVelocity, body->angularVelocity, angularImpulse);
+}
+
+RayCollision castRay(GFC_Edge3D ray, PhysicsBody *exclude) {
+	float maxDist = gfc_vector3d_magnitude_between(ray.a, ray.b);
+	float closest = INFINITY;
+	RayCollision closestCol = {0};
+	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
+		PhysicsBody *body = &physics.physicsBodies[i];
+		if(!body->inuse || exclude == body) continue;
+		RayCollision col = rayTest(ray, body);
+		if(!col.hit || col.dist > maxDist) continue;
+		if(col.dist < closest) {
+			closest = col.dist;
+			closestCol = col;
+		}
+	}
+	return closestCol;
 }

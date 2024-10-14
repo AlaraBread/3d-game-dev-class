@@ -40,8 +40,6 @@ void parse_arguments(int argc, char *argv[]);
 
 double calculate_delta_time();
 
-#define FIXED_TIMESTEP (1.0/120.0)
-
 int main(int argc, char *argv[]) {
 	// initializtion
 	parse_arguments(argc, argv);
@@ -75,7 +73,7 @@ int main(int argc, char *argv[]) {
 	gf3d_camera_set_rotate_step(2.0);
 
 	gf3d_camera_enable_free_look(1);
-	physicsStart(10);
+	physicsStart(50);
 	createPlayer();
 	createBox()->position = gfc_vector3d(0, 0, 10);
 	createBox()->position = gfc_vector3d(0, 0, 20);
@@ -83,14 +81,14 @@ int main(int argc, char *argv[]) {
 
 	float floorSize = 50;
 	float floorThickness = 5;
-	createFloor(gfc_vector3d(0, 0, -floorSize/2), gfc_vector3d(0, 0, 0), gfc_vector3d(floorSize*4, floorSize*4, floorThickness));
+	createFloor(gfc_vector3d(0, 0, -floorSize/2.0), gfc_vector3d(0, 0, 0), gfc_vector3d(floorSize*4, floorSize*4, floorThickness));
 
 	//createFloor(gfc_vector3d(floorSize, 0, 0), gfc_vector3d(0, -M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(-floorSize, 0, 0), gfc_vector3d(0, M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(0, floorSize, 0), gfc_vector3d(M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(0, -floorSize, 0), gfc_vector3d(-M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 
-	createMovingPlatform(gfc_vector3d(-32, 4, -1), gfc_vector3d(256, 0, 0), 10);
+	createMovingPlatform(gfc_vector3d(-32, 4, -floorSize/2.0+4), gfc_vector3d(256, 0, 0), 10);
 	// windows
 
 	// main game loop

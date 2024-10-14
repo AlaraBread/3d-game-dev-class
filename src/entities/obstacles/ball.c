@@ -7,11 +7,11 @@ PhysicsBody *createBall(GFC_Vector3D position) {
 	ball->position = position;
 	Shape shape;
 	shape.shapeType = SPHERE;
-	shape.shape.sphere.radius = 8;
+	shape.shape.sphere.radius = 6;
 	ball->shape = shape;
 	Model *model = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
 	ball->model = model;
-	ball->mass = 0.002;
+	ball->mass = 0.004;
 	ball->friction = 0.8;
 	ball->bounce = 0.4;
 	ball->visualScale = gfc_vector3d(shape.shape.sphere.radius, shape.shape.sphere.radius, shape.shape.sphere.radius);

@@ -5,6 +5,7 @@
 #include "gfc_matrix.h"
 #include "gfc_vector.h"
 #include "collision.h"
+#include "raycast.h"
 
 typedef enum ShapeType_e {
 	SPHERE,
@@ -88,5 +89,6 @@ void drawPhysicsObjects();
 GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local);
 GFC_Vector3D physicsBodyGlobalToLocal(PhysicsBody *body, GFC_Vector3D global);
 void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point);
+RayCollision castRay(GFC_Edge3D ray, PhysicsBody *exclude);
 
 #endif

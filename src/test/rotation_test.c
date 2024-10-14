@@ -1,10 +1,10 @@
+#include "simple_logger.h"
 #include "util.h"
 
 void rotation_test() {
-	GFC_Vector3D angularVelocity = gfc_vector3d(3.170366, 0.000000, 2.377771);
-	GFC_Vector3D rotation = gfc_vector3d(0, 0, 0);
-	gfc_vector3d_scale(angularVelocity, angularVelocity, (1.0 / 60.0));
-	printf("angular velocity: %f %f %f\n", angularVelocity.x, angularVelocity.y, angularVelocity.z);
-	GFC_Vector3D rotated = compose_euler_vectors(rotation, angularVelocity);
-	printf("rotated: %f %f %f\n", rotated.x, rotated.y, rotated.z);
+	GFC_Vector3D a = gfc_vector3d(0, 1, 0);
+	GFC_Vector3D b = gfc_vector3d(1, 1, 0);
+	GFC_Vector4D q = get_rotation_between(a, b);
+	quat_to_axis_angle(&q, q);
+	slog("%f %f %f %f", q.x, q.y, q.z, q.w*GFC_RADTODEG);
 }

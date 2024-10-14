@@ -43,6 +43,11 @@ void quat_to_axis_angle(GFC_Vector4D *dst, GFC_Vector4D quat) {
 	dst->w = angle;
 }
 
+void quat_to_euler_vector(GFC_Vector3D *dst, GFC_Vector4D quat) {
+	quat_to_axis_angle(&quat, quat);
+	axis_angle_to_euler_vector(dst, quat);
+}
+
 // NOT an euler angle, euler vector: https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation
 void euler_vector_to_axis_angle(GFC_Vector4D *dst, GFC_Vector3D eulerVector) {
 	float l = gfc_vector3d_magnitude(eulerVector);
@@ -239,4 +244,32 @@ void scaleMat3(GFC_Matrix3 mat, GFC_Vector3D scale) {
 	mat[2][0] *= scale.z;
 	mat[2][1] *= scale.z;
 	mat[2][2] *= scale.z;
+}
+
+// https://stackoverflow.com/a/11741520
+GFC_Vector4D get_rotation_between(GFC_Vector3D u, GFC_Vector3D v) {
+	// It is important that the inputs are of equal length when
+	// calculating the half-way vector.
+	gfc_vector3d_normalize(&u);
+	gfc_vector3d_normalize(&v);
+
+	// Unfortunately, we have to check for when u == -v, as u + v
+	// in this case will be (0, 0, 0), which cannot be normalized.
+	if (gfc_vector3d_dot_product(u, v) == -1) {
+		// 180 degree rotation around any orthogonal vector
+		GFC_Vector4D quat;
+		u = perpendicularVector3(u);
+		gfc_vector3d_copy(quat, u);
+		quat.w = 0;
+		return quat;
+	}
+
+	GFC_Vector3D half;
+	gfc_vector3d_add(half, u, v);
+	gfc_vector3d_normalize(&half);
+	GFC_Vector4D quat;
+	quat.w = gfc_vector3d_dot_product(u, half);
+	gfc_vector3d_cross_product(&half, u, half);
+	gfc_vector3d_copy(quat, half);
+	return quat;
 }
