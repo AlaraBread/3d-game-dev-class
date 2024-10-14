@@ -149,11 +149,15 @@ void drawPhysicsObjects() {
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];
 		if(!body->inuse) continue;
-		GFC_Vector4D quat;
-		euler_vector_to_quat(&quat, body->rotation);
-		GFC_Matrix4 matrix;
-		gfc_matrix4_from_vectors_q(matrix, body->position, quat, body->visualScale);
-		gf3d_model_draw(body->model, matrix, gfc_color(1, 1, 1, 1), 0);
+		if(body->draw) {
+			body->draw(body);
+		} else {
+			GFC_Vector4D quat;
+			euler_vector_to_quat(&quat, body->rotation);
+			GFC_Matrix4 matrix;
+			gfc_matrix4_from_vectors_q(matrix, body->position, quat, body->visualScale);
+			gf3d_model_draw(body->model, matrix, gfc_color(1, 1, 1, 1), 0);
+		}
 	}
 }
 

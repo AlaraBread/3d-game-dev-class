@@ -67,12 +67,19 @@ struct PhysicsBody_s {
 	Collision reportedCollisions[MAX_REPORTED_COLLISIONS];
 	void (*physicsProcess)(PhysicsBody *, float);
 	void (*frameProcess)(PhysicsBody *, float);
+	void (*draw)(PhysicsBody *);
 	EntityType entityType;
 	union {
 		struct {
 			float yaw, pitch;
-			float jumpBufferTimer, coyoteTimer;
 			Collision coyoteCollisions[MAX_REPORTED_COLLISIONS];
+			float jumpBufferTimer, coyoteTimer, rightingTimer;
+			Bool isRighting;
+			Model *wheelModel;
+			float wheelRotations[4];
+			float wheelVelocities[4];
+			float wheelDistances[4];
+			float wheelRadius;
 		} player;
 		struct {
 			GFC_Vector3D movementStart, movementEnd;

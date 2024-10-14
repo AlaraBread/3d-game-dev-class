@@ -10,9 +10,34 @@
 
 void jump(Collision cols[MAX_REPORTED_COLLISIONS]);
 
+GFC_Vector3D wheelOffset(int i) {
+	return gfc_vector3d(i <= 1 ? 5 : -5, i%2 == 0 ? 3 : -3, 0);
+}
+
 void carPhysicsProcess(PhysicsBody *self, float delta) {
 	GFC_Vector3D invRotation;
 	gfc_vector3d_negate(invRotation, self->rotation);
+	GFC_Vector3D forward = gfc_vector3d(1, 0, 0);
+	rotate_vector3_by_euler_vector(&forward, self->rotation);
+	GFC_Vector3D up = gfc_vector3d(0, 0, 1);
+	rotate_vector3_by_euler_vector(&up, self->rotation);
+	GFC_Vector3D right = gfc_vector3d(0, 1, 0);
+	rotate_vector3_by_euler_vector(&right, self->rotation);
+	float upness = gfc_vector3d_dot_product(up, gfc_vector3d(0, 0, 1));
+	self->entity.player.rightingTimer -= delta;
+	if(self->entity.player.rightingTimer <= 0.0) {
+		self->entity.player.isRighting = false;
+	}
+	if((self->reportedCollisions[0].hit && upness < 0.5) || self->entity.player.isRighting) {
+		if(!self->entity.player.isRighting) {
+			self->entity.player.isRighting = true;
+			self->entity.player.rightingTimer = 0.5;
+		}
+		GFC_Vector3D righting;
+		gfc_vector3d_cross_product(&righting, right, gfc_vector3d(0, 0, 1));
+		gfc_vector3d_scale(righting, righting, -(upness-1.0)*40*delta);
+		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, righting);
+	}
 	// car movement
 	float steer = 0;
 	if(gfc_input_command_held("left")) {
@@ -28,24 +53,21 @@ void carPhysicsProcess(PhysicsBody *self, float delta) {
 	if(gfc_input_command_held("back")) {
 		engineForce -= 1;
 	}
-	GFC_Vector3D forward = gfc_vector3d(1, 0, 0);
-	rotate_vector3_by_euler_vector(&forward, self->rotation);
-	GFC_Vector3D up = gfc_vector3d(0, 0, 1);
-	rotate_vector3_by_euler_vector(&up, self->rotation);
 	// cast wheel rays
 	// fl, fr, bl, br
 	for(int i = 0; i < 4; i++) {
-		GFC_Vector3D start = gfc_vector3d(i <= 1 ? 6 : -6, i%2 == 0 ? 3 : -3, 0);
+		GFC_Vector3D start = wheelOffset(i);
 		GFC_Vector3D end = start;
 		end.z = -4;
 		start = physicsBodyLocalToGlobal(self, start);
 		end = physicsBodyLocalToGlobal(self, end);
 		GFC_Edge3D ray = gfc_edge3d_from_vectors(start, end);
-		gf3d_draw_edge_3d(ray, gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.1, gfc_color(1,1,1,1));
 		RayCollision col = castRay(ray, self);
 		if(!col.hit) {
+			self->entity.player.wheelDistances[i] = 4;
 			continue;
 		}
+		self->entity.player.wheelDistances[i] = col.dist;
 		GFC_Vector3D colVelocity = velocityAtPoint(col.body, col.position);
 		GFC_Vector3D wheelVelocity = velocityAtPoint(self, col.position);
 		gfc_vector3d_sub(wheelVelocity, wheelVelocity, colVelocity);
@@ -55,11 +77,9 @@ void carPhysicsProcess(PhysicsBody *self, float delta) {
 		if(i <= 1) {
 			// front
 			rotate_vector3_by_axis_angle(&leftLocal, gfc_vector4d(0, 0, 1, steer));
-			gf3d_draw_sphere_solid(gfc_sphere(0,0,0,0.5), col.position, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1,1,0,1), gfc_color(1,1,1,1));
 		} else {
 			// back
 			force.x = engineForce;
-			gf3d_draw_sphere_solid(gfc_sphere(0,0,0,0.5), col.position, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1,0,1,1), gfc_color(1,1,1,1));
 		}
 		if(col.dist < 3) {
 			// suspension force
@@ -70,6 +90,12 @@ void carPhysicsProcess(PhysicsBody *self, float delta) {
 		// friction
 		float slip = gfc_vector3d_dot_product(leftLocal, wheelVelocity);
 		force.y -= 0.05*slip;
+		// wheel turning
+		float wheelRadius = self->entity.player.wheelRadius;
+		GFC_Vector3D forwardLocal = gfc_vector3d(1, 0, 0);
+		self->entity.player.wheelVelocities[i] = gfc_vector3d_dot_product(forwardLocal, wheelVelocity)/wheelRadius;
+		self->entity.player.wheelRotations[i] += self->entity.player.wheelVelocities[i]*delta;
+		// apply forces
 		rotate_vector3_by_euler_vector(&force, self->rotation);
 		gfc_vector3d_scale(force, force, delta);
 		GFC_Vector3D selfPoint = start;
@@ -104,6 +130,27 @@ void carFrameProcess(PhysicsBody *self, float delta) {
 	gf3d_camera_look_at(self->position, &cameraPos);
 }
 
+void carDraw(PhysicsBody *self) {
+	GFC_Vector4D quat;
+	euler_vector_to_quat(&quat, self->rotation);
+	GFC_Matrix4 matrix;
+	gfc_matrix4_from_vectors_q(matrix, self->position, quat, self->visualScale);
+	gf3d_model_draw(self->model, matrix, gfc_color(1, 1, 1, 1), 0);
+	for(int i = 0; i < 4; i++) {
+		GFC_Vector3D wheelPos = wheelOffset(i);
+		gfc_vector3d_add(wheelPos, wheelPos, gfc_vector3d(0, 0, -(self->entity.player.wheelDistances[i]-self->entity.player.wheelRadius)));
+		wheelPos = physicsBodyLocalToGlobal(self, wheelPos);
+		GFC_Matrix4 wheelMat;
+		euler_vector_to_quat(&quat, self->rotation);
+		GFC_Vector4D wheelRotation = gfc_vector4d(0, 1, 0, self->entity.player.wheelRotations[i]);
+		axis_angle_to_quat(&wheelRotation, wheelRotation);
+		quat_mult(&quat, wheelRotation, quat);
+		float radius = self->entity.player.wheelRadius;
+		gfc_matrix4_from_vectors_q(wheelMat, wheelPos, quat, gfc_vector3d(radius, 1, radius));
+		gf3d_model_draw(self->entity.player.wheelModel, wheelMat, gfc_color(1, 1, 1, 1), 0);
+	}
+}
+
 PhysicsBody *createCarPlayer() {
 	Shape s;
 	s.shapeType = BOX;
@@ -111,10 +158,13 @@ PhysicsBody *createCarPlayer() {
 	PhysicsBody *player = physicsCreateBody();
 	player->shape = s;
 	Model *cubeModel = gf3d_model_load("assets/models/test_cube/test_cube.model");
+	player->entity.player.wheelModel = gf3d_model_load("assets/models/test_cylinder/test_cylinder.model");
+	player->entity.player.wheelRadius = 2;
 	player->model = cubeModel;
 	player->visualScale = s.shape.box.extents;
+	player->draw = carDraw;
 	player->position = gfc_vector3d(0, 0, 10);
-	player->rotation = gfc_vector3d(0, 0, 1);
+	player->rotation = compose_euler_vectors(gfc_vector3d(0, M_PI, 0), gfc_vector3d(0, 0, M_PI/2.0));
 	player->mass = 0.01;
 	player->bounce = 0.5;
 	player->friction = 1.0;

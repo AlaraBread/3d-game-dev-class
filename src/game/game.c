@@ -76,9 +76,9 @@ int main(int argc, char *argv[]) {
 	gf3d_camera_enable_free_look(1);
 	physicsStart(50);
 	createCarPlayer();
-	//createBox()->position = gfc_vector3d(0, 0, 10);
-	//createBox()->position = gfc_vector3d(0, 0, 20);
-	//createBall(gfc_vector3d(5, 10, 0));
+	createBox()->position = gfc_vector3d(0, 0, 10);
+	createBox()->position = gfc_vector3d(0, 0, 20);
+	createBall(gfc_vector3d(5, 10, 0));
 
 	float floorSize = 50;
 	float floorThickness = 5;
