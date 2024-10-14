@@ -79,7 +79,7 @@ struct PhysicsBody_s {
 			float wheelRotations[4];
 			float wheelVelocities[4];
 			float wheelDistances[4];
-			float wheelRadius;
+			float wheelRadius, steer;
 		} player;
 		struct {
 			GFC_Vector3D movementStart, movementEnd;

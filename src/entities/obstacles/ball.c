@@ -13,7 +13,7 @@ PhysicsBody *createBall(GFC_Vector3D position) {
 	ball->model = model;
 	ball->mass = 0.004;
 	ball->friction = 0.8;
-	ball->bounce = 0.4;
+	ball->bounce = 1.0;
 	ball->visualScale = gfc_vector3d(shape.shape.sphere.radius, shape.shape.sphere.radius, shape.shape.sphere.radius);
 	calculateInertiaForBody(ball);
 	return ball;
