@@ -13,9 +13,9 @@
 // NOTE: make this configurable
 
 typedef struct {
-	GFC_Matrix4 model;
-	GFC_Matrix4 view;
-	GFC_Matrix4 proj;
+	GFC_Matrix4F model;
+	GFC_Matrix4F view;
+	GFC_Matrix4F proj;
 } ModelViewProjection;
 
 /**
@@ -91,7 +91,7 @@ GFC_Vector3D vgraphics_3d_position_to_screen_depth(GFC_Vector3D position);
  * @brief copy into view the current view matrix
  * @param view [output]
  */
-void gf3d_vgraphics_get_view(GFC_Matrix4 *view);
+void gf3d_vgraphics_get_view(GFC_Matrix4F *view);
 
 void gf3d_vgraphics_clear();
 
@@ -104,19 +104,19 @@ void gf3d_vgraphics_clear();
  */
 uint32_t gf3d_vgraphics_find_memory_type(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
-void gf3d_vgraphics_rotate_camera(float degrees);
+void gf3d_vgraphics_rotate_camera(double degrees);
 
 /**
  * @brief get the matrix used for rendering the view
  * @return the view matrix sent to every rendering call
  */
-GFC_Matrix4 *gf3d_vgraphics_get_view_matrix();
+GFC_Matrix4F *gf3d_vgraphics_get_view_matrix();
 
 /**
  * @brief get the projection matrix
  * @param proj where to put the projection matrix
  */
-void gf3d_vgraphics_get_projection_matrix(GFC_Matrix4 *proj);
+void gf3d_vgraphics_get_projection_matrix(GFC_Matrix4F *proj);
 
 /**
  * @brief get the vulkan handle for a uniform buffer by its index

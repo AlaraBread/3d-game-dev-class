@@ -97,6 +97,6 @@ void gf3d_obj_free(ObjData *obj);
  * @param e the edge to test with
  * @param contact [optional output] provides the point of impact
  */
-int gf3d_obj_edge_test(ObjData *obj, GFC_Matrix4 offset, GFC_Edge3D e, GFC_Vector3D *contact);
+int gf3d_obj_edge_test(ObjData *obj, GFC_Matrix4F offset, GFC_Edge3D e, GFC_Vector3D *contact);
 
 #endif

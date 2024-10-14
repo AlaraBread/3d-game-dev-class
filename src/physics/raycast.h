@@ -7,7 +7,7 @@ typedef struct PhysicsBody_s PhysicsBody;
 
 typedef struct RayCollision_s {
 	Bool hit;
-	float dist;
+	double dist;
 	GFC_Vector3D position;
 	PhysicsBody *body;
 } RayCollision;

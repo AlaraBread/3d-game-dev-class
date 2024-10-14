@@ -104,7 +104,7 @@ void gf3d_vgraphics_init(const char *config) {
 	Pipeline *renderPipe = NULL;
 	SJson *json, *setup;
 	const char *windowName = NULL;
-	GFC_Vector2D resolution = {1024, 768};
+	GFC_Vector2DF resolution = {1024, 768};
 	short int fullscreen = 0;
 	short int enableValidation = 0;
 	short int enableDebug = 0;
@@ -138,11 +138,11 @@ void gf3d_vgraphics_init(const char *config) {
 		return;
 	}
 
-	gfc_matrix4_identity(gf3d_vgraphics.ubo.model);
-	gfc_matrix4_identity(gf3d_vgraphics.ubo.view);
-	gfc_matrix4_identity(gf3d_vgraphics.ubo.proj);
+	gfc_matrix4f_identity(gf3d_vgraphics.ubo.model);
+	gfc_matrix4f_identity(gf3d_vgraphics.ubo.view);
+	gfc_matrix4f_identity(gf3d_vgraphics.ubo.proj);
 
-	gfc_matrix4_perspective(gf3d_vgraphics.ubo.proj, 45 * GFC_DEGTORAD, resolution.x / resolution.y, 0.1f, 100000);
+	gfc_matrix4f_perspective(gf3d_vgraphics.ubo.proj, 45 * GFC_DEGTORAD, resolution.x / resolution.y, 0.1f, 100000);
 
 	gf3d_vgraphics.ubo.proj[1][1] *= -1;
 
@@ -479,20 +479,20 @@ uint32_t gf3d_vgraphics_find_memory_type(uint32_t typeFilter, VkMemoryPropertyFl
 	return 0;
 }
 
-void gf3d_vgraphics_get_projection_matrix(GFC_Matrix4 *proj) {
+void gf3d_vgraphics_get_projection_matrix(GFC_Matrix4F *proj) {
 	if(!proj) return;
-	memcpy(proj, gf3d_vgraphics.ubo.proj, sizeof(GFC_Matrix4));
+	memcpy(proj, gf3d_vgraphics.ubo.proj, sizeof(GFC_Matrix4F));
 }
 
-void gf3d_vgraphics_get_view(GFC_Matrix4 *view) {
+void gf3d_vgraphics_get_view(GFC_Matrix4F *view) {
 	if(!view) return;
-	memcpy(view, gf3d_vgraphics.ubo.view, sizeof(GFC_Matrix4));
+	memcpy(view, gf3d_vgraphics.ubo.view, sizeof(GFC_Matrix4F));
 }
 
-GFC_Matrix4 *gf3d_vgraphics_get_view_matrix() { return &gf3d_vgraphics.ubo.view; }
+GFC_Matrix4F *gf3d_vgraphics_get_view_matrix() { return &gf3d_vgraphics.ubo.view; }
 
-void gf3d_vgraphics_rotate_camera(float degrees) {
-	gfc_matrix4_rotate(gf3d_vgraphics.ubo.view, gf3d_vgraphics.ubo.view, degrees, gfc_vector3d(0, 0, 1));
+void gf3d_vgraphics_rotate_camera(double degrees) {
+	gfc_matrix4f_rotate(gf3d_vgraphics.ubo.view, gf3d_vgraphics.ubo.view, degrees, gfc_vector3df(0, 0, 1));
 }
 
 Command *gf3d_vgraphics_get_graphics_command_pool() { return gf3d_vgraphics.graphicsCommandPool; }
@@ -523,17 +523,17 @@ VkImageView gf3d_vgraphics_create_image_view(VkImage image, VkFormat format) {
 
 GFC_Vector2D vgraphics_3d_position_to_screen(GFC_Vector3D position) {
 	GFC_Vector2D res, out;
-	GFC_Matrix4 mvp, model;
-	GFC_Vector4D transformed = {0};
+	GFC_Matrix4F mvp, model;
+	GFC_Vector4DF transformed = {0};
 	ModelViewProjection graphics_mvp;
 
 	res = gf3d_vgraphics_get_resolution();
 
-	gfc_matrix4_make_translation(model, position);
+	gfc_matrix4f_make_translation(model, gfc_vector3d_to_float(position));
 	graphics_mvp = gf3d_vgraphics_get_mvp();
-	gfc_matrix4_multiply(mvp, graphics_mvp.view, graphics_mvp.proj);
+	gfc_matrix4f_multiply(mvp, graphics_mvp.view, graphics_mvp.proj);
 
-	gfc_matrix4_v_multiply(&transformed, gfc_vector4d(position.x, position.y, position.z, 1.0), mvp);
+	gfc_matrix4f_v_multiply(&transformed, gfc_vector4df(position.x, position.y, position.z, 1.0), mvp);
 
 	out.x = (0.5 * (transformed.x / transformed.w) + 0.5) * res.x;
 	out.y = (0.5 * (transformed.y / transformed.w) + 0.5) * res.y;
@@ -544,17 +544,17 @@ GFC_Vector2D vgraphics_3d_position_to_screen(GFC_Vector3D position) {
 GFC_Vector3D vgraphics_3d_position_to_screen_depth(GFC_Vector3D position) {
 	GFC_Vector2D res;
 	GFC_Vector3D out;
-	GFC_Matrix4 mvp, model;
-	GFC_Vector4D transformed = {0};
+	GFC_Matrix4F mvp, model;
+	GFC_Vector4DF transformed = {0};
 	ModelViewProjection graphics_mvp;
 
 	res = gf3d_vgraphics_get_resolution();
 
-	gfc_matrix4_make_translation(model, position);
+	gfc_matrix4f_make_translation(model, gfc_vector3d_to_float(position));
 	graphics_mvp = gf3d_vgraphics_get_mvp();
-	gfc_matrix4_multiply(mvp, graphics_mvp.view, graphics_mvp.proj);
+	gfc_matrix4f_multiply(mvp, graphics_mvp.view, graphics_mvp.proj);
 
-	gfc_matrix4_v_multiply(&transformed, gfc_vector4d(position.x, position.y, position.z, 1.0), mvp);
+	gfc_matrix4f_v_multiply(&transformed, gfc_vector4df(position.x, position.y, position.z, 1.0), mvp);
 
 	out.x = (0.5 * (transformed.x / transformed.w) + 0.5) * res.x;
 	out.y = (0.5 * (transformed.y / transformed.w) + 0.5) * res.y;

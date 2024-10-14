@@ -11,25 +11,25 @@ GFC_Edge3D gfc_edge3d_from_vectors(GFC_Vector3D a,GFC_Vector3D b)
     return e;
 }
 
-GFC_Edge3D gfc_edge3d(float ax,float ay,float az,float bx,float by,float bz)
+GFC_Edge3D gfc_edge3d(double ax,double ay,double az,double bx,double by,double bz)
 {
     GFC_Edge3D e = {{ax,ay,az},{bx,by,bz}};
     return e;
 }
 
-GFC_Box gfc_box(float x, float y, float z, float w, float h, float d)
+GFC_Box gfc_box(double x, double y, double z, double w, double h, double d)
 {
     GFC_Box b = {x, y, z, w, h, d};
     return b;
 }
 
-GFC_Sphere gfc_sphere(float x, float y, float z, float r)
+GFC_Sphere gfc_sphere(double x, double y, double z, double r)
 {
     GFC_Sphere s = {x, y, z, r};
     return s;
 }
 
-GFC_Plane3D gfc_plane3d(float x, float y, float z, float d)
+GFC_Plane3D gfc_plane3d(double x, double y, double z, double d)
 {
     GFC_Plane3D p = {x, y, z, d};
     return p;
@@ -101,14 +101,14 @@ GFC_Plane3D gfc_trigfc_angle_get_plane(GFC_Triangle3D t)
     return p;
 }
 
-float gfc_edge_in_plane(
+double gfc_edge_in_plane(
     GFC_Edge3D e,
     GFC_Plane3D p,
     GFC_Vector3D *contact)
 {
     GFC_Vector3D dir,normal;
-    float denom,t = 0;
-    float distance;
+    double denom,t = 0;
+    double distance;
         
     gfc_vector3d_sub(dir,e.b,e.a);//direction from a to b
     distance = gfc_vector3d_magnitude(dir);
@@ -155,7 +155,7 @@ GFC_Box gfc_trigfc_angle_get_bounding_box(GFC_Triangle3D t)
 
 Uint8 gfc_point_same_side(GFC_Vector3D p1,GFC_Vector3D p2,GFC_Vector3D a,GFC_Vector3D b)
 {
-    float f;
+    double f;
     GFC_Vector3D cp1,cp2;
     GFC_Vector3D side1,side2,ref;
     gfc_vector3d_sub(side1,b,a);
@@ -188,7 +188,7 @@ Uint8 gfc_point_in_triangle_old(
     GFC_Plane3D p)
 {
     GFC_Vector3D absNormal;
-    float rayTest = 0;
+    double rayTest = 0;
     Uint8 intersectCount = 0;
     
     rayTest = gfc_vector3d_magnitude_squared(gfc_vector3d(point.x - t.a.x,point.y - t.a.y,point.z - t.a.z)) +
@@ -278,8 +278,8 @@ Uint8 gfc_edge_box_test(
 {
     GFC_Vector3D contact;
     GFC_Vector3D vertices[8];
-    float bestDistance = -1;
-    float distance;
+    double bestDistance = -1;
+    double distance;
     GFC_Vector3D bestContact;
     GFC_Vector3D bestNormal;
         
@@ -421,7 +421,7 @@ Uint8 gfc_trigfc_angle_edge_test(
     GFC_Triangle3D t,
     GFC_Vector3D *contact)
 {
-    float time;
+    double time;
     GFC_Plane3D p;
     GFC_Vector3D intersectPoint = {0,0,0};
 
@@ -444,7 +444,7 @@ Uint8 gfc_trigfc_angle_edge_test(
 
 Uint8 gfc_edge3d_to_sphere_intersection(GFC_Edge3D e,GFC_Sphere s,GFC_Vector3D *poc,GFC_Vector3D *normal)
 {
-    float dx, dy, dz, A, B, C, det, t,t1,t2;
+    double dx, dy, dz, A, B, C, det, t,t1,t2;
     GFC_Vector3D intersection1, intersection2;
     GFC_Vector3D cp;
     
@@ -502,8 +502,8 @@ Uint8 gfc_edge3d_to_sphere_intersection(GFC_Edge3D e,GFC_Sphere s,GFC_Vector3D *
     else
     {
         // Two solutions. picking the one closer to the first point of the edge
-        t1 = (float)((-B + sqrt(det)) / (2 * A));
-        t2 = (float)((-B - sqrt(det)) / (2 * A));
+        t1 = (double)((-B + sqrt(det)) / (2 * A));
+        t2 = (double)((-B - sqrt(det)) / (2 * A));
         intersection1 = gfc_vector3d(e.a.x + t1 * dx, e.a.y + t1 * dy, e.a.z + t1 * dz);
         intersection2 = gfc_vector3d(e.a.x + t2 * dx, e.a.y + t2 * dy, e.a.z + t2 * dz);
         
@@ -619,8 +619,11 @@ GFC_Edge3D gfc_edge_from_config(SJson *config)
 {
     GFC_Edge3D edge = {0};
     if (!config)return edge;
-    sj_object_get_vector3d(config,"a",&edge.a);
-    sj_object_get_vector3d(config,"b",&edge.b);    
+	GFC_Vector3DF a, b;
+    sj_object_get_vector3d(config,"a",&a);
+    sj_object_get_vector3d(config,"b",&b);
+	edge.a = gfc_vector3df_to_double(a);
+	edge.b = gfc_vector3df_to_double(b);
     return edge;
 }
 
@@ -635,10 +638,14 @@ GFC_Edge3D gfc_edge_from_config(SJson *config)
 GFC_Triangle3D gfc_triangle_from_config(SJson *config)
 {
     GFC_Triangle3D triangle= {0};
+	GFC_Vector3DF a, b, c;
     if (!config)return triangle;
-    sj_object_get_vector3d(config,"a",&triangle.a);
-    sj_object_get_vector3d(config,"b",&triangle.b);
-    sj_object_get_vector3d(config,"c",&triangle.c);
+    sj_object_get_vector3d(config,"a",&a);
+    sj_object_get_vector3d(config,"b",&b);
+    sj_object_get_vector3d(config,"c",&c);
+	triangle.a = gfc_vector3df_to_double(a);
+	triangle.b = gfc_vector3df_to_double(b);
+	triangle.c = gfc_vector3df_to_double(c);
     return triangle;
 }
 
@@ -651,12 +658,14 @@ GFC_Triangle3D gfc_triangle_from_config(SJson *config)
  */
 GFC_Plane3D gfc_plane_from_config(SJson *config)
 {
-    GFC_Vector3D v;
     GFC_Plane3D plane = {0};
+	float d;
+	GFC_Vector3DF v;
     if (!config)return plane;
     sj_object_get_vector3d(config,"n",&v);
-    sj_object_get_value_as_float(config,"d",&plane.d);
-    gfc_vector3d_copy(plane,v);
+    sj_object_get_value_as_float(config,"d",&d);
+    gfc_vector3d_copy(plane,(double)v);
+	plane.d = (double)d;
     return plane;
 }
 
@@ -669,12 +678,14 @@ GFC_Plane3D gfc_plane_from_config(SJson *config)
  */
 GFC_Sphere gfc_sphere_from_config(SJson *config)
 {
-    GFC_Vector3D v;
+    GFC_Vector3DF v;
+	float r;
     GFC_Sphere sphere = {0};
     if (!config)return sphere;
     sj_object_get_vector3d(config,"c",&v);
-    sj_object_get_value_as_float(config,"r",&sphere.r);
-    gfc_vector3d_copy(sphere,v);
+    sj_object_get_value_as_float(config,"r",&r);
+    gfc_vector3d_copy(sphere,(double)v);
+	sphere.r = (double)r;
     return sphere;
 }
 
@@ -687,15 +698,15 @@ GFC_Sphere gfc_sphere_from_config(SJson *config)
  */
 GFC_Box gfc_box_from_config(SJson *config)
 {
-    GFC_Vector3D v;
+    GFC_Vector3DF v;
     GFC_Box box = {0};
     if (!config)return box;
     sj_object_get_vector3d(config,"m",&v);
-    gfc_vector3d_copy(box,v);
+    gfc_vector3d_copy(box,(double)v);
     sj_object_get_vector3d(config,"s",&v);
-    box.w = v.x;
-    box.h = v.y;
-    box.d = v.z;
+    box.w = (double)v.x;
+    box.h = (double)v.y;
+    box.d = (double)v.z;
     return box;
 }
 
@@ -743,7 +754,9 @@ GFC_Primitive gfc_primitive_from_config(SJson *config)
     if (shape)
     {
         primitive.type = GPT_POINT;
-        sj_value_as_vector3d(shape,&primitive.s.p);
+		GFC_Vector3DF p;
+        sj_value_as_vector3d(shape,&p);
+		primitive.s.p = gfc_vector3df_to_double(p);
         return primitive;
     }
     shape = sj_object_get_value(config,"sphere");

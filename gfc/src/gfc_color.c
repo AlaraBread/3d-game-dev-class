@@ -211,7 +211,7 @@ Uint32 gfc_color_to_hex(GFC_Color color)
     return hex;
 }
 
-GFC_Color gfc_color_from_vector4(GFC_Vector4D gfc_vector)
+GFC_Color gfc_color_from_vector4(GFC_Vector4DF gfc_vector)
 {
     GFC_Color color;
     color.ct = CT_RGBA8;
@@ -222,7 +222,7 @@ GFC_Color gfc_color_from_vector4(GFC_Vector4D gfc_vector)
     return color;
 }
 
-GFC_Color gfc_color_from_vector4f(GFC_Vector4D gfc_vector)
+GFC_Color gfc_color_from_vector4f(GFC_Vector4DF gfc_vector)
 {
     GFC_Color color;
     color.ct = CT_RGBAf;
@@ -234,9 +234,9 @@ GFC_Color gfc_color_from_vector4f(GFC_Vector4D gfc_vector)
 }
 
 
-GFC_Vector4D gfc_color_to_vector4(GFC_Color color)
+GFC_Vector4DF gfc_color_to_vector4(GFC_Color color)
 {
-    GFC_Vector4D gfc_vector;
+    GFC_Vector4DF gfc_vector;
     color = gfc_color_to_int8(color);
     gfc_vector.x = color.r;
     gfc_vector.y = color.g;
@@ -245,9 +245,9 @@ GFC_Vector4D gfc_color_to_vector4(GFC_Color color)
     return gfc_vector;
 }
 
-GFC_Vector4D gfc_color_to_vector4f(GFC_Color color)
+GFC_Vector4DF gfc_color_to_vector4f(GFC_Color color)
 {
-    GFC_Vector4D gfc_vector;
+    GFC_Vector4DF gfc_vector;
     color = gfc_color_to_float(color);
     gfc_vector.x = color.r;
     gfc_vector.y = color.g;

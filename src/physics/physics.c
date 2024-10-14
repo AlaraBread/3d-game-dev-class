@@ -50,12 +50,12 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 	body->bounce = 1.0;
 }
 
-void physicsUpdate(float delta);
+void physicsUpdate(double delta);
 
 #define FIXED_TIMESTEP (1.0/120.0)
 #define MAX_TIMESTEPS_PER_FRAME 5
-void physicsFrame(float delta) {
-	static float physicsDelta = 0;
+void physicsFrame(double delta) {
+	static double physicsDelta = 0;
 	physicsDelta += delta;
 	int i = 0;
 	while(physicsDelta > FIXED_TIMESTEP) {
@@ -79,7 +79,7 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b);
 
 void physicsBodyUpdateInertiaTensor(PhysicsBody *body);
 
-void physicsUpdate(float delta) {
+void physicsUpdate(double delta) {
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];
 		if(!body->inuse) continue;
@@ -154,8 +154,8 @@ void drawPhysicsObjects() {
 		} else {
 			GFC_Vector4D quat;
 			euler_vector_to_quat(&quat, body->rotation);
-			GFC_Matrix4 matrix;
-			gfc_matrix4_from_vectors_q(matrix, body->position, quat, body->visualScale);
+			GFC_Matrix4F matrix;
+			gfc_matrix4f_from_vectors_q(matrix, gfc_vector3d_to_float(body->position), gfc_vector4d_to_float(quat), gfc_vector3d_to_float(body->visualScale));
 			gf3d_model_draw(body->model, matrix, gfc_color(1, 1, 1, 1), 0);
 		}
 	}
@@ -229,23 +229,23 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 
 	gfc_vector3d_cross_product(&aInertia, aInertia, ra);
 	gfc_vector3d_cross_product(&bInertia, bInertia, rb);
-	float normalMass = 1.0/(1.0/a->mass + 1.0/b->mass +
+	double normalMass = 1.0/(1.0/a->mass + 1.0/b->mass +
 			gfc_vector3d_dot_product(col.normal, aInertia) +
 			gfc_vector3d_dot_product(col.normal, bInertia));
 	// normal impulse
-	float bounce = SDL_clamp(a->bounce*b->bounce, 0.0, 1.0);
+	double bounce = SDL_clamp(a->bounce*b->bounce, 0.0, 1.0);
 	GFC_Vector3D av = velocityAtPoint(a, col.aPosition);
 	GFC_Vector3D bv = velocityAtPoint(b, col.bPosition);
 	GFC_Vector3D dv;
 	gfc_vector3d_sub(dv, bv, av);
 	GFC_Vector3D normalImpulse = projectVector(dv, col.normal);
 	gfc_vector3d_scale(normalImpulse, normalImpulse, (bounce + 1.0) * normalMass);
-	float normalImpulseMagnitude = gfc_vector3d_magnitude(normalImpulse);
+	double normalImpulseMagnitude = gfc_vector3d_magnitude(normalImpulse);
 	// tangential impulse
 	// https://github.com/godotengine/godot/blob/master/modules/godot_physics_3d/godot_body_pair_3d.cpp#L566
-	float friction = SDL_clamp(a->friction*b->friction, 0.0, 1.0);
+	double friction = SDL_clamp(a->friction*b->friction, 0.0, 1.0);
 	GFC_Vector3D tv = projectVectorOntoPlane(dv, col.normal);
-	float tvl = gfc_vector3d_magnitude(tv);
+	double tvl = gfc_vector3d_magnitude(tv);
 	gfc_vector3d_scale(tv, tv, 1.0/tvl);
 	GFC_Vector3D raxtv;
 	gfc_vector3d_cross_product(&raxtv, ra, tv);
@@ -259,7 +259,7 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	gfc_vector3d_cross_product(&temp2, temp2, rb);
 	GFC_Vector3D temp3;
 	gfc_vector3d_add(temp3, temp1, temp2);
-	float t = tvl / (1.0/a->mass + 1.0/b->mass + gfc_vector3d_dot_product(tv, temp3));
+	double t = tvl / (1.0/a->mass + 1.0/b->mass + gfc_vector3d_dot_product(tv, temp3));
 	t = SDL_clamp(t, -friction*normalImpulseMagnitude, friction*normalImpulseMagnitude);
 	GFC_Vector3D tangentImpulse;
 	gfc_vector3d_scale(tangentImpulse, tv, t);
@@ -305,8 +305,8 @@ void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point) {
 }
 
 RayCollision castRay(GFC_Edge3D ray, PhysicsBody *exclude) {
-	float maxDist = gfc_vector3d_magnitude_between(ray.a, ray.b);
-	float closest = INFINITY;
+	double maxDist = gfc_vector3d_magnitude_between(ray.a, ray.b);
+	double closest = INFINITY;
 	RayCollision closestCol = {0};
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];

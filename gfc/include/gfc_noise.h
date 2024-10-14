@@ -8,6 +8,6 @@
  * @param in the input gfc_vector
  * @return a gradient value
  */
-float gfc_perlin(GFC_Vector2D in);
+double gfc_perlin(GFC_Vector2D in);
 
 #endif

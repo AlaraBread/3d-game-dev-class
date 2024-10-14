@@ -4,10 +4,10 @@
 Collision sphereSphereIntersectionTest(PhysicsBody *a, PhysicsBody *b) {
 	GFC_Vector3D ab;
 	gfc_vector3d_sub(ab, b->position, a->position);
-	float aRadius = a->shape.shape.sphere.radius;
-	float bRadius = b->shape.shape.sphere.radius;
-	float radius = aRadius + bRadius;
-	float distance = gfc_vector3d_magnitude(ab);
+	double aRadius = a->shape.shape.sphere.radius;
+	double bRadius = b->shape.shape.sphere.radius;
+	double radius = aRadius + bRadius;
+	double distance = gfc_vector3d_magnitude(ab);
 	Collision col = {0};
 	if(distance > radius) { return col; }
 	col.hit = true;

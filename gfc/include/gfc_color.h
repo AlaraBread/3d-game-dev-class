@@ -144,14 +144,14 @@ SDL_Color gfc_color_to_sdl(GFC_Color color);
  * @param gfc_vector the gfc_vector to convert
  * @return a new color in the format CT_RGBA8
  */
-GFC_Color gfc_color_from_vector4(GFC_Vector4D gfc_vector);
+GFC_Color gfc_color_from_vector4(GFC_Vector4DF gfc_vector);
 
 /**
  * @brief create a color from a gfc_vector where x = r, y = g, z = b, w = a
  * @param gfc_vector the gfc_vector to convert
  * @return a new color in the format CT_RGBAf
  */
-GFC_Color gfc_color_from_vector4f(GFC_Vector4D gfc_vector);
+GFC_Color gfc_color_from_vector4f(GFC_Vector4DF gfc_vector);
 
 /**
  * @brief convert a color to a gfc_vector where x = r, y = g, z = b, w = a
@@ -159,7 +159,7 @@ GFC_Color gfc_color_from_vector4f(GFC_Vector4D gfc_vector);
  * @return a gfc_vector set to the color provided
  * @note: will be in values from 0-255
  */
-GFC_Vector4D gfc_color_to_vector4(GFC_Color color);
+GFC_Vector4DF gfc_color_to_vector4(GFC_Color color);
 
 /**
  * @brief convert a color to a gfc_vector where x = r, y = g, z = b, w = a
@@ -167,7 +167,7 @@ GFC_Vector4D gfc_color_to_vector4(GFC_Color color);
  * @return a gfc_vector set to the color provided
  * @note: will be in values from 0-1.0f
  */
-GFC_Vector4D gfc_color_to_vector4f(GFC_Color color);
+GFC_Vector4DF gfc_color_to_vector4f(GFC_Color color);
 
 /**
  * @brief Get the Hue value of a color.  It may convert internally as needed.

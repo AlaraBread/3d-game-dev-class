@@ -64,8 +64,8 @@ int main(int argc, char *argv[]) {
 
 	// game setup
 	Model *sky = gf3d_model_load("assets/models/sky.model");
-	GFC_Matrix4 skyMat;
-	gfc_matrix4_identity(skyMat);
+	GFC_Matrix4F skyMat;
+	gfc_matrix4f_identity(skyMat);
 	// camera
 	gf3d_camera_set_scale(gfc_vector3d(1, 1, 1));
 	gf3d_camera_set_position(gfc_vector3d(15, -15, 10));
@@ -80,8 +80,8 @@ int main(int argc, char *argv[]) {
 	createBox()->position = gfc_vector3d(0, 0, 20);
 	createBall(gfc_vector3d(5, 10, 0));
 
-	float floorSize = 50;
-	float floorThickness = 5;
+	double floorSize = 50;
+	double floorThickness = 5;
 	createFloor(gfc_vector3d(0, 0, -floorSize/2.0), gfc_vector3d(0, 0, 0), gfc_vector3d(floorSize*4, floorSize*4, floorThickness));
 
 	//createFloor(gfc_vector3d(floorSize, 0, 0), gfc_vector3d(0, -M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));

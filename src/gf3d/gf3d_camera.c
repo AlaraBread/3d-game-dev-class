@@ -8,18 +8,18 @@
 
 static Camera gf3d_camera = {0};
 
-void gf3d_camera_set_move_step(float step) { gf3d_camera.moveStep = step; }
+void gf3d_camera_set_move_step(double step) { gf3d_camera.moveStep = step; }
 
-void gf3d_camera_set_rotate_step(float step) { gf3d_camera.rotateStep = step; }
+void gf3d_camera_set_rotate_step(double step) { gf3d_camera.rotateStep = step; }
 
-void gf3d_camera_get_view_mat4(GFC_Matrix4 *view) {
+void gf3d_camera_get_view_mat4(GFC_Matrix4F *view) {
 	if(!view) return;
-	memcpy(view, gf3d_camera.cameraMat, sizeof(GFC_Matrix4));
+	memcpy(view, gf3d_camera.cameraMat, sizeof(GFC_Matrix4F));
 }
 
-void gf3d_camera_set_view_mat4(GFC_Matrix4 *view) {
+void gf3d_camera_set_view_mat4(GFC_Matrix4F *view) {
 	if(!view) return;
-	memcpy(gf3d_camera.cameraMat, view, sizeof(GFC_Matrix4));
+	memcpy(gf3d_camera.cameraMat, view, sizeof(GFC_Matrix4F));
 }
 
 void gf3d_camera_look_at(GFC_Vector3D target, const GFC_Vector3D *position) {
@@ -45,15 +45,15 @@ void gf3d_camera_update_view() {
 	 */
 
 	GFC_Vector3D xaxis, yaxis, zaxis, position;
-	float cosPitch = cos(gf3d_camera.rotation.x);
-	float sinPitch = sin(gf3d_camera.rotation.x);
-	float cosYaw = cos(gf3d_camera.rotation.z);
-	float sinYaw = sin(gf3d_camera.rotation.z);
+	double cosPitch = cos(gf3d_camera.rotation.x);
+	double sinPitch = sin(gf3d_camera.rotation.x);
+	double cosYaw = cos(gf3d_camera.rotation.z);
+	double sinYaw = sin(gf3d_camera.rotation.z);
 
 	position.x = gf3d_camera.position.x;
 	position.y = -gf3d_camera.position.z; // inverting for Z-up
 	position.z = gf3d_camera.position.y;
-	gfc_matrix4_identity(gf3d_camera.cameraMat);
+	gfc_matrix4f_identity(gf3d_camera.cameraMat);
 
 	gfc_vector3d_set(xaxis, cosYaw, 0, -sinYaw);
 	gfc_vector3d_set(yaxis, sinYaw * sinPitch, cosPitch, cosYaw * sinPitch);
@@ -92,7 +92,7 @@ void gf3d_camera_move(GFC_Vector3D translation) {
 	gfc_vector3d_sub(gf3d_camera.position, gf3d_camera.position, translation);
 }
 
-void gf3d_camera_walk_forward(float magnitude) {
+void gf3d_camera_walk_forward(double magnitude) {
 	GFC_Vector2D w;
 	GFC_Vector3D forward = {0};
 	w = gfc_vector2d_from_angle(-gf3d_camera.rotation.z);
@@ -102,7 +102,7 @@ void gf3d_camera_walk_forward(float magnitude) {
 	gf3d_camera_move(forward);
 }
 
-void gf3d_camera_walk_right(float magnitude) {
+void gf3d_camera_walk_right(double magnitude) {
 	GFC_Vector2D w;
 	GFC_Vector3D right = {0};
 	w = gfc_vector2d_from_angle(-gf3d_camera.rotation.z - GFC_HALF_PI);
@@ -112,20 +112,20 @@ void gf3d_camera_walk_right(float magnitude) {
 	gf3d_camera_move(right);
 }
 
-void gf3d_camera_move_up(float magnitude) {
+void gf3d_camera_move_up(double magnitude) {
 	GFC_Vector3D up = {0, 0, magnitude};
 	gf3d_camera_move(up);
 }
 
-void gf3d_camera_yaw(float magnitude) { gf3d_camera.rotation.z -= magnitude; }
+void gf3d_camera_yaw(double magnitude) { gf3d_camera.rotation.z -= magnitude; }
 
-void gf3d_camera_pitch(float magnitude) {
+void gf3d_camera_pitch(double magnitude) {
 	gf3d_camera.rotation.x -= magnitude;
 	if(gf3d_camera.rotation.x >= -GFC_HALF_PI) { gf3d_camera.rotation.x = -GFC_HALF_PI - GFC_EPSILON; }
 	if(gf3d_camera.rotation.x <= -GFC_PI_HALFPI) { gf3d_camera.rotation.x = -GFC_PI_HALFPI + GFC_EPSILON; }
 }
 
-void gf3d_camera_roll(float magnitude) { gf3d_camera.rotation.y -= magnitude; }
+void gf3d_camera_roll(double magnitude) { gf3d_camera.rotation.y -= magnitude; }
 
 GFC_Vector3D gf3d_camera_get_direction() {
 	GFC_Vector3D forward = {0};
@@ -145,21 +145,21 @@ GFC_Vector3D gf3d_camera_get_up() {
 	return up;
 }
 
-void gf3d_camera_fly_forward(float magnitude) {
+void gf3d_camera_fly_forward(double magnitude) {
 	GFC_Vector3D forward;
 	gf3d_camera_get_view_vectors(&forward, NULL, NULL);
 	gfc_vector3d_set_magnitude(&forward, magnitude);
 	gf3d_camera_move(forward);
 }
 
-void gf3d_camera_fly_right(float magnitude) {
+void gf3d_camera_fly_right(double magnitude) {
 	GFC_Vector3D right;
 	gf3d_camera_get_view_vectors(NULL, &right, NULL);
 	gfc_vector3d_set_magnitude(&right, magnitude);
 	gf3d_camera_move(right);
 }
 
-void gf3d_camera_fly_up(float magnitude) {
+void gf3d_camera_fly_up(double magnitude) {
 	GFC_Vector3D up;
 	gf3d_camera_get_view_vectors(NULL, NULL, &up);
 	gfc_vector3d_set_magnitude(&up, magnitude);
@@ -232,7 +232,7 @@ void gf3d_camera_set_auto_pan(Bool enable) { gf3d_camera.autoPan = enable; }
 Bool gf3d_camera_free_look_enabled() { return gf3d_camera.freeLook; }
 
 void gf3d_camera_controls_update(double delta) {
-	float moveSpeed = gf3d_camera.moveStep * delta;
+	double moveSpeed = gf3d_camera.moveStep * delta;
 	GFC_Vector3D position, rotation;
 	const Uint8 *keys;
 

@@ -60,26 +60,26 @@ SJson *sj_gfc_string_new(GFC_String *string);
  * @param output a pointer to the vector to store the values.
  * @return 0 if it failed, 1 if successful
  */
-int sj_value_as_vector2d(SJson *json,GFC_Vector2D *output);
-int sj_value_as_vector3d(SJson *json,GFC_Vector3D *output);
-int sj_value_as_vector4d(SJson *json,GFC_Vector4D *output);
+int sj_value_as_vector2d(SJson *json,GFC_Vector2DF *output);
+int sj_value_as_vector3d(SJson *json,GFC_Vector3DF *output);
+int sj_value_as_vector4d(SJson *json,GFC_Vector4DF *output);
 
 /**
  * @brief convert a gfc_vector to json
  * @param input the vector to convert
  * @return NULL on failure, a json array containing the vector as floats otherwise
  */
-SJson *sj_vector2d_new(GFC_Vector2D input);
-SJson *sj_vector3d_new(GFC_Vector3D input);
-SJson *sj_vector4d_new(GFC_Vector4D input);
+SJson *sj_vector2d_new(GFC_Vector2DF input);
+SJson *sj_vector3d_new(GFC_Vector3DF input);
+SJson *sj_vector4d_new(GFC_Vector4DF input);
 
 /**
  * @brief get a gfc_vector from an object by its key
  * @param 
  */
-int sj_object_get_vector2d(SJson *json,const char *key,GFC_Vector2D *output);
-int sj_object_get_vector3d(SJson *json,const char *key,GFC_Vector3D *output);
-int sj_object_get_vector4d(SJson *json,const char *key,GFC_Vector4D *output);
+int sj_object_get_vector2d(SJson *json,const char *key,GFC_Vector2DF *output);
+int sj_object_get_vector3d(SJson *json,const char *key,GFC_Vector3DF *output);
+int sj_object_get_vector4d(SJson *json,const char *key,GFC_Vector4DF *output);
 
 /**
  * @brief convert a matrix into json for storing
@@ -88,9 +88,9 @@ int sj_object_get_vector4d(SJson *json,const char *key,GFC_Vector4D *output);
  * @return NULL if something went wrong, the json containing a matrix otherwise
  */
 
-SJson *sj_matrix4_new(GFC_Matrix4 input);
-SJson *sj_matrix3_new(GFC_Matrix3 input);
-SJson *sj_matrix2_new(GFC_Matrix2 input);
+SJson *sj_matrix4_new(GFC_Matrix4F input);
+SJson *sj_matrix3_new(GFC_Matrix3F input);
+SJson *sj_matrix2_new(GFC_Matrix2F input);
 
 /**
  * @brief get matrix information from json
@@ -98,9 +98,9 @@ SJson *sj_matrix2_new(GFC_Matrix2 input);
  * @param output the matrix that will be populated by the json
  * @return 0 if the data doesn't match expected or other error.  1 if it was successful
  */
-int sj_value_as_matrix4(SJson *matrix,GFC_Matrix4 output);
-int sj_value_as_matrix3(SJson *matrix,GFC_Matrix3 output);
-int sj_value_as_matrix2(SJson *matrix,GFC_Matrix2 output);
+int sj_value_as_matrix4(SJson *matrix,GFC_Matrix4F output);
+int sj_value_as_matrix3(SJson *matrix,GFC_Matrix3F output);
+int sj_value_as_matrix2(SJson *matrix,GFC_Matrix2F output);
 
 /**
  * @brief get matrix data from an object by its key
@@ -109,9 +109,9 @@ int sj_value_as_matrix2(SJson *matrix,GFC_Matrix2 output);
  * @param output the matrix that will be populated by the json
  * @return 0 if it failed, 1 if it succeeded
  */
-int sj_object_get_matrix4(SJson *json,const char *key,GFC_Matrix4 output);
-int sj_object_get_matrix3(SJson *json,const char *key,GFC_Matrix3 output);
-int sj_object_get_matrix2(SJson *json,const char *key,GFC_Matrix2 output);
+int sj_object_get_matrix4(SJson *json,const char *key,GFC_Matrix4F output);
+int sj_object_get_matrix3(SJson *json,const char *key,GFC_Matrix3F output);
+int sj_object_get_matrix2(SJson *json,const char *key,GFC_Matrix2F output);
 
 /**
  * @brief extract a matrix based on component vectors provided in the json
@@ -123,7 +123,7 @@ int sj_object_get_matrix2(SJson *json,const char *key,GFC_Matrix2 output);
  * @param output the matrix that will be populated by the json
  * @return 0 if it failed, 1 if it succeeded
  */
-int sj_object_get_matrix4_vectors(SJson *json,const char *key,GFC_Matrix4 output);
+int sj_object_get_matrix4_vectors(SJson *json,const char *key,GFC_Matrix4F output);
 
 /**
  * @brief extract a matrix based on component vectors provided in the json object
@@ -134,7 +134,7 @@ int sj_object_get_matrix4_vectors(SJson *json,const char *key,GFC_Matrix4 output
  * @param output the matrix that will be populated by the json
  * @return 0 if it failed, 1 if it succeeded
  */
-int sj_value_as_matrix4_vectors(SJson *matrix,GFC_Matrix4 output);
+int sj_value_as_matrix4_vectors(SJson *matrix,GFC_Matrix4F output);
 
 
 /**

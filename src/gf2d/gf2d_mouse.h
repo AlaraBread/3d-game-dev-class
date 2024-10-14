@@ -102,7 +102,7 @@ GFC_Vector2D gf2d_mouse_get_position();
  * @param point the relative point to check from
  * @return the angle, in degrees (with 0 being UP)
  */
-float gf2d_mouse_get_angle_to(GFC_Vector2D point);
+double gf2d_mouse_get_angle_to(GFC_Vector2D point);
 
 /**
  * @brief get the change in position from the last frame

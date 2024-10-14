@@ -23,7 +23,7 @@ void gf3d_draw_init();
  * @param color the color to draw with
  */
 void gf3d_draw_edge_3d(
-	GFC_Edge3D edge, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, float radius, GFC_Color color
+	GFC_Edge3D edge, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, double radius, GFC_Color color
 );
 
 /**

@@ -100,14 +100,14 @@ int gfc_rect_from_json(SJson *json,GFC_Rect *rect);
  * @param h the height of the rect
  * @return a GFC rect
  */
-GFC_Rect gfc_rect(float x, float y, float w, float h);
+GFC_Rect gfc_rect(double x, double y, double w, double h);
 
 /**
  * @brief make a GFC GFC_Rect
  * @param v the gfc_vector holding rect info
  * @return a GFC rect
  */
-GFC_Rect gfc_rect_from_vector4(GFC_Vector4D v);
+GFC_Rect gfc_rect_from_vector4f(GFC_Vector4DF v);
 
 /**
  * @brief make a shape based on a rect
@@ -116,7 +116,7 @@ GFC_Rect gfc_rect_from_vector4(GFC_Vector4D v);
  * @param w the width
  * @param h the height
  */
-GFC_Shape gfc_shape_rect(float x, float y, float w, float h);
+GFC_Shape gfc_shape_rect(double x, double y, double w, double h);
 
 /**
  * @brief convert a rect to a gfc_vector4d
@@ -143,7 +143,7 @@ GFC_Shape gfc_shape_from_sdl_rect(SDL_Rect r);
  * @param y the center y
  * @param r the radius
  */
-GFC_Shape gfc_shape_circle(float x, float y, float r);
+GFC_Shape gfc_shape_circle(double x, double y, double r);
 
 /**
  * @brief make a shape based on a gfc GFC_Circle
@@ -167,7 +167,7 @@ GFC_Circle gfc_shape_to_circle(GFC_Shape s);
  * @param y2 the Y component of ending point
  * @return the shape
  */
-GFC_Shape gfc_shape_edge(float x1,float y1,float x2,float y2);
+GFC_Shape gfc_shape_edge(double x1,double y1,double x2,double y2);
 
 /**
  * @brief make a shape based on a gfc GFC_Edge2D
@@ -228,7 +228,7 @@ Uint8 gfc_rect_overlap_poc(GFC_Rect a,GFC_Rect b,GFC_Vector2D *poc, GFC_Vector2D
  * @param y the position of the circle center
  * @param r the radius of the circle
  */
-GFC_Circle gfc_circle(float x, float y, float r);
+GFC_Circle gfc_circle(double x, double y, double r);
 
 /**
  * @brief get the bounding circle for the given rectangle
@@ -368,14 +368,14 @@ void gfc_shape_copy(GFC_Shape *dst,GFC_Shape src);
  * @param y2 the Y component of ending point
  * @return a set edge
  */
-GFC_Edge2D gfc_edge(float x1, float y1, float x2, float y2);
+GFC_Edge2D gfc_edge(double x1, double y1, double x2, double y2);
 
 /**
  * @brief return the length of the edge
  * @param e the edge in question
  * @return the length
  */
-float gfc_edge_length(GFC_Edge2D e);
+double gfc_edge_length(GFC_Edge2D e);
 
 /**
  * @brief make an edge from two gfc_vectors
@@ -531,7 +531,7 @@ GFC_Vector2D gfc_rect_get_center_point(GFC_Rect r);
  * @param t the time step along the curve to determine where the point is.  should be between zero and 1
  * @return the position on the curve corresponding to the time step provided
  */
-GFC_Vector2D gfc_shape_get_bezier_point_2d(GFC_Vector2D p0, GFC_Vector2D p1, GFC_Vector2D p2,float t);
+GFC_Vector2D gfc_shape_get_bezier_point_2d(GFC_Vector2D p0, GFC_Vector2D p1, GFC_Vector2D p2,double t);
 
 /**
  * @brief get the interpolated point along a bezier curve described by the points provided in 3d space
@@ -541,7 +541,7 @@ GFC_Vector2D gfc_shape_get_bezier_point_2d(GFC_Vector2D p0, GFC_Vector2D p1, GFC
  * @param t the time step along the curve to determine where the point is.  should be between zero and 1
  * @return the position on the curve corresponding to the time step provided
  */
-GFC_Vector3D gfc_shape_get_bezier_point_3d(GFC_Vector3D p0, GFC_Vector3D p1, GFC_Vector3D p2,float t);
+GFC_Vector3D gfc_shape_get_bezier_point_3d(GFC_Vector3D p0, GFC_Vector3D p1, GFC_Vector3D p2,double t);
 
 /**
  * @brief get a list of points that describe a bezier curve bound by the 3 points provided in 2D

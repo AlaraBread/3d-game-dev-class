@@ -22,9 +22,9 @@
 #define vec3_idx(v, i) ((i) == 0 ? (v).x : (i) == 1 ? (v).y : (v).z)
 
 // wrap x -> [0,max)
-float wrapMax(float x, float max);
+double wrapMax(double x, double max);
 // wrap x -> [min,max)
-float wrapMinMax(float x, float min, float max);
+double wrapMinMax(double x, double min, double max);
 void inverse_quat(GFC_Vector4D *quat);
 void quat_mult(GFC_Vector4D *dst, GFC_Vector4D a, GFC_Vector4D b);
 void axis_angle_to_quat(GFC_Vector4D *dst, GFC_Vector4D rotation);
@@ -47,7 +47,7 @@ GFC_Vector3D projectVector(GFC_Vector3D v, GFC_Vector3D normal);
 GFC_Vector3D projectVectorOntoPlane(GFC_Vector3D v, GFC_Vector3D normal);
 GFC_Vector3D toBarycentric(GFC_Vector3D p, GFC_Triangle3D triangle);
 GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle);
-GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, float t);
+GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, double t);
 GFC_Vector3D perpendicularVector3(GFC_Vector3D v);
 GFC_Vector3D kindaPerpendicularVector3(GFC_Vector3D v);
 void transposeMat3(GFC_Matrix3 mat);

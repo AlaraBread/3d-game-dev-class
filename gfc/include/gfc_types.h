@@ -32,24 +32,24 @@ typedef short int Bool;
 #endif
 
 /**
- * @brief generate a random float (0 -1) based on the provided seed
+ * @brief generate a random double (0 -1) based on the provided seed
  * @param seed the seed for the random number
  */
-float gfc_random_seeded(Uint32 seed);
+double gfc_random_seeded(Uint32 seed);
 
 /**
  * @brief random macro taken from Id Software's Quake 2 Source.
  * This macro exposes the more random bits from the rand() function
- * @return a random float between 0 and 1.0
+ * @return a random double between 0 and 1.0
  */
-#define gfc_random()  ((rand ()%1000)/(float)1000.0)
+#define gfc_random()  ((rand ()%1000)/(double)1000.0)
 
 /**
  * @brief random macro taken from Id Software's Quake 2 Source.
  * This macro exposes the more random bits from the rand() function
- * @return a random float between -1.0 and 1.0
+ * @return a random double between -1.0 and 1.0
  */
-#define gfc_crandom() (((float)((rand()%1000)/(float)1000.0) * 2.0) - 1.0)
+#define gfc_crandom() (((double)((rand()%1000)/(double)1000.0) * 2.0) - 1.0)
 
 /**
  * @brief Gives a random integer value between 0 and the provided range

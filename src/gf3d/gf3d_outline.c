@@ -11,18 +11,18 @@ typedef struct {
 } Face;
 
 typedef struct {
-	GFC_Vector2D vertex;
-	GFC_Vector2D texel;
+	GFC_Vector2DF vertex;
+	GFC_Vector2DF texel;
 } Vertex;
 
 typedef struct {
-	GFC_Vector3D color;
+	GFC_Vector3DF color;
 	float padding;
-	GFC_Vector2D extents;
+	GFC_Vector2DF extents;
 	float zNear;
 	float zFar;
-	GFC_Matrix4 proj;
-	GFC_Matrix4 view;
+	GFC_Matrix4F proj;
+	GFC_Matrix4F view;
 } OutlineUBO;
 
 static struct {
@@ -138,8 +138,8 @@ void render_outlines() {
 	gf3d_outline.ubo.zNear = 0.1;
 	gf3d_outline.ubo.zFar = 100000.0;
 	ModelViewProjection mvp = gf3d_vgraphics_get_mvp();
-	gfc_matrix4_copy(gf3d_outline.ubo.view, mvp.view);
-	gfc_matrix4_copy(gf3d_outline.ubo.proj, mvp.proj);
+	gfc_matrix4f_copy(gf3d_outline.ubo.view, mvp.view);
+	gfc_matrix4f_copy(gf3d_outline.ubo.proj, mvp.proj);
 
 	gf3d_pipeline_queue_render(
 		gf3d_outline.pipe, gf3d_outline.vertexBuffer,

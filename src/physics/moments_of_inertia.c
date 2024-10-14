@@ -1,13 +1,13 @@
 #include "moments_of_inertia.h"
 
 // https://en.wikipedia.org/wiki/List_of_moments_of_inertia
-GFC_Vector3D sphereInertia(Sphere sphere, float mass) {
-	float i = (2.0/5.0)*mass*sphere.radius*sphere.radius;
+GFC_Vector3D sphereInertia(Sphere sphere, double mass) {
+	double i = (2.0/5.0)*mass*sphere.radius*sphere.radius;
 	return gfc_vector3d(i, i, i);
 }
 
 // https://en.wikipedia.org/wiki/List_of_moments_of_inertia
-GFC_Vector3D boxInertia(Box box, float mass) {
+GFC_Vector3D boxInertia(Box box, double mass) {
 	GFC_Vector3D e = box.extents;
 	gfc_vector3d_scale(e, e, 2);
 	GFC_Vector3D e2 = gfc_vector3d_multiply(e, e);

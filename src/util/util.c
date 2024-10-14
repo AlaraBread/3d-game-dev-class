@@ -2,9 +2,9 @@
 
 // https://stackoverflow.com/a/29871193
 
-float wrapMax(float x, float max) { return fmod(max + fmod(x, max), max); }
+double wrapMax(double x, double max) { return fmod(max + fmod(x, max), max); }
 
-float wrapMinMax(float x, float min, float max) { return min + wrapMax(x - min, max - min); }
+double wrapMinMax(double x, double min, double max) { return min + wrapMax(x - min, max - min); }
 
 // using this resource as a reference for quaternion math
 // https://danceswithcode.net/engineeringnotes/quaternions/quaternions.html
@@ -23,8 +23,8 @@ void quat_mult(GFC_Vector4D *dst, GFC_Vector4D a, GFC_Vector4D b) {
 }
 
 void axis_angle_to_quat(GFC_Vector4D *dst, GFC_Vector4D rotation) {
-	dst->w = cosf(rotation.w / 2.0);
-	float s = sinf(rotation.w / 2.0);
+	dst->w = cos(rotation.w / 2.0);
+	double s = sin(rotation.w / 2.0);
 	dst->x = rotation.x * s;
 	dst->y = rotation.y * s;
 	dst->z = rotation.z * s;
@@ -35,8 +35,8 @@ void quat_to_axis_angle(GFC_Vector4D *dst, GFC_Vector4D quat) {
 		*dst = gfc_vector4d(1, 0, 0, 0);
 		return;
 	}
-	float angle = 2.0 * acosf(quat.w);
-	float s = sin(angle / 2.0);
+	double angle = 2.0 * acos(quat.w);
+	double s = sin(angle / 2.0);
 	dst->x = quat.x / s;
 	dst->y = quat.y / s;
 	dst->z = quat.z / s;
@@ -50,7 +50,7 @@ void quat_to_euler_vector(GFC_Vector3D *dst, GFC_Vector4D quat) {
 
 // NOT an euler angle, euler vector: https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation
 void euler_vector_to_axis_angle(GFC_Vector4D *dst, GFC_Vector3D eulerVector) {
-	float l = gfc_vector3d_magnitude(eulerVector);
+	double l = gfc_vector3d_magnitude(eulerVector);
 	if(l == 0.0) {
 		*dst = gfc_vector4d(1, 0, 0, 0);
 		return;
@@ -127,9 +127,9 @@ GFC_Vector4D compose_axis_angles(GFC_Vector4D a, GFC_Vector4D b) {
 }
 
 void quatToRotationMatrix(GFC_Matrix3 out, GFC_Vector4D q) {
-	float xx = q.x*q.x;
-	float yy = q.y*q.y;
-	float zz = q.z*q.z;
+	double xx = q.x*q.x;
+	double yy = q.y*q.y;
+	double zz = q.z*q.z;
 	out[0][0] = 1.0 - 2.0*yy - 2.0*zz;
 	out[0][1] = 2.0*q.x*q.y - 2.0*q.w*q.z;
 	out[0][2] = 2.0*q.x*q.z + 2.0*q.w*q.y;
@@ -150,7 +150,7 @@ GFC_Vector3D triangleCenter(GFC_Triangle3D triangle) {
 }
 
 GFC_Vector3D projectVector(GFC_Vector3D v, GFC_Vector3D normal) {
-	float magnitude = gfc_vector3d_dot_product(v, normal);
+	double magnitude = gfc_vector3d_dot_product(v, normal);
 	GFC_Vector3D projected;
 	gfc_vector3d_scale(projected, normal, magnitude);
 	return projected;
@@ -173,12 +173,12 @@ GFC_Vector3D toBarycentric(GFC_Vector3D p, GFC_Triangle3D triangle) {
 	gfc_vector3d_sub(v1, triangle.c, triangle.a);
 	GFC_Vector3D v2;
 	gfc_vector3d_sub(v2, p, triangle.a);
-	float d00 = gfc_vector3d_dot_product(v0, v0);
-	float d01 = gfc_vector3d_dot_product(v0, v1);
-	float d11 = gfc_vector3d_dot_product(v1, v1);
-	float d20 = gfc_vector3d_dot_product(v2, v0);
-	float d21 = gfc_vector3d_dot_product(v2, v1);
-	float denom = d00 * d11 - d01 * d01;
+	double d00 = gfc_vector3d_dot_product(v0, v0);
+	double d01 = gfc_vector3d_dot_product(v0, v1);
+	double d11 = gfc_vector3d_dot_product(v1, v1);
+	double d20 = gfc_vector3d_dot_product(v2, v0);
+	double d21 = gfc_vector3d_dot_product(v2, v1);
+	double denom = d00 * d11 - d01 * d01;
 	GFC_Vector3D out;
 	out.y = (d11 * d20 - d01 * d21) / denom;
 	out.z = (d00 * d21 - d01 * d20) / denom;
@@ -198,7 +198,7 @@ GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle) {
 	return out;
 }
 
-GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, float t) {
+GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, double t) {
 	gfc_vector3d_scale(a, a, t);
 	gfc_vector3d_scale(b, b, (1.0 - t));
 	GFC_Vector3D out;
@@ -221,7 +221,7 @@ GFC_Vector3D kindaPerpendicularVector3(GFC_Vector3D v) {
 }
 
 void transposeMat3(GFC_Matrix3 mat) {
-	float swap = mat[1][0];
+	double swap = mat[1][0];
 	mat[1][0] = mat[0][1];
 	mat[0][1] = swap;
 	swap = mat[2][0];

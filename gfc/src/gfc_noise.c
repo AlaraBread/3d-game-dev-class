@@ -1,6 +1,6 @@
 #include "gfc_noise.h"
 
-float interpolate(float a0, float a1, float w)
+double interpolate(double a0, double a1, double w)
 {
     return (a1 - a0) * w + a0;
 }
@@ -9,7 +9,7 @@ float interpolate(float a0, float a1, float w)
  */
 GFC_Vector2D randomGradient(int ix, int iy) {
     // No precomputed gradients mean this works for any number of grid coordinates
-    float random;
+    double random;
     GFC_Vector2D v;
     const unsigned w = 8 * sizeof(unsigned);
     const unsigned s = w / 2; // rotation width
@@ -25,21 +25,21 @@ GFC_Vector2D randomGradient(int ix, int iy) {
 }
 
 // Computes the dot product of the distance and gradient gfc_vectors.
-float dotGridGradient(int ix, int iy, float x, float y)
+double dotGridGradient(int ix, int iy, double x, double y)
 {
     // Get gradient from integer coordinates
     GFC_Vector2D gradient = randomGradient(ix, iy);
 
     // Compute the distance gfc_vector
-    float dx = x - (float)ix;
-    float dy = y - (float)iy;
+    double dx = x - (double)ix;
+    double dy = y - (double)iy;
 
     // Compute the dot-product
     return (dx*gradient.x + dy*gradient.y);
 }
 
 // Compute Perlin noise at coordinates x, y
-float gfc_perlin(GFC_Vector2D in)
+double gfc_perlin(GFC_Vector2D in)
 {
     // Determine grid cell coordinates
     int x0 = (int)floor(in.x);
@@ -49,11 +49,11 @@ float gfc_perlin(GFC_Vector2D in)
 
     // Determine interpolation weights
     // Could also use higher order polynomial/s-curve here
-    float sx = in.x - (float)x0;
-    float sy = in.y - (float)y0;
+    double sx = in.x - (double)x0;
+    double sy = in.y - (double)y0;
 
     // Interpolate between grid point gradients
-    float n0, n1, ix0, ix1, value;
+    double n0, n1, ix0, ix1, value;
 
     n0 = dotGridGradient(x0, y0, in.x, in.y);
     n1 = dotGridGradient(x1, y0, in.x, in.y);

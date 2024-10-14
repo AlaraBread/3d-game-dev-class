@@ -18,7 +18,7 @@ Bool wheelIsFront(int i) {
 	return i <= 1;
 }
 
-void carPhysicsProcess(PhysicsBody *self, float delta) {
+void carPhysicsProcess(PhysicsBody *self, double delta) {
 	GFC_Vector3D invRotation;
 	gfc_vector3d_negate(invRotation, self->rotation);
 	GFC_Vector3D forward = gfc_vector3d(1, 0, 0);
@@ -27,7 +27,7 @@ void carPhysicsProcess(PhysicsBody *self, float delta) {
 	rotate_vector3_by_euler_vector(&up, self->rotation);
 	GFC_Vector3D right = gfc_vector3d(0, 1, 0);
 	rotate_vector3_by_euler_vector(&right, self->rotation);
-	float upness = gfc_vector3d_dot_product(up, gfc_vector3d(0, 0, 1));
+	double upness = gfc_vector3d_dot_product(up, gfc_vector3d(0, 0, 1));
 	self->entity.player.rightingTimer -= delta;
 	if((self->reportedCollisions[0].hit && upness < 0.5) || self->entity.player.rightingTimer > 0.0) {
 		if(self->entity.player.rightingTimer <= 0.0) {
@@ -42,7 +42,7 @@ void carPhysicsProcess(PhysicsBody *self, float delta) {
 		}
 		GFC_Vector3D t;
 		gfc_vector3d_cross_product(&t, up, gfc_vector3d(0, 0, 1));
-		float rightDir = gfc_vector3d_dot_product(t, righting) > 0 ? 1 : -1;
+		double rightDir = gfc_vector3d_dot_product(t, righting) > 0 ? 1 : -1;
 		gfc_vector3d_scale(righting, righting, rightDir*-(upness-1.0)*80*delta);
 		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, righting);
 	}
@@ -51,7 +51,7 @@ void carPhysicsProcess(PhysicsBody *self, float delta) {
 	gfc_vector3d_scale(angularDampVector, self->angularVelocity, delta * 2.0);
 	gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, angularDampVector);
 	// car movement
-	float steer = 0;
+	double steer = 0;
 	GFC_Vector3D airControl = {0};
 	if(gfc_input_command_held("left")) {
 		steer += 0.5;
@@ -62,7 +62,7 @@ void carPhysicsProcess(PhysicsBody *self, float delta) {
 		gfc_vector3d_add(airControl, airControl, forward);
 	}
 	self->entity.player.steer = steer;
-	float engineForce = 0;
+	double engineForce = 0;
 	if(gfc_input_command_held("forward")) {
 		engineForce += 0.5;
 		gfc_vector3d_add(airControl, airControl, right);
@@ -111,10 +111,10 @@ void carPhysicsProcess(PhysicsBody *self, float delta) {
 			force.z -= wheelVelocity.z*0.05;
 		}
 		// friction
-		float slip = gfc_vector3d_dot_product(leftLocal, wheelVelocity);
+		double slip = gfc_vector3d_dot_product(leftLocal, wheelVelocity);
 		force.y -= 0.05*slip;
 		// wheel turning
-		float wheelRadius = self->entity.player.wheelRadius;
+		double wheelRadius = self->entity.player.wheelRadius;
 		GFC_Vector3D forwardLocal = gfc_vector3d(1, 0, 0);
 		self->entity.player.wheelVelocities[i] = gfc_vector3d_dot_product(forwardLocal, wheelVelocity)/wheelRadius;
 		// jump
@@ -135,7 +135,7 @@ void carPhysicsProcess(PhysicsBody *self, float delta) {
 	}
 }
 
-void carFrameProcess(PhysicsBody *self, float delta) {
+void carFrameProcess(PhysicsBody *self, double delta) {
 	// camera movement
 	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
 	self->entity.player.pitch -= mouseMotion.y*0.01;
@@ -162,14 +162,14 @@ void carFrameProcess(PhysicsBody *self, float delta) {
 void carDraw(PhysicsBody *self) {
 	GFC_Vector4D quat;
 	euler_vector_to_quat(&quat, self->rotation);
-	GFC_Matrix4 matrix;
-	gfc_matrix4_from_vectors_q(matrix, self->position, quat, self->visualScale);
+	GFC_Matrix4F matrix;
+	gfc_matrix4f_from_vectors_q(matrix, gfc_vector3d_to_float(self->position), gfc_vector4d_to_float(quat), gfc_vector3d_to_float(self->visualScale));
 	gf3d_model_draw(self->model, matrix, gfc_color(1, 1, 1, 1), 0);
 	for(int i = 0; i < 4; i++) {
 		GFC_Vector3D wheelPos = wheelOffset(i);
 		gfc_vector3d_add(wheelPos, wheelPos, gfc_vector3d(0, 0, -(self->entity.player.wheelDistances[i]-self->entity.player.wheelRadius)));
 		wheelPos = physicsBodyLocalToGlobal(self, wheelPos);
-		GFC_Matrix4 wheelMat;
+		GFC_Matrix4F wheelMat;
 		euler_vector_to_quat(&quat, self->rotation);
 		GFC_Vector4D wheelRotation = gfc_vector4d(0, 0, 1, self->entity.player.steer);
 		axis_angle_to_quat(&wheelRotation, wheelRotation);
@@ -177,8 +177,8 @@ void carDraw(PhysicsBody *self) {
 		wheelRotation = gfc_vector4d(0, 1, 0, self->entity.player.wheelRotations[i]);
 		axis_angle_to_quat(&wheelRotation, wheelRotation);
 		quat_mult(&quat, wheelRotation, quat);
-		float radius = self->entity.player.wheelRadius;
-		gfc_matrix4_from_vectors_q(wheelMat, wheelPos, quat, gfc_vector3d(radius, 1, radius));
+		double radius = self->entity.player.wheelRadius;
+		gfc_matrix4f_from_vectors_q(wheelMat, gfc_vector3d_to_float(wheelPos), gfc_vector4d_to_float(quat), gfc_vector3df(radius, 1, radius));
 		gf3d_model_draw(self->entity.player.wheelModel, wheelMat, gfc_color(1, 1, 1, 1), 0);
 	}
 }

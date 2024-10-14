@@ -30,16 +30,37 @@
  */
 typedef struct
 {
+  double x;
+  double y;
+}GFC_Vector2D;
+
+typedef struct
+{
+  double x;
+  double y;
+  double z;
+}GFC_Vector3D;
+
+typedef struct
+{
+  double x;
+  double y;
+  double z;
+  double w;
+}GFC_Vector4D;
+
+typedef struct
+{
   float x;
   float y;
-}GFC_Vector2D;
+}GFC_Vector2DF;
 
 typedef struct
 {
   float x;
   float y;
   float z;
-}GFC_Vector3D;
+}GFC_Vector3DF;
 
 typedef struct
 {
@@ -47,7 +68,7 @@ typedef struct
   float y;
   float z;
   float w;
-}GFC_Vector4D;
+}GFC_Vector4DF;
 
 /**
  * The integer space gfc_vector types:
@@ -92,9 +113,9 @@ typedef struct
 /**
  * @brief create and return an GFC_Vector2D
  */
-GFC_Vector2D gfc_vector2d(float x, float y);
-GFC_Vector3D gfc_vector3d(float x, float y, float z);
-GFC_Vector4D gfc_vector4d(float x, float y, float z, float w);
+GFC_Vector2D gfc_vector2d(double x, double y);
+GFC_Vector3D gfc_vector3d(double x, double y, double z);
+GFC_Vector4D gfc_vector4d(double x, double y, double z, double w);
 
 /**
  * @brief convert a 3d gfc_vector into a 2d gfc_vector, dropping the 3rd value
@@ -123,7 +144,7 @@ GFC_Vector3D gfc_vector4dxyz(GFC_Vector4D v);
  * @param z the new z component
  * @return the new 3d gfc_vector
  */
-GFC_Vector3D gfc_vector2dz(GFC_Vector2D v,float z);
+GFC_Vector3D gfc_vector2dz(GFC_Vector2D v,double z);
 
 /**
  * @brief convert a 3d gfc_vector into a 4d gfc_vector
@@ -131,7 +152,7 @@ GFC_Vector3D gfc_vector2dz(GFC_Vector2D v,float z);
  * @param w the new w component
  * @return the new 4d gfc_vector
  */
-GFC_Vector4D gfc_vector3dw(GFC_Vector3D v,float w);
+GFC_Vector4D gfc_vector3dw(GFC_Vector3D v,double w);
 
 /**
  * @brief convert a 2d gfc_vector into a 4d gfc_vector
@@ -140,22 +161,22 @@ GFC_Vector4D gfc_vector3dw(GFC_Vector3D v,float w);
  * @param w the new w component
  * @return the new 4d gfc_vector
  */
-GFC_Vector4D gfc_vector2dzw(GFC_Vector2D v,float z,float w);
+GFC_Vector4D gfc_vector2dzw(GFC_Vector2D v,double z,double w);
 
 /**
  * @brief sets the outvector to a unit gfc_vector pointing at the angle specified
  * @param out output.  GFC_Vector will be set to a unit gfc_vector rotated by radians
  * @param radians specify the angle of the gfc_vector to be set.
  */
-void gfc_vector3d_set_angle_by_radians(GFC_Vector3D *out,float radians);
-void gfc_vector2d_set_angle_by_radians(GFC_Vector2D *out,float radians);
+void gfc_vector3d_set_angle_by_radians(GFC_Vector3D *out,double radians);
+void gfc_vector2d_set_angle_by_radians(GFC_Vector2D *out,double radians);
 
 /**
  * @brief get a unit gfc_vector rotated off of the vertical axis
  * @param angle in radians off of vertical axis
  * @return a unit gfc_vector
  */
-GFC_Vector2D gfc_vector2d_from_angle(float angle);
+GFC_Vector2D gfc_vector2d_from_angle(double angle);
 
 /**
  * @brief returns the angle of a gfc_vector in 2D space.
@@ -163,14 +184,14 @@ GFC_Vector2D gfc_vector2d_from_angle(float angle);
  * @param y the y component of the gfc_vector
  * @return the angle of the gfc_vector in radians from vertical.
  */
-float gfc_vector_angle(float x,float y);
+double gfc_vector_angle(double x,double y);
 
 /**
  * @brief returns the angle of a gfc_vector in 2D space.
  * @param v the gfc_vector
  * @return the angle of the gfc_vector in radian. off of the y axis, not x
  */
-float gfc_vector2d_angle(GFC_Vector2D v);
+double gfc_vector2d_angle(GFC_Vector2D v);
 
 /**
  * @brief check if the current scale requires flipping of rotations
@@ -188,7 +209,7 @@ int gfc_vector2d_scale_flip_rotation(GFC_Vector2D scale);
  * @Param b one of the angles in question
  * @return the angle, in degrees, between the two angles
  */
-float gfc_angle_between_degrees(float a, float b);
+double gfc_angle_between_degrees(double a, double b);
 
 /**
  * @brief returns the angle between the two angles.
@@ -198,19 +219,19 @@ float gfc_angle_between_degrees(float a, float b);
  * @Param b one of the angles in question
  * @return the angle, in degrees, between the two angles
  */
-float gfc_angle_between_radians(float a, float b);
+double gfc_angle_between_radians(double a, double b);
 
 /**
  * @brief prevent an angle from going beyond the range of 0 to 2Pi
  * @param a the angle to clamp
  */
-void gfc_angle_clamp_radians(float *a);
+void gfc_angle_clamp_radians(double *a);
 
 /**
  * @brief prevent an angle from going beyond the range of 0 - 360
  * @param a the angle to clamp
  */
-void gfc_angle_clamp_degrees(float *a);
+void gfc_angle_clamp_degrees(double *a);
 
 /**
  * 3D GFC_Vector Math
@@ -428,25 +449,25 @@ void gfc_vector4d_reflect(GFC_Vector4D *out, GFC_Vector4D normal,GFC_Vector4D in
  * @param v pointer to the gfc_vector to be normalized.
  * @return the magnitude of the vector provided
  */
-float gfc_vector2d_magnitude(GFC_Vector2D V);
-float gfc_vector3d_magnitude(GFC_Vector3D V);
-float gfc_vector4d_magnitude(GFC_Vector4D V);
+double gfc_vector2d_magnitude(GFC_Vector2D V);
+double gfc_vector3d_magnitude(GFC_Vector3D V);
+double gfc_vector4d_magnitude(GFC_Vector4D V);
 
 /**
  * @brief get the magnitude of the difference of the two gfc_vectors
  * @return the magnitude between the two vectors
  */
-float gfc_vector2d_magnitude_between(GFC_Vector2D a,GFC_Vector2D b);
-float gfc_vector3d_magnitude_between(GFC_Vector3D a,GFC_Vector3D b);
-float gfc_vector4d_magnitude_between(GFC_Vector4D a,GFC_Vector4D b);
+double gfc_vector2d_magnitude_between(GFC_Vector2D a,GFC_Vector2D b);
+double gfc_vector3d_magnitude_between(GFC_Vector3D a,GFC_Vector3D b);
+double gfc_vector4d_magnitude_between(GFC_Vector4D a,GFC_Vector4D b);
 
 /**
  * @brief get the magnitude of the difference of the two gfc_vectors
  * @return the magnitude squared between the two vectors (avoids a square root)
  */
-float gfc_vector2d_magnitude_between_squared(GFC_Vector2D a,GFC_Vector2D b);
-float gfc_vector3d_magnitude_between_squared(GFC_Vector3D a,GFC_Vector3D b);
-float gfc_vector4d_magnitude_between_squared(GFC_Vector4D a,GFC_Vector4D b);
+double gfc_vector2d_magnitude_between_squared(GFC_Vector2D a,GFC_Vector2D b);
+double gfc_vector3d_magnitude_between_squared(GFC_Vector3D a,GFC_Vector3D b);
+double gfc_vector4d_magnitude_between_squared(GFC_Vector4D a,GFC_Vector4D b);
 
 /**
  * @brief normalize a gfc_vector
@@ -473,9 +494,9 @@ GFC_Vector4D gfc_vector4d_get_normal(GFC_Vector4D v);
  * @param V the gfc_vector to get the magnitude for
  * @return the square of the magnitude of V
  */
-float gfc_vector2d_magnitude_squared(GFC_Vector2D V);
-float gfc_vector3d_magnitude_squared(GFC_Vector3D V);
-float gfc_vector4d_magnitude_squared(GFC_Vector4D V);
+double gfc_vector2d_magnitude_squared(GFC_Vector2D V);
+double gfc_vector3d_magnitude_squared(GFC_Vector3D V);
+double gfc_vector4d_magnitude_squared(GFC_Vector4D V);
 
 /**
  * @brief checks if the magnitude of V against size.  It does this without
@@ -484,9 +505,9 @@ float gfc_vector4d_magnitude_squared(GFC_Vector4D V);
  * @param size the magnitude to check against
  * @return -1 f V is less than size, 0 if equal or 1 if size is greater than V
  */
-int  gfc_vector2d_magnitude_compare(GFC_Vector2D V,float size);
-int  gfc_vector3d_magnitude_compare(GFC_Vector3D V,float size);
-int  gfc_vector4d_magnitude_compare(GFC_Vector4D V,float size);
+int  gfc_vector2d_magnitude_compare(GFC_Vector2D V,double size);
+int  gfc_vector3d_magnitude_compare(GFC_Vector3D V,double size);
+int  gfc_vector4d_magnitude_compare(GFC_Vector4D V,double size);
 
 /**
  * @brief scales the gfc_vector to the specified length without changing direction
@@ -494,9 +515,9 @@ int  gfc_vector4d_magnitude_compare(GFC_Vector4D V,float size);
  * @param V a pointer to the gfc_vector to scale
  * @param magnitude the new length for the gfc_vector
  */
-void gfc_vector2d_set_magnitude(GFC_Vector2D * V,float magnitude);
-void gfc_vector3d_set_magnitude(GFC_Vector3D * V,float magnitude);
-void gfc_vector4d_set_magnitude(GFC_Vector4D * V,float magnitude);
+void gfc_vector2d_set_magnitude(GFC_Vector2D * V,double magnitude);
+void gfc_vector3d_set_magnitude(GFC_Vector3D * V,double magnitude);
+void gfc_vector4d_set_magnitude(GFC_Vector4D * V,double magnitude);
 
 /**
  * @brief checks if the distance between the two points provided is less than size.
@@ -505,9 +526,9 @@ void gfc_vector4d_set_magnitude(GFC_Vector4D * V,float magnitude);
  * @param size the value to check against
  * @return true if the distance between P1 and P2 is less than size, false otherwise
  */
-Bool gfc_vector2d_distance_between_less_than(GFC_Vector2D p1,GFC_Vector2D p2,float size);
-Bool gfc_vector3d_distance_between_less_than(GFC_Vector3D p1,GFC_Vector3D p2,float size);
-Bool gfc_vector4d_distance_between_less_than(GFC_Vector4D p1,GFC_Vector4D p2,float size);
+Bool gfc_vector2d_distance_between_less_than(GFC_Vector2D p1,GFC_Vector2D p2,double size);
+Bool gfc_vector3d_distance_between_less_than(GFC_Vector3D p1,GFC_Vector3D p2,double size);
+Bool gfc_vector4d_distance_between_less_than(GFC_Vector4D p1,GFC_Vector4D p2,double size);
 
 /**
  * @brief given a rotation, get the component gfc_vectors  (in radians!)
@@ -544,7 +565,7 @@ void gfc_vector3d_angles (GFC_Vector3D gfc_vector, GFC_Vector3D * angles);
  * @param angle the angle to rotate by
  * @return the new gfc_vector
  */
-GFC_Vector2D gfc_vector2d_rotate(GFC_Vector2D in, float angle);
+GFC_Vector2D gfc_vector2d_rotate(GFC_Vector2D in, double angle);
 
 /**
  * @brief rotate a point around a center point
@@ -553,7 +574,7 @@ GFC_Vector2D gfc_vector2d_rotate(GFC_Vector2D in, float angle);
  * @param center the point around which to rotate
  * @return the new location for the point
  */
-GFC_Vector2D gfc_vector2d_rotate_around_center(GFC_Vector2D point,float angle, GFC_Vector2D center);
+GFC_Vector2D gfc_vector2d_rotate_around_center(GFC_Vector2D point,double angle, GFC_Vector2D center);
 
 /**
  * @brief rotate an GFC_Vector3D about another gfc_vector
@@ -562,16 +583,16 @@ GFC_Vector2D gfc_vector2d_rotate_around_center(GFC_Vector2D point,float angle, G
  * @param point the point to rotate
  * @param degrees how far to rotate
  */
-void gfc_vector3d_rotate_about_vector(GFC_Vector3D *dst, GFC_Vector3D dir, GFC_Vector3D point, float degrees);
+void gfc_vector3d_rotate_about_vector(GFC_Vector3D *dst, GFC_Vector3D dir, GFC_Vector3D point, double degrees);
 
 /**
  * @brief rotate a vector around the axis based on the angle provided
  * @param vect the input and output if NULL this is a no-op
  * @param angle the amount to rotate in radians
  */
-void gfc_vector3d_rotate_about_x(GFC_Vector3D *vect, float angle);
-void gfc_vector3d_rotate_about_y(GFC_Vector3D *vect, float angle);
-void gfc_vector3d_rotate_about_z(GFC_Vector3D *vect, float angle);
+void gfc_vector3d_rotate_about_x(GFC_Vector3D *vect, double angle);
+void gfc_vector3d_rotate_about_y(GFC_Vector3D *vect, double angle);
+void gfc_vector3d_rotate_about_z(GFC_Vector3D *vect, double angle);
 
 /**
  * @brief move a point towards another point a set distance
@@ -581,7 +602,7 @@ void gfc_vector3d_rotate_about_z(GFC_Vector3D *vect, float angle);
  * @param destination the point to move towards
  * @param distance the amount to move the point
  */
-void gfc_vector2d_move_towards(GFC_Vector2D *out, GFC_Vector2D point, GFC_Vector2D destination, float distance);
+void gfc_vector2d_move_towards(GFC_Vector2D *out, GFC_Vector2D point, GFC_Vector2D destination, double distance);
 
 /**
  * @brief given a vector multiply its components by gfc_crandom() range of [-1.0 - 1.0]
@@ -589,5 +610,363 @@ void gfc_vector2d_move_towards(GFC_Vector2D *out, GFC_Vector2D point, GFC_Vector
  * @param in the input vector.
  */
 void gfc_vector3d_randomize(GFC_Vector3D *out,GFC_Vector3D in);
+
+/**
+ * @brief create and return an GFC_Vector2D
+ */
+GFC_Vector2DF gfc_vector2df(float x, float y);
+GFC_Vector3DF gfc_vector3df(float x, float y, float z);
+GFC_Vector4DF gfc_vector4df(float x, float y, float z, float w);
+
+/**
+ * @brief convert a 3d gfc_vector into a 2d gfc_vector, dropping the 3rd value
+ * @param v the 3d gfc_vector
+ * @return the new 2d gfc_vector
+ */
+GFC_Vector2DF gfc_vector3dfxy(GFC_Vector3DF v);
+
+/**
+ * @brief convert a 4d gfc_vector into a 2d gfc_vector, dropping the 3rd and 4th value
+ * @param v the 4d gfc_vector
+ * @return the new 2d gfc_vector
+ */
+GFC_Vector2DF gfc_vector4dfxy(GFC_Vector4DF v);
+
+/**
+ * @brief convert a 4d gfc_vector into a 3d gfc_vector, dropping the 4th value
+ * @param v the 4d gfc_vector
+ * @return the new 3d gfc_vector
+ */
+GFC_Vector3DF gfc_vector4dfxyz(GFC_Vector4DF v);
+
+/**
+ * @brief convert a 2d gfc_vector into a 3d gfc_vector
+ * @param v the 2d gfc_vector
+ * @param z the new z component
+ * @return the new 3d gfc_vector
+ */
+GFC_Vector3DF gfc_vector2dfz(GFC_Vector2DF v,float z);
+
+/**
+ * @brief convert a 3d gfc_vector into a 4d gfc_vector
+ * @param v the 3d gfc_vector
+ * @param w the new w component
+ * @return the new 4d gfc_vector
+ */
+GFC_Vector4DF gfc_vector3dfw(GFC_Vector3DF v,float w);
+
+/**
+ * @brief convert a 2d gfc_vector into a 4d gfc_vector
+ * @param v the 2d gfc_vector
+ * @param z the new z component
+ * @param w the new w component
+ * @return the new 4d gfc_vector
+ */
+GFC_Vector4DF gfc_vector2dfzw(GFC_Vector2DF v,float z,float w);
+
+/**
+ * @brief sets the outvector to a unit gfc_vector pointing at the angle specified
+ * @param out output.  GFC_Vector will be set to a unit gfc_vector rotated by radians
+ * @param radians specify the angle of the gfc_vector to be set.
+ */
+void gfc_vector3df_set_angle_by_radians(GFC_Vector3DF *out,float radians);
+void gfc_vector2df_set_angle_by_radians(GFC_Vector2DF *out,float radians);
+
+/**
+ * @brief get a unit gfc_vector rotated off of the vertical axis
+ * @param angle in radians off of vertical axis
+ * @return a unit gfc_vector
+ */
+GFC_Vector2DF gfc_vector2df_from_angle(float angle);
+
+/**
+ * @brief returns the angle of a gfc_vector in 2D space.
+ * @param x the x component of the gfc_vector
+ * @param y the y component of the gfc_vector
+ * @return the angle of the gfc_vector in radians from vertical.
+ */
+float gfc_vectorf_angle(float x,float y);
+
+/**
+ * @brief returns the angle of a gfc_vector in 2D space.
+ * @param v the gfc_vector
+ * @return the angle of the gfc_vector in radian. off of the y axis, not x
+ */
+float gfc_vector2df_angle(GFC_Vector2DF v);
+
+/**
+ * @brief check if the current scale requires flipping of rotations
+ * @param scale the scaling factor.
+ * @return -1 if rotations need to be flipped, or 1 otherwise
+ * @note: zero size gfc_vectors return 1
+ */
+int gfc_vector2df_scale_flip_rotation(GFC_Vector2DF scale);
+
+/**
+ * @brief returns the angle between the two angles.
+ * Takes into account wraping around 0 and 360
+ * units are degrees
+ * @Param a one of the angles in question
+ * @Param b one of the angles in question
+ * @return the angle, in degrees, between the two angles
+ */
+float gfc_angle_between_degreesf(float a, float b);
+
+/**
+ * @brief returns the angle between the two angles.
+ * Takes into account wraping around 0 and 2PI
+ * units are radians
+ * @Param a one of the angles in question
+ * @Param b one of the angles in question
+ * @return the angle, in degrees, between the two angles
+ */
+float gfc_angle_between_radiansf(float a, float b);
+
+/**
+ * @brief prevent an angle from going beyond the range of 0 to 2Pi
+ * @param a the angle to clamp
+ */
+void gfc_angle_clamp_radiansf(float *a);
+
+/**
+ * @brief prevent an angle from going beyond the range of 0 - 360
+ * @param a the angle to clamp
+ */
+void gfc_angle_clamp_degreesf(float *a);
+
+/**
+ * @brief calculates the cross product of the two input gfc_vectors
+ * @param out the resultant cross product
+ * @param v1 one of the components
+ * @param v2 one of the components
+ */
+void gfc_vector3df_cross_product(GFC_Vector3DF *out, GFC_Vector3DF v1, GFC_Vector3DF v2);
+
+/**
+ * @brief multiply two gfc_vectors together (x *x, y*y, etc)
+ * @param a component of the multiplication
+ * @param b component of the multiplication
+ * @return a gfc_vector multiplication product
+ */
+GFC_Vector2DF gfc_vector2df_multiply(GFC_Vector2DF a, GFC_Vector2DF b);
+GFC_Vector3DF gfc_vector3df_multiply(GFC_Vector3DF a, GFC_Vector3DF b);
+GFC_Vector4DF gfc_vector4df_multiply(GFC_Vector4DF a, GFC_Vector4DF b);
+
+/**
+ * @brief function version of the subtract, returns the new gfc_vector
+ * @param a GFC_Vector3D input
+ * @param b GFC_Vector3D input
+ * @return the resulting gfc_vector
+ */
+GFC_Vector3DF gfc_vector3df_subbed(GFC_Vector3DF a, GFC_Vector3DF b);
+
+/**
+ * @brief function version of the add, returns the new gfc_vector
+ * @param a GFC_Vector3D input
+ * @param b GFC_Vector3D input
+ * @return the resulting gfc_vector
+ */
+GFC_Vector3DF gfc_vector3df_added(GFC_Vector3DF a, GFC_Vector3DF b);
+
+/**
+ * @brief allocate an initialize to zero a vector
+ * @return NULL on memory error, or a pointer to a vector that must be free()'d
+ */
+GFC_Vector2DF *gfc_vector2df_new();
+GFC_Vector3DF *gfc_vector3df_new();
+GFC_Vector4DF *gfc_vector4df_new();
+
+/**
+ * @brief allocate and copy the data from a vector
+ * @param old the vector to copy
+ * @return NULL on memory error, or a pointer to a vector that must be free()'d
+ */
+GFC_Vector2DF *gfc_vector2df_dup(GFC_Vector2DF old);
+GFC_Vector3DF *gfc_vector3df_dup(GFC_Vector3DF old);
+GFC_Vector4DF *gfc_vector4df_dup(GFC_Vector4DF old);
+
+/**
+ * @brief reflect a gfc_vector about a normal.  Simulates "Bounce"
+ * @param out the resultant gfc_vector
+ * @param normal the normal gfc_vector for the surface that is providing the bounce
+ * @param in the input gfc_vector that will bounce off of the normal
+ */
+void gfc_vector2df_reflect(GFC_Vector2DF *out, GFC_Vector2DF normal,GFC_Vector2DF in);
+void gfc_vector3df_reflect(GFC_Vector3DF *out, GFC_Vector3DF normal,GFC_Vector3DF in);
+void gfc_vector4df_reflect(GFC_Vector4DF *out, GFC_Vector4DF normal,GFC_Vector4DF in);
+
+/**
+ * @brief normalizes the gfc_vector passed.  does nothing for a zero length gfc_vector.
+ * @param v pointer to the gfc_vector to be normalized.
+ * @return the magnitude of the vector provided
+ */
+float gfc_vector2df_magnitude(GFC_Vector2DF V);
+float gfc_vector3df_magnitude(GFC_Vector3DF V);
+float gfc_vector4df_magnitude(GFC_Vector4DF V);
+
+/**
+ * @brief get the magnitude of the difference of the two gfc_vectors
+ * @return the magnitude between the two vectors
+ */
+float gfc_vector2df_magnitude_between(GFC_Vector2DF a,GFC_Vector2DF b);
+float gfc_vector3df_magnitude_between(GFC_Vector3DF a,GFC_Vector3DF b);
+float gfc_vector4df_magnitude_between(GFC_Vector4DF a,GFC_Vector4DF b);
+
+/**
+ * @brief get the magnitude of the difference of the two gfc_vectors
+ * @return the magnitude squared between the two vectors (avoids a square root)
+ */
+float gfc_vector2df_magnitude_between_squared(GFC_Vector2DF a,GFC_Vector2DF b);
+float gfc_vector3df_magnitude_between_squared(GFC_Vector3DF a,GFC_Vector3DF b);
+float gfc_vector4df_magnitude_between_squared(GFC_Vector4DF a,GFC_Vector4DF b);
+
+/**
+ * @brief normalize a gfc_vector
+ * @param V input and output. this is changed by the process
+ * @note changes the gfc_vector
+ */
+void gfc_vector2df_normalize (GFC_Vector2DF *V);
+void gfc_vector3df_normalize (GFC_Vector3DF *V);
+void gfc_vector4df_normalize (GFC_Vector4DF *V);
+
+/**
+ * @brief get the normal of a gfc_vector
+ * @note original gfc_vector is unchanged
+ * @param v the input vector
+ * @return a new unit length gfc_vector
+ */
+GFC_Vector2DF gfc_vector2df_get_normal(GFC_Vector2DF v);
+GFC_Vector3DF gfc_vector3df_get_normal(GFC_Vector3DF v);
+GFC_Vector4DF gfc_vector4df_get_normal(GFC_Vector4DF v);
+
+/**
+ * @brief returns the magnitude squared, which is faster than getting the magnitude
+ * which would involve taking the square root of a floating point number.
+ * @param V the gfc_vector to get the magnitude for
+ * @return the square of the magnitude of V
+ */
+float gfc_vector2df_magnitude_squared(GFC_Vector2DF V);
+float gfc_vector3df_magnitude_squared(GFC_Vector3DF V);
+float gfc_vector4df_magnitude_squared(GFC_Vector4DF V);
+
+/**
+ * @brief checks if the magnitude of V against size.  It does this without
+ * doing square roots, which are costly.  It will still do floating point multiplication
+ * @param V the gfc_vector to check
+ * @param size the magnitude to check against
+ * @return -1 f V is less than size, 0 if equal or 1 if size is greater than V
+ */
+int  gfc_vector2df_magnitude_compare(GFC_Vector2DF V,float size);
+int  gfc_vector3df_magnitude_compare(GFC_Vector3DF V,float size);
+int  gfc_vector4df_magnitude_compare(GFC_Vector4DF V,float size);
+
+/**
+ * @brief scales the gfc_vector to the specified length without changing direction
+ * No op is magnitude is 0 or V is NULL
+ * @param V a pointer to the gfc_vector to scale
+ * @param magnitude the new length for the gfc_vector
+ */
+void gfc_vector2df_set_magnitude(GFC_Vector2DF * V,float magnitude);
+void gfc_vector3df_set_magnitude(GFC_Vector3DF * V,float magnitude);
+void gfc_vector4df_set_magnitude(GFC_Vector4DF * V,float magnitude);
+
+/**
+ * @brief checks if the distance between the two points provided is less than size.
+ * @param p1 one point for the distance check
+ * @param p2 another point for the distance check
+ * @param size the value to check against
+ * @return true if the distance between P1 and P2 is less than size, false otherwise
+ */
+Bool gfc_vector2df_distance_between_less_than(GFC_Vector2DF p1,GFC_Vector2DF p2,float size);
+Bool gfc_vector3df_distance_between_less_than(GFC_Vector3DF p1,GFC_Vector3DF p2,float size);
+Bool gfc_vector4df_distance_between_less_than(GFC_Vector4DF p1,GFC_Vector4DF p2,float size);
+
+/**
+ * @brief given a rotation, get the component gfc_vectors  (in radians!)
+ * @param angles the input rotation for each axis
+ * @param forward output optional calculated forward gfc_vector
+ * @param right output optional calculated right gfc_vector
+ * @param up output optional calculated up gfc_vector
+ * @note this works by rotating a unit vectors along the p,r,y of the angles
+ */
+void gfc_vector3df_angle_vectors(GFC_Vector3DF angles, GFC_Vector3DF *forward, GFC_Vector3DF *right, GFC_Vector3DF *up);
+
+/**
+ * @brief given a rotation, get the component gfc_vectors  (in radians!)
+ * @param angles the input rotation for each axis
+ * @param forward output optional calculated forward gfc_vector
+ * @param right output optional calculated right gfc_vector
+ * @param up output optional calculated up gfc_vector
+ * @note this will fail to gimble lock
+ */
+void gfc_vector3df_angle_vectors2(GFC_Vector3DF angles, GFC_Vector3DF *forward, GFC_Vector3DF *right, GFC_Vector3DF *up);
+
+/**
+ * @brief given a gfc_vector, get the angles, in radians for yaw,roll, pitch
+ * @param gfc_vector the gfc_vector to assess
+ * @param angles the angles in radians (x,y,z) as (yaw,roll,pitch)
+ * @note roll will always be zero
+ * @note adapted from the quake2 source 'vectoangles' function
+ */
+void gfc_vector3df_angles (GFC_Vector3DF gfc_vector, GFC_Vector3DF * angles);
+
+/**
+ * @brief rotate a 2D gfc_vector by the angle specified (in radians)
+ * @param in the input gfc_vector
+ * @param angle the angle to rotate by
+ * @return the new gfc_vector
+ */
+GFC_Vector2DF gfc_vector2df_rotate(GFC_Vector2DF in, float angle);
+
+/**
+ * @brief rotate a point around a center point
+ * @param point the point to rotate
+ * @param angle the amount to rotate in radians
+ * @param center the point around which to rotate
+ * @return the new location for the point
+ */
+GFC_Vector2DF gfc_vector2df_rotate_around_center(GFC_Vector2DF point,float angle, GFC_Vector2DF center);
+
+/**
+ * @brief rotate an GFC_Vector3D about another gfc_vector
+ * @param dst output result
+ * @param dir the gfc_vector to rotate about
+ * @param point the point to rotate
+ * @param degrees how far to rotate
+ */
+void gfc_vector3df_rotate_about_vector(GFC_Vector3DF *dst, GFC_Vector3DF dir, GFC_Vector3DF point, float degrees);
+
+/**
+ * @brief rotate a vector around the axis based on the angle provided
+ * @param vect the input and output if NULL this is a no-op
+ * @param angle the amount to rotate in radians
+ */
+void gfc_vector3df_rotate_about_x(GFC_Vector3DF *vect, float angle);
+void gfc_vector3df_rotate_about_y(GFC_Vector3DF *vect, float angle);
+void gfc_vector3df_rotate_about_z(GFC_Vector3DF *vect, float angle);
+
+/**
+ * @brief move a point towards another point a set distance
+ * @note this is a common quality of life function
+ * @param out the output gfc_vector, if it is NULL, this is a no-op
+ * @param point the point to modify
+ * @param destination the point to move towards
+ * @param distance the amount to move the point
+ */
+void gfc_vector2df_move_towards(GFC_Vector2DF *out, GFC_Vector2DF point, GFC_Vector2DF destination, float distance);
+
+/**
+ * @brief given a vector multiply its components by gfc_crandom() range of [-1.0 - 1.0]
+ * @param out [output] results saved here
+ * @param in the input vector.
+ */
+void gfc_vector3df_randomize(GFC_Vector3DF *out,GFC_Vector3DF in);
+
+GFC_Vector2DF gfc_vector2d_to_float(GFC_Vector2D v);
+GFC_Vector3DF gfc_vector3d_to_float(GFC_Vector3D v);
+GFC_Vector4DF gfc_vector4d_to_float(GFC_Vector4D v);
+GFC_Vector2D gfc_vector2df_to_double(GFC_Vector2DF v);
+GFC_Vector3D gfc_vector3df_to_double(GFC_Vector3DF v);
+GFC_Vector4D gfc_vector4df_to_double(GFC_Vector4DF v);
 
 #endif

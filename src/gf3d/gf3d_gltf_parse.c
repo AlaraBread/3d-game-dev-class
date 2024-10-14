@@ -172,7 +172,7 @@ const char *gf3d_gltf_accessor_get_details(GLTF *gltf, Uint32 accessorIndex, int
 
 ObjData *gf3d_gltf_parse_primitive(GLTF *gltf, SJson *primitive) {
 	ObjData *obj;
-	GFC_Vector3D min, max;
+	GFC_Vector3DF min, max;
 	int index, bufferIndex;
 	SJson *attributes, *accessor;
 

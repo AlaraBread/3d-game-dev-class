@@ -11,7 +11,7 @@ typedef struct Collision_s {
 	// the closest point to the collision on the surface of a in global coordinates
 	GFC_Vector3D aPosition;
 	GFC_Vector3D bPosition;
-	float penetrationDepth;
+	double penetrationDepth;
 	GFC_Vector3D normal;
 	PhysicsBody *a, *b;
 } Collision;

@@ -15,11 +15,11 @@ GFC_Vector3D vec3ListGet(Vector3List *list, int index) {
 	index *= 3;
 	GFC_Vector3D v;
 	void *x = gfc_list_get_nth((GFC_List *)list, index);
-	v.x = *(float *)(&x);
+	v.x = *(double *)(&x);
 	void *y = gfc_list_get_nth((GFC_List *)list, index + 1);
-	v.y = *(float *)(&y);
+	v.y = *(double *)(&y);
 	void *z = gfc_list_get_nth((GFC_List *)list, index + 2);
-	v.z = *(float *)(&z);
+	v.z = *(double *)(&z);
 	return v;
 }
 

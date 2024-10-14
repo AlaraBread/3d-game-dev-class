@@ -17,7 +17,7 @@ typedef struct {
 	MouseState mouse[2]; /**<mouse state for the current and last frames*/
 	Actor *actor;		 /**<mouse actor*/
 	GFC_Action *action;
-	float frame;
+	double frame;
 	Uint8 hidden; /**<if true, don't show mouse or use its inputs*/
 } Mouse;
 
@@ -92,7 +92,7 @@ int gf2d_mouse_button_state(int button) {
 	return (_mouse.mouse[0].buttons & mask);
 }
 
-float gf2d_mouse_get_angle_to(GFC_Vector2D point) {
+double gf2d_mouse_get_angle_to(GFC_Vector2D point) {
 	GFC_Vector2D delta;
 	gfc_vector2d_sub(delta, _mouse.mouse[0].position, point);
 	return gfc_vector2d_angle(delta);

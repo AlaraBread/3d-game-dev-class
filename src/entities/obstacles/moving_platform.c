@@ -2,8 +2,8 @@
 #include "physics.h"
 #include "moments_of_inertia.h"
 
-void movingPlatformPhysicsProcess(PhysicsBody *self, float delta) {
-	float ratio = self->entity.platform.moveRatio;
+void movingPlatformPhysicsProcess(PhysicsBody *self, double delta) {
+	double ratio = self->entity.platform.moveRatio;
 	ratio += self->entity.platform.direction*self->entity.platform.movementSpeed*delta;
 	if(ratio > 1.0) {
 		self->entity.platform.direction = -1;
@@ -21,13 +21,13 @@ void movingPlatformPhysicsProcess(PhysicsBody *self, float delta) {
 	self->linearVelocity = diff;
 }
 
-PhysicsBody *createMovingPlatform(GFC_Vector3D position, GFC_Vector3D movement, float speed) {
+PhysicsBody *createMovingPlatform(GFC_Vector3D position, GFC_Vector3D movement, double speed) {
 	PhysicsBody *platform = physicsCreateBody();
 	platform->position = position;
 	platform->entityType = PLATFORM;
 	platform->entity.platform.movementStart = position;
 	gfc_vector3d_add(platform->entity.platform.movementEnd, position, movement);
-	float dist = gfc_vector3d_magnitude(movement);
+	double dist = gfc_vector3d_magnitude(movement);
 	platform->entity.platform.movementSpeed = speed/dist;
 	platform->entity.platform.direction = 1;
 	Shape s;

@@ -146,7 +146,7 @@ GFC_Sound *gfc_sound_get_by_filename(const char * filename)
     return NULL;// not found
 }
 
-GFC_Sound *gfc_sound_load(const char *filename,float volume,int defaultChannel)
+GFC_Sound *gfc_sound_load(const char *filename,double volume,int defaultChannel)
 {
     GFC_Sound *sound;
     if (!filename)return NULL;
@@ -175,10 +175,10 @@ GFC_Sound *gfc_sound_load(const char *filename,float volume,int defaultChannel)
     return sound;
 }
 
-void gfc_sound_play(GFC_Sound *sound,int loops,float volume,int channel,int group)
+void gfc_sound_play(GFC_Sound *sound,int loops,double volume,int channel,int group)
 {
     int chan;
-    float netVolume = 1;
+    double netVolume = 1;
     if (!sound)return;
     if (!sound->sound)return;
     if (volume > 0)
@@ -198,7 +198,7 @@ void gfc_sound_play(GFC_Sound *sound,int loops,float volume,int channel,int grou
 
 }
 
-void gfc_sound_pack_play(GFC_HashMap *pack, const char *name,int loops,float volume,int channel,int group)
+void gfc_sound_pack_play(GFC_HashMap *pack, const char *name,int loops,double volume,int channel,int group)
 {
     GFC_Sound *sound;
     if ((!pack)||(!name))return;

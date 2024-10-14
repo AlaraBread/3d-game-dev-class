@@ -40,7 +40,7 @@ typedef struct {
 							  sheet*/
 	Uint32 frameWidth, frameHeight;	   /*<the size, in pixels, of the
 						  individual sprite frames*/
-	float widthPercent, heightPercent; /**<size percent of the sprite frame
+	double widthPercent, heightPercent; /**<size percent of the sprite frame
 						  from the texture*/
 	VkBuffer buffer;
 	VkDeviceMemory bufferMemory;
@@ -142,7 +142,7 @@ void gf2d_sprite_free(Sprite *sprite);
  * @param frame which frame to draw
  */
 void gf2d_sprite_draw(
-	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *center, float *rotation,
+	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *center, double *rotation,
 	GFC_Vector2D *flip, GFC_Color *colorShift, GFC_Vector4D *clip, Uint32 frame
 );
 
@@ -161,7 +161,7 @@ void gf2d_sprite_draw(
  * @param frame which frame to draw
  */
 void gf2d_sprite_draw_full(
-	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D scale, GFC_Vector2D center, float rotation, GFC_Vector2D flip,
+	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D scale, GFC_Vector2D center, double rotation, GFC_Vector2D flip,
 	GFC_Color colorShift, GFC_Vector4D clip, Uint32 frame
 );
 

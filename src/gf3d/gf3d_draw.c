@@ -37,12 +37,12 @@ void gf3d_draw_init() {
 }
 
 void gf3d_draw_edge_3d(
-	GFC_Edge3D edge, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, float radius, GFC_Color color
+	GFC_Edge3D edge, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, double radius, GFC_Color color
 ) {
 	Mesh *mesh;
-	GFC_Matrix4 modelMat;
+	GFC_Matrix4F modelMat;
 	GFC_Vector3D v, angles;
-	float d;
+	double d;
 
 	if(!radius) return; // zero radius doesn't draw anyway
 
@@ -61,9 +61,9 @@ void gf3d_draw_edge_3d(
 	scale.y *= radius / mesh->bounds.h;
 	scale.z *= radius / mesh->bounds.d;
 
-	gfc_matrix4_from_vectors(
-		modelMat, gfc_vector3d(position.x + edge.a.x, position.y + edge.a.y, position.z + edge.a.z),
-		gfc_vector3d(rotation.x + angles.x, rotation.y + angles.y, rotation.z + angles.z), scale
+	gfc_matrix4f_from_vectors(
+		modelMat, gfc_vector3df(position.x + edge.a.x, position.y + edge.a.y, position.z + edge.a.z),
+		gfc_vector3df(rotation.x + angles.x, rotation.y + angles.y, rotation.z + angles.z), gfc_vector3d_to_float(scale)
 	);
 	gf3d_model_draw(gf3d_draw_manager.icylinder, modelMat, color, 0);
 }
@@ -71,11 +71,11 @@ void gf3d_draw_edge_3d(
 void gf3d_draw_cube_solid(
 	GFC_Box cube, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, GFC_Color color
 ) {
-	GFC_Matrix4 modelMat;
+	GFC_Matrix4F modelMat;
 
-	gfc_matrix4_from_vectors(
-		modelMat, gfc_vector3d(position.x + cube.x, position.y + cube.y, position.z + cube.z), rotation,
-		gfc_vector3d(scale.x * cube.w, scale.y * cube.h, scale.z * cube.d)
+	gfc_matrix4f_from_vectors(
+		modelMat, gfc_vector3df(position.x + cube.x, position.y + cube.y, position.z + cube.z), gfc_vector3d_to_float(rotation),
+		gfc_vector3df(scale.x * cube.w, scale.y * cube.h, scale.z * cube.d)
 	);
 	gf3d_model_draw(gf3d_draw_manager.cube, modelMat, color, 0);
 }
@@ -84,11 +84,11 @@ void gf3d_draw_sphere_solid(
 	GFC_Sphere sphere, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale, GFC_Color color,
 	GFC_Color ambient
 ) {
-	GFC_Matrix4 modelMat;
+	GFC_Matrix4F modelMat;
 
-	gfc_matrix4_from_vectors(
-		modelMat, gfc_vector3d(position.x + sphere.x, position.y + sphere.y, position.z + sphere.z), rotation,
-		gfc_vector3d(scale.x * sphere.r, scale.y * sphere.r, scale.z * sphere.r)
+	gfc_matrix4f_from_vectors(
+		modelMat, gfc_vector3df(position.x + sphere.x, position.y + sphere.y, position.z + sphere.z), gfc_vector3d_to_float(rotation),
+		gfc_vector3df(scale.x * sphere.r, scale.y * sphere.r, scale.z * sphere.r)
 	);
 	gf3d_model_draw(gf3d_draw_manager.sphere, modelMat, color, 0);
 }

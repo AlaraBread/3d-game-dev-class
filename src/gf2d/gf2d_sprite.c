@@ -18,22 +18,22 @@
 extern int __DEBUG;
 
 typedef struct {
-	GFC_Matrix4 rotation;
-	GFC_Vector4D colorMod;
-	GFC_Vector4D clip;
-	GFC_Vector2D size;
-	GFC_Vector2D extent;
-	GFC_Vector2D position;
-	GFC_Vector2D scale;
-	GFC_Vector2D frame_offset;
-	GFC_Vector2D center;
+	GFC_Matrix4F rotation;
+	GFC_Vector4DF colorMod;
+	GFC_Vector4DF clip;
+	GFC_Vector2DF size;
+	GFC_Vector2DF extent;
+	GFC_Vector2DF position;
+	GFC_Vector2DF scale;
+	GFC_Vector2DF frame_offset;
+	GFC_Vector2DF center;
 	float drawOrder;
-	GFC_Vector3D padding;
+	GFC_Vector3DF padding;
 } SpriteUBO;
 
 typedef struct {
-	GFC_Vector2D vertex;
-	GFC_Vector2D texel;
+	GFC_Vector2DF vertex;
+	GFC_Vector2DF texel;
 } SpriteVertex;
 
 typedef struct {
@@ -51,7 +51,7 @@ typedef struct {
 	VkDeviceMemory faceBufferMemory; /**<memory habdle for tge face memory*/
 	VkVertexInputAttributeDescription attributeDescriptions[SPRITE_ATTRIBUTE_COUNT];
 	VkVertexInputBindingDescription bindingDescription;
-	float drawOrder;
+	double drawOrder;
 } SpriteManager;
 
 SpriteUBO gf2d_sprite_get_uniform_buffer(
@@ -182,8 +182,8 @@ Sprite *gf2d_sprite_from_surface(SDL_Surface *surface, int frame_width, int fram
 	if(frame_height <= 0) frame_height = sprite->texture->height;
 	sprite->frameWidth = frame_width;
 	sprite->frameHeight = frame_height;
-	sprite->widthPercent = sprite->frameWidth / (float)sprite->texture->width;
-	sprite->heightPercent = sprite->frameHeight / (float)sprite->texture->height;
+	sprite->widthPercent = sprite->frameWidth / (double)sprite->texture->width;
+	sprite->heightPercent = sprite->frameHeight / (double)sprite->texture->height;
 	if(frames_per_line)
 		sprite->framesPerLine = frames_per_line;
 	else
@@ -234,8 +234,8 @@ Sprite *gf2d_sprite_load(const char *filename, int frame_width, int frame_height
 	if(frame_height <= 0) frame_height = sprite->texture->height;
 	sprite->frameWidth = frame_width;
 	sprite->frameHeight = frame_height;
-	sprite->widthPercent = sprite->frameWidth / (float)sprite->texture->width;
-	sprite->heightPercent = sprite->frameHeight / (float)sprite->texture->height;
+	sprite->widthPercent = sprite->frameWidth / (double)sprite->texture->width;
+	sprite->heightPercent = sprite->frameHeight / (double)sprite->texture->height;
 	if(frames_per_line)
 		sprite->framesPerLine = frames_per_line;
 	else
@@ -262,7 +262,7 @@ void gf2d_sprite_delete(Sprite *sprite) {
 }
 
 void gf2d_sprite_draw_full(
-	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D scale, GFC_Vector2D center, float rotation, GFC_Vector2D flip,
+	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D scale, GFC_Vector2D center, double rotation, GFC_Vector2D flip,
 	GFC_Color colorShift, GFC_Vector4D clip, Uint32 frame
 ) {
 	gf2d_sprite_draw(sprite, position, &scale, &center, &rotation, &flip, &colorShift, &clip, frame);
@@ -277,7 +277,7 @@ void gf2d_sprite_draw_simple(Sprite *sprite, GFC_Vector2D position, Uint32 frame
 }
 
 void gf2d_sprite_draw(
-	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *center, float *rotation,
+	Sprite *sprite, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *center, double *rotation,
 	GFC_Vector2D *flip, GFC_Color *colorShift, GFC_Vector4D *clip, Uint32 frame
 ) {
 	SpriteUBO spriteUBO = {0};
@@ -319,11 +319,11 @@ void gf2d_sprite_create_vertex_buffer(Sprite *sprite) {
 	VkDeviceMemory stagingBufferMemory;
 	SpriteVertex vertices[] = {
 		{{0, 0}, {0, 0}},
-		{{(sprite->frameWidth + 1) * 2, 0}, {sprite->frameWidth / ((float)sprite->texture->width + 0.01), 0}},
-		{{0, (sprite->frameHeight + 1) * 2}, {0, sprite->frameHeight / ((float)sprite->texture->height + 0.01)}},
+		{{(sprite->frameWidth + 1) * 2, 0}, {sprite->frameWidth / ((double)sprite->texture->width + 0.01), 0}},
+		{{0, (sprite->frameHeight + 1) * 2}, {0, sprite->frameHeight / ((double)sprite->texture->height + 0.01)}},
 		{{(sprite->frameWidth + 1) * 2, (sprite->frameHeight + 1) * 2},
-		 {sprite->frameWidth / ((float)sprite->texture->width + 0.01),
-		  sprite->frameHeight / ((float)sprite->texture->height + 0.01)}}
+		 {sprite->frameWidth / ((double)sprite->texture->width + 0.01),
+		  sprite->frameHeight / ((double)sprite->texture->height + 0.01)}}
 	};
 	bufferSize = sizeof(SpriteVertex) * 4;
 
@@ -385,13 +385,12 @@ SpriteUBO gf2d_sprite_get_uniform_buffer(
 	GFC_Vector4D clip, GFC_Vector2D flip, Uint32 frame
 ) {
 	SpriteUBO spriteUBO = {0};
-	spriteUBO.size = gfc_vector2d(sprite->texture->width, sprite->texture->height);
-	spriteUBO.extent = gf3d_vgraphics_get_view_extent_as_vector2d();
-	;
+	spriteUBO.size = gfc_vector2df(sprite->texture->width, sprite->texture->height);
+	spriteUBO.extent = gfc_vector2d_to_float(gf3d_vgraphics_get_view_extent_as_vector2d());
 	spriteUBO.colorMod = gfc_color_to_vector4f(color);
-	spriteUBO.position = position;
-	spriteUBO.scale = scale;
-	gfc_matrix4_identity(spriteUBO.rotation);
+	spriteUBO.position = gfc_vector2d_to_float(position);
+	spriteUBO.scale = gfc_vector2d_to_float(scale);
+	gfc_matrix4f_identity(spriteUBO.rotation);
 	spriteUBO.rotation[0][0] = cos(rotation.z);
 	spriteUBO.rotation[0][1] = sin(rotation.z);
 	spriteUBO.rotation[1][0] = sin(rotation.z) * -1; // clockwise rotation
@@ -404,8 +403,8 @@ SpriteUBO gf2d_sprite_get_uniform_buffer(
 	if(flip.y) { scale.y = fabs(scale.y) * -1; }
 
 	gfc_vector4d_copy(spriteUBO.clip, clip);
-	spriteUBO.frame_offset.x = (frame % sprite->framesPerLine * sprite->frameWidth) / (float)sprite->texture->width;
-	spriteUBO.frame_offset.y = (frame / sprite->framesPerLine * sprite->frameHeight) / (float)sprite->texture->height;
+	spriteUBO.frame_offset.x = (frame % sprite->framesPerLine * sprite->frameWidth) / (double)sprite->texture->width;
+	spriteUBO.frame_offset.y = (frame / sprite->framesPerLine * sprite->frameHeight) / (double)sprite->texture->height;
 	return spriteUBO;
 }
 

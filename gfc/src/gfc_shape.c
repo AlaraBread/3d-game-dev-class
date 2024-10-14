@@ -362,14 +362,14 @@ GFC_Vector4D gfc_rect_to_vector4d(GFC_Rect r)
     return gfc_vector4d(r.x,r.y,r.w,r.h);
 }
 
-GFC_Rect gfc_rect(float x, float y, float w, float h)
+GFC_Rect gfc_rect(double x, double y, double w, double h)
 {
     GFC_Rect r;
     gfc_rect_set(r,x,y,w,h);
     return r;
 }
 
-GFC_Circle gfc_circle(float x, float y, float r)
+GFC_Circle gfc_circle(double x, double y, double r)
 {
     GFC_Circle c;
     gfc_circle_set(c,x,y,r);
@@ -472,7 +472,7 @@ Uint8 gfc_point_in_cicle(GFC_Vector2D p,GFC_Circle c)
 int gfc_circle_intersect_circle(GFC_Circle A, GFC_Circle B, GFC_Vector2D *pocA, GFC_Vector2D *pocB)
 {
     GFC_Vector2D v,p,outA,outB;
-    float dS,d,a,h;
+    double dS,d,a,h;
     gfc_vector2d_sub(v,A,B);//difference in positions
     if ((v.x == 0)&&(v.y == 0))
     {
@@ -707,7 +707,7 @@ Uint8 gfc_shape_overlap(GFC_Shape a, GFC_Shape b)
     return gfc_shape_overlap_poc(a,b,NULL,NULL);
 }
 
-GFC_Shape gfc_shape_rect(float x, float y, float w, float h)
+GFC_Shape gfc_shape_rect(double x, double y, double w, double h)
 {
     GFC_Shape shape;
     shape.type = ST_RECT;
@@ -740,7 +740,7 @@ GFC_Shape gfc_shape_sdl_rect(SDL_Rect r)
     return shape;
 }
 
-GFC_Shape gfc_shape_circle(float x, float y, float r)
+GFC_Shape gfc_shape_circle(double x, double y, double r)
 {
     GFC_Shape shape;
     shape.type = ST_CIRCLE;
@@ -777,7 +777,7 @@ GFC_Circle gfc_shape_to_circle(GFC_Shape s)
     }
 }
 
-GFC_Shape gfc_shape_edge(float x1,float y1,float x2,float y2)
+GFC_Shape gfc_shape_edge(double x1,double y1,double x2,double y2)
 {
     return gfc_shape_from_edge(gfc_edge(x1,y1,x2,y2));
 }
@@ -815,8 +815,8 @@ Uint8 gfc_edge_intersect_poc(
     GFC_Vector2D *normal
 )
 {
-    float testx, testy;
-    float Ua,Ub,Uden;
+    double testx, testy;
+    double Ua,Ub,Uden;
 
     Uden = ((b.y2 - b.y1)*(a.x2 - a.x1)) - ((b.x2 - b.x1)*(a.y2 - a.y1));
     if(Uden == 0)
@@ -854,7 +854,7 @@ Uint8 gfc_edge_intersect(GFC_Edge2D a,GFC_Edge2D b)
     return gfc_edge_intersect_poc(a,b,NULL,NULL);
 }
 
-GFC_Edge2D gfc_edge(float x1, float y1, float x2, float y2)
+GFC_Edge2D gfc_edge(double x1, double y1, double x2, double y2)
 {
     GFC_Edge2D e;
     gfc_edge_set(e,x1,y1,x2,y2);
@@ -876,7 +876,7 @@ Uint8 gfc_rect_to_intersection_poc(GFC_Edge2D e, GFC_Rect r,GFC_Vector2D *poc,GF
     GFC_Vector2D normals[4] = {0};
     GFC_Vector2D *best = NULL;
     GFC_Vector2D *bestNormal = NULL;
-    float bestDistance;
+    double bestDistance;
     if (gfc_edge_intersect_poc(e,gfc_edge(r.x,r.y,r.x+r.w,r.y),&contacts[0],NULL))//top
     {
         ret = 1;
@@ -940,7 +940,7 @@ Uint8 gfc_edge_rect_intersection_poc(GFC_Edge2D e, GFC_Rect r,GFC_Vector2D *poc,
     GFC_Vector2D center;
     GFC_Vector2D *best = NULL;
     GFC_Vector2D *bestNormal = NULL;
-    float bestDistance;
+    double bestDistance;
     if (gfc_edge_intersect_poc(e,gfc_edge(r.x,r.y,r.x+r.w,r.y),&contacts[0],NULL))//top
     {
         ret = 1;
@@ -1023,7 +1023,7 @@ Uint8 gfc_edge_intersect_shape_poc(GFC_Edge2D e,GFC_Shape s,GFC_Vector2D *poc,GF
 
 Uint8 gfc_circle_to_edge_intersection_poc(GFC_Edge2D e,GFC_Circle c,GFC_Vector2D *poc,GFC_Vector2D *normal)
 {
-    float dx, dy, A, B, C, det, t,t1,t2;
+    double dx, dy, A, B, C, det, t,t1,t2;
     GFC_Vector2D intersection1, intersection2;
     dx = e.x2 - e.x1;
     dy = e.y2 - e.y1;
@@ -1064,8 +1064,8 @@ Uint8 gfc_circle_to_edge_intersection_poc(GFC_Edge2D e,GFC_Circle c,GFC_Vector2D
     else
     {
         // Two solutions. picking the one closer to the first point of the edge
-        t1 = (float)((-B + sqrt(det)) / (2 * A));
-        t2 = (float)((-B - sqrt(det)) / (2 * A));
+        t1 = (double)((-B + sqrt(det)) / (2 * A));
+        t2 = (double)((-B - sqrt(det)) / (2 * A));
         intersection1 = gfc_vector2d(e.x1 + t1 * dx, e.y1 + t1 * dy);
         intersection2 = gfc_vector2d(e.x1 + t2 * dx, e.y1 + t2 * dy);
         if ((intersection1.x < MIN(e.x1,e.x2))||(intersection1.x > MAX(e.x1,e.x2))||
@@ -1105,7 +1105,7 @@ Uint8 gfc_circle_to_edge_intersection_poc(GFC_Edge2D e,GFC_Circle c,GFC_Vector2D
 
 Uint8 gfc_edge_to_circle_intersection_poc(GFC_Edge2D e,GFC_Circle c,GFC_Vector2D *poc,GFC_Vector2D *normal)
 {
-    float dx, dy, A, B, C, det, t,t1,t2;
+    double dx, dy, A, B, C, det, t,t1,t2;
     GFC_Vector2D intersection1, intersection2;
     GFC_Vector2D cp;
     dx = e.x2 - e.x1;
@@ -1151,8 +1151,8 @@ Uint8 gfc_edge_to_circle_intersection_poc(GFC_Edge2D e,GFC_Circle c,GFC_Vector2D
     else
     {
         // Two solutions. picking the one closer to the first point of the edge
-        t1 = (float)((-B + sqrt(det)) / (2 * A));
-        t2 = (float)((-B - sqrt(det)) / (2 * A));
+        t1 = (double)((-B + sqrt(det)) / (2 * A));
+        t2 = (double)((-B - sqrt(det)) / (2 * A));
         intersection1 = gfc_vector2d(e.x1 + t1 * dx, e.y1 + t1 * dy);
         intersection2 = gfc_vector2d(e.x1 + t2 * dx, e.y1 + t2 * dy);
         if ((intersection1.x < MIN(e.x1,e.x2))||(intersection1.x > MAX(e.x1,e.x2))||
@@ -1259,9 +1259,9 @@ void gfc_shape_slog(GFC_Shape shape)
     }
 }
 
-float gfc_edge_length(GFC_Edge2D e)
+double gfc_edge_length(GFC_Edge2D e)
 {
-    float a,b;
+    double a,b;
     a = e.x1 - e.x2;
     b = e.y1 - e.y2;
     return gfc_vector2d_magnitude(gfc_vector2d(a,b));
@@ -1280,7 +1280,7 @@ GFC_Circle gfc_rect_get_bounding_circle(GFC_Rect r)
 {
     GFC_Circle c;
     GFC_Edge2D e;
-    float diameter;
+    double diameter;
     e = gfc_edge(r.x,r.y,r.x + r.w,r.y + r.h);
     diameter = gfc_edge_length(e);
     c.r = diameter * 0.5;
@@ -1309,13 +1309,13 @@ GFC_Rect gfc_circle_get_bounds(GFC_Circle c)
     return r;
 }
 
-GFC_Rect gfc_rect_from_vector4(GFC_Vector4D v)
+GFC_Rect gfc_rect_from_vector4f(GFC_Vector4DF v)
 {
     GFC_Rect r;
-    r.x = v.x;
-    r.y = v.y;
-    r.w = v.z;
-    r.h = v.w;
+    r.x = (double)v.x;
+    r.y = (double)v.y;
+    r.w = (double)v.z;
+    r.h = (double)v.w;
     return r;
 }
 
@@ -1339,12 +1339,12 @@ GFC_Rect gfc_shape_get_bounds(GFC_Shape shape)
 
 int gfc_rect_from_json(SJson *json,GFC_Rect *rect)
 {
-    GFC_Vector4D dimensions = {0};
+    GFC_Vector4DF dimensions = {0};
     if ((!rect)||(!json))return 0;
     
     if (sj_value_as_vector4d(json,&dimensions))
     {
-        *rect = gfc_rect_from_vector4(dimensions);
+        *rect = gfc_rect_from_vector4f(dimensions);
         return 1;
     }
 
@@ -1354,8 +1354,8 @@ int gfc_rect_from_json(SJson *json,GFC_Rect *rect)
 int gfc_shape_from_json(SJson *json,GFC_Shape *shape)
 {
     const char *type;
-    GFC_Vector4D dimensions;
-    GFC_Vector2D point,point2;
+    GFC_Vector4DF dimensions;
+    GFC_Vector2DF point,point2;
     float radius;
     if ((!json)||(!shape))return 0;
     type = sj_get_string_value(sj_object_get_value(json,"type"));
@@ -1368,26 +1368,26 @@ int gfc_shape_from_json(SJson *json,GFC_Shape *shape)
     {
         sj_value_as_vector2d(sj_object_get_value(json,"center"),&point);
         sj_get_float_value(sj_object_get_value(json,"radius"),&radius);
-        *shape = gfc_shape_circle(point.x, point.y, radius);
+        *shape = gfc_shape_circle((double)point.x, (double)point.y, (double)radius);
         return 1;
     }
     if (strcmp(type,"rect")== 0)
     {
         sj_value_as_vector4d(sj_object_get_value(json,"dimensions"),&dimensions);
-        *shape = gfc_shape_rect(dimensions.x, dimensions.y, dimensions.z, dimensions.w);
+        *shape = gfc_shape_rect((double)dimensions.x, (double)dimensions.y, (double)dimensions.z, (double)dimensions.w);
         return 1;
     }
     if (strcmp(type,"edge")== 0)
     {
         sj_value_as_vector2d(sj_object_get_value(json,"point1"),&point);
         sj_value_as_vector2d(sj_object_get_value(json,"point2"),&point2);
-        *shape = gfc_shape_edge(point.x,point.y,point2.x,point2.y);
+        *shape = gfc_shape_edge((double)point.x,(double)point.y,(double)point2.x,(double)point2.y);
         return 1;
     }
     return 0;
 }
 
-GFC_Vector2D gfc_shape_get_bezier_point_2d(GFC_Vector2D p0, GFC_Vector2D p1, GFC_Vector2D p2,float t)
+GFC_Vector2D gfc_shape_get_bezier_point_2d(GFC_Vector2D p0, GFC_Vector2D p1, GFC_Vector2D p2,double t)
 {
     GFC_Vector2D point;
     GFC_Vector2D qp,qp2,qpv; /*approximation line starting point and gfc_vector*/
@@ -1408,7 +1408,7 @@ GFC_Vector2D gfc_shape_get_bezier_point_2d(GFC_Vector2D p0, GFC_Vector2D p1, GFC
     return point;
 }
 
-GFC_Vector3D gfc_shape_get_bezier_point_3d(GFC_Vector3D p0, GFC_Vector3D p1, GFC_Vector3D p2,float t)
+GFC_Vector3D gfc_shape_get_bezier_point_3d(GFC_Vector3D p0, GFC_Vector3D p1, GFC_Vector3D p2,double t)
 {
     GFC_Vector3D point;
     GFC_Vector3D qp,qp2,qpv; /*approximation line starting point and gfc_vector*/
@@ -1436,11 +1436,11 @@ GFC_List *gfc_shape_get_bezier_point_list_2d(GFC_Vector2D p0, GFC_Vector2D p1, G
     GFC_Vector2D qp,qp2,qpv; /*approximation line starting point and gfc_vector*/
     GFC_Vector2D p0v,p1v,temp; /*gfc_vectors from point to next point*/
     GFC_Vector2D dp; /*draw point*/
-    float t = 0;  /*time segment*/
-    float tstep;
+    double t = 0;  /*time segment*/
+    double tstep;
     gfc_vector2d_sub(p0v,p1,p0);
     gfc_vector2d_sub(p1v,p2,p1);
-    tstep = 1/(float)count;
+    tstep = 1/(double)count;
     points = gfc_list_new();
     if (!points)return NULL;
     for (t = 0; t <= 1;t += tstep)
@@ -1471,11 +1471,11 @@ GFC_List *gfc_shape_get_bezier_point_list_3d(GFC_Vector3D p0, GFC_Vector3D p1, G
     GFC_Vector3D qp,qp2,qpv; /*approximation line starting point and gfc_vector*/
     GFC_Vector3D p0v,p1v,temp; /*gfc_vectors from point to next point*/
     GFC_Vector3D dp; /*draw point*/
-    float t = 0;  /*time segment*/
-    float tstep;
+    double t = 0;  /*time segment*/
+    double tstep;
     gfc_vector3d_sub(p0v,p1,p0);
     gfc_vector3d_sub(p1v,p2,p1);
-    tstep = 1/(float)count;
+    tstep = 1/(double)count;
     points = gfc_list_new();
     if (!points)return NULL;
     for (t = 0; t <= 1;t += tstep)

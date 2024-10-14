@@ -24,13 +24,13 @@ typedef struct
 
 typedef struct
 {
-    float x,y,z;   //vector normal of the plane
-    float d;       //distance from origin
+    double x,y,z;   //vector normal of the plane
+    double d;       //distance from origin
 }GFC_Plane3D;
 
 typedef struct
 {
-    float x,y,z,r; // position in space, and radius
+    double x,y,z,r; // position in space, and radius
 }GFC_Sphere;
 
 /**
@@ -39,8 +39,8 @@ typedef struct
  */
 typedef struct
 {
-    float x,y,z;   //position of corner
-    float w,h,d;   // width, height, and depth offsets
+    double x,y,z;   //position of corner
+    double w,h,d;   // width, height, and depth offsets
 }GFC_Box;
 
 typedef enum
@@ -78,7 +78,7 @@ typedef struct
  * @param d the size along z
  * @return a set box
  */
-GFC_Box gfc_box(float x, float y, float z, float w, float h, float d);
+GFC_Box gfc_box(double x, double y, double z, double w, double h, double d);
 
 
 #define gfc_box_cpy(dst,src) (dst.x = src.x,dst.y = src.y,dst.z = src.z,dst.w = src.w,dst.h = src.h,dst.d = src.d)
@@ -91,7 +91,7 @@ GFC_Box gfc_box(float x, float y, float z, float w, float h, float d);
  * @param r the radius
  * @return a set sphere
  */
-GFC_Sphere gfc_sphere(float x, float y, float z, float r);
+GFC_Sphere gfc_sphere(double x, double y, double z, double r);
 
 /**
  * @brief make a plane based on its component
@@ -101,7 +101,7 @@ GFC_Sphere gfc_sphere(float x, float y, float z, float r);
  * @param d the distance from origin
  * @return a set sphere
  */
-GFC_Plane3D gfc_plane3d(float x, float y, float z, float d);
+GFC_Plane3D gfc_plane3d(double x, double y, double z, double d);
 
 /**
  * @brief make a triangle based on 3 points
@@ -122,7 +122,7 @@ GFC_Triangle3D gfc_triangle(GFC_Vector3D a,GFC_Vector3D b,GFC_Vector3D c);
  * @param bz point b z position
  * @return a set edge3d
  */
-GFC_Edge3D gfc_edge3d(float ax,float ay,float az,float bx,float by,float bz);
+GFC_Edge3D gfc_edge3d(double ax,double ay,double az,double bx,double by,double bz);
 
 /**
  * @brief make an edge from component gfc_vectors

@@ -23,7 +23,7 @@ typedef struct
     Uint32 ref_count;
     GFC_TextLine filepath;  /**<the sound file that was loaded*/
     Mix_Chunk *sound;
-    float volume;
+    double volume;
     int defaultChannel;
 }GFC_Sound;
 
@@ -58,7 +58,7 @@ Mix_Music *gfc_sound_load_music(const char *filename);
  * @param defaultChannel which channel to play this sound on if not specified
  * @return NULL on error or a pointer to the sound file
  */
-GFC_Sound *gfc_sound_load(const char *filename,float volume,int defaultChannel);
+GFC_Sound *gfc_sound_load(const char *filename,double volume,int defaultChannel);
 
 /**
  * @brief play a sound file that has been loaded
@@ -67,7 +67,7 @@ GFC_Sound *gfc_sound_load(const char *filename,float volume,int defaultChannel);
  * @param channel which channel to play on, -1 means use default
  * @param group which group to play on, -1 means use default
  */
-void gfc_sound_play(GFC_Sound *sound,int loops,float volume,int channel,int group);
+void gfc_sound_play(GFC_Sound *sound,int loops,double volume,int channel,int group);
 
 /**
  * @brief decrement references to the sound.  Free it when needed
@@ -103,7 +103,7 @@ GFC_HashMap *gfc_sound_pack_parse(SJson *sounds);
  * @param channel which channel to play on, -1 means use default
  * @param group which group to play on, -1 means use default
  */
-void gfc_sound_pack_play(GFC_HashMap *pack, const char *name,int loops,float volume,int channel,int group);
+void gfc_sound_pack_play(GFC_HashMap *pack, const char *name,int loops,double volume,int channel,int group);
 
 /**
  * @brief free a previously loaded sound pack

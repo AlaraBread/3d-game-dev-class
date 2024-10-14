@@ -16,9 +16,9 @@
 
 void jump(Collision cols[MAX_REPORTED_COLLISIONS]);
 
-void playerPhysicsProcess(PhysicsBody *self, float delta) {
+void playerPhysicsProcess(PhysicsBody *self, double delta) {
 	// ball movement
-	float speed = delta*ANGULAR_SPEED;
+	double speed = delta*ANGULAR_SPEED;
 	GFC_Vector3D forward = gfc_vector3d(-speed, 0, 0);
 	GFC_Vector3D left = gfc_vector3d(0, -speed, 0);
 	gfc_vector3d_rotate_about_z(&forward, self->entity.player.yaw);
@@ -84,7 +84,7 @@ void playerPhysicsProcess(PhysicsBody *self, float delta) {
 void jump(Collision cols[MAX_REPORTED_COLLISIONS]) {
 	int numCollisions = 0;
 	while(numCollisions < MAX_REPORTED_COLLISIONS && cols[numCollisions].hit) numCollisions++;
-	float jumpAmount = JUMP_IMPULSE/numCollisions;
+	double jumpAmount = JUMP_IMPULSE/numCollisions;
 	for(int i = 0; i < numCollisions; i++) {
 		Collision *col = &cols[i];
 		GFC_Vector3D jump;
@@ -95,7 +95,7 @@ void jump(Collision cols[MAX_REPORTED_COLLISIONS]) {
 	}
 }
 
-void playerFrameProcess(PhysicsBody *self, float delta) {
+void playerFrameProcess(PhysicsBody *self, double delta) {
 	// camera movement
 	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
 	self->entity.player.pitch -= mouseMotion.y*0.01;

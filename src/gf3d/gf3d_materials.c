@@ -266,10 +266,10 @@ MaterialUBO gf3d_material_get_ubo(GF3D_Material *material) {
 
 MaterialUBO gf3d_material_make_basic_ubo(GFC_Color diffuse) {
 	MaterialUBO material = {0};
-	material.ambient = gfc_vector4d(1, 1, 1, 1);
-	material.specular = gfc_vector4d(1, 1, 1, 1);
+	material.ambient = gfc_vector4df(1, 1, 1, 1);
+	material.specular = gfc_vector4df(1, 1, 1, 1);
 	material.diffuse = gfc_color_to_vector4f(diffuse);
-	material.emission = gfc_vector4d(0, 0, 0, 0);
+	material.emission = gfc_vector4df(0, 0, 0, 0);
 	material.shininess = 128;
 	material.transparency = 1.0;
 	return material;

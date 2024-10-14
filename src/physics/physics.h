@@ -14,7 +14,7 @@ typedef enum ShapeType_e {
 } ShapeType;
 
 typedef struct Sphere_s {
-	float radius;
+	double radius;
 } Sphere;
 
 typedef struct Box_s {
@@ -50,9 +50,9 @@ typedef enum {
 struct PhysicsBody_s {
 	Bool inuse;
 	MotionType motionType;
-	float mass;
-	float bounce;
-	float friction;
+	double mass;
+	double bounce;
+	double friction;
 	GFC_Vector3D inertia;
 	GFC_Matrix3 invInertiaTensor;
 	GFC_Vector3D linearVelocity;
@@ -65,25 +65,25 @@ struct PhysicsBody_s {
 	Shape shape;
 	int numReportedCollisions;
 	Collision reportedCollisions[MAX_REPORTED_COLLISIONS];
-	void (*physicsProcess)(PhysicsBody *, float);
-	void (*frameProcess)(PhysicsBody *, float);
+	void (*physicsProcess)(PhysicsBody *, double);
+	void (*frameProcess)(PhysicsBody *, double);
 	void (*draw)(PhysicsBody *);
 	EntityType entityType;
 	union {
 		struct {
-			float yaw, pitch;
+			double yaw, pitch;
 			Collision coyoteCollisions[MAX_REPORTED_COLLISIONS];
-			float jumpBufferTimer, coyoteTimer, rightingTimer;
+			double jumpBufferTimer, coyoteTimer, rightingTimer;
 			Bool isRighting;
 			Model *wheelModel;
-			float wheelRotations[4];
-			float wheelVelocities[4];
-			float wheelDistances[4];
-			float wheelRadius, steer;
+			double wheelRotations[4];
+			double wheelVelocities[4];
+			double wheelDistances[4];
+			double wheelRadius, steer;
 		} player;
 		struct {
 			GFC_Vector3D movementStart, movementEnd;
-			float movementSpeed, direction, moveRatio;
+			double movementSpeed, direction, moveRatio;
 		} platform;
 	} entity;
 };
@@ -91,7 +91,7 @@ struct PhysicsBody_s {
 void physicsStart(int maxPhysicsBodies);
 void physicsEnd();
 PhysicsBody *physicsCreateBody();
-void physicsFrame(float delta);
+void physicsFrame(double delta);
 void drawPhysicsObjects();
 GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local);
 GFC_Vector3D physicsBodyGlobalToLocal(PhysicsBody *body, GFC_Vector3D global);

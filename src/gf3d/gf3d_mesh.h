@@ -17,20 +17,20 @@ typedef struct ObjData_S ObjData;
 
 // absolute basics of the mesh information sent to the graphics card
 typedef struct {
-	GFC_Matrix4 model;
-	GFC_Matrix4 view;
-	GFC_Matrix4 proj;
-	GFC_Vector4D color;
-	GFC_Vector4D camera;
+	GFC_Matrix4F model;
+	GFC_Matrix4F view;
+	GFC_Matrix4F proj;
+	GFC_Vector4DF color;
+	GFC_Vector4DF camera;
 } MeshUBO;
 
 typedef struct {
-	GFC_Vector3D vertex;
-	GFC_Vector3D normal;
-	GFC_Vector2D texel;
+	GFC_Vector3DF vertex;
+	GFC_Vector3DF normal;
+	GFC_Vector2DF texel;
 	// armature support:
-	GFC_Vector4D bones;	  // bone indices
-	GFC_Vector4D weights; // bone weights
+	GFC_Vector4DF bones;	  // bone indices
+	GFC_Vector4DF weights; // bone weights
 } Vertex;
 
 typedef struct {
@@ -209,6 +209,6 @@ Pipeline *gf3d_mesh_get_sky_pipeline();
  * @param modelMat the model Matrix
  * @param colorMod the color for the UBO
  */
-MeshUBO gf3d_mesh_get_ubo(GFC_Matrix4 modelMat, GFC_Color colorMod);
+MeshUBO gf3d_mesh_get_ubo(GFC_Matrix4F modelMat, GFC_Color colorMod);
 
 #endif

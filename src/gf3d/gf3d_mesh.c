@@ -528,18 +528,18 @@ Mesh *gf3d_mesh_load_obj(const char *filename) {
 	return mesh;
 }
 
-MeshUBO gf3d_mesh_get_ubo(GFC_Matrix4 modelMat, GFC_Color colorMod) {
+MeshUBO gf3d_mesh_get_ubo(GFC_Matrix4F modelMat, GFC_Color colorMod) {
 	ModelViewProjection mvp;
 	MeshUBO modelUBO = {0};
-	GFC_Vector4D color = gfc_color_to_vector4f(colorMod);
+	GFC_Vector4DF color = gfc_color_to_vector4f(colorMod);
 
 	mvp = gf3d_vgraphics_get_mvp();
-	gfc_matrix4_copy(modelUBO.model, modelMat);
-	gfc_matrix4_copy(modelUBO.view, mvp.view);
-	gfc_matrix4_copy(modelUBO.proj, mvp.proj);
+	gfc_matrix4f_copy(modelUBO.model, modelMat);
+	gfc_matrix4f_copy(modelUBO.view, mvp.view);
+	gfc_matrix4f_copy(modelUBO.proj, mvp.proj);
 	gfc_vector4d_copy(modelUBO.color, color);
 
-	modelUBO.camera = gfc_vector3dw(gf3d_camera_get_position(), 1.0);
+	modelUBO.camera = gfc_vector3dfw(gfc_vector3d_to_float(gf3d_camera_get_position()), 1.0);
 
 	return modelUBO;
 }

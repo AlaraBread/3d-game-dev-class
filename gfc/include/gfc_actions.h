@@ -37,7 +37,7 @@ typedef struct Action_S
     GFC_TextLine        name;       /**<searchable name criteria*/
     int                 startFrame; /**<starting frame of the animation*/
     int                 endFrame;   /**<ending frame of the animmation*/
-    float               frameRate;  /**<how much to progress a frame per update*/
+    double               frameRate;  /**<how much to progress a frame per update*/
     GFC_ActionType      type;       /**<how the animation should be treated*/
 }GFC_Action;
 
@@ -114,7 +114,7 @@ GFC_Action *gfc_action_list_get_action_by_name(GFC_ActionList *list,const char *
  * @param frame [output] set to the starting frame of the action if provided.
  * @return NULL on error or not found, the Action otherwise
  */
-GFC_Action *gfc_action_list_get_action_frame(GFC_ActionList *al, const char *name,float *frame);
+GFC_Action *gfc_action_list_get_action_frame(GFC_ActionList *al, const char *name,double *frame);
 
 /**
  * @brief call if you insert an animation frame and need to keep the actions in line
@@ -179,7 +179,7 @@ Uint32 gfc_action_list_get_framecount(GFC_ActionList *list);
  * @param frame (input and output) given this starting frame, this frame will be set to the next frame
  * @return if not an ART_ERROR, it will let you know its return status.  
  */
-GFC_ActionReturnType gfc_action_next_frame(GFC_Action *action,float *frame);
+GFC_ActionReturnType gfc_action_next_frame(GFC_Action *action,double *frame);
 
 /**
  * @brief given a frame, what is the next whole number frame that will come afterwards
@@ -187,7 +187,7 @@ GFC_ActionReturnType gfc_action_next_frame(GFC_Action *action,float *frame);
  * @param frame the current frame
  * @return which whole number frame would be next
  */
-Uint32 gfc_action_next_frame_after(GFC_Action *action,float frame);
+Uint32 gfc_action_next_frame_after(GFC_Action *action,double frame);
 
 /**
  * @brief given an action, check how many frames of animation it has
@@ -214,7 +214,7 @@ int gfc_action_get_animation_frames(GFC_Action *action);
  * @param frame the current frame
  * @return the number of frames (or calls to next_frame)before the current action is completed
  */
-int gfc_action_get_frames_remaining(GFC_Action *action,float frame);
+int gfc_action_get_frames_remaining(GFC_Action *action,double frame);
 
 /**
  * @brief returns the percentage of completion of the current action
@@ -222,7 +222,7 @@ int gfc_action_get_frames_remaining(GFC_Action *action,float frame);
  * @param action the action in question
  * @param frame the current frame
  */
-float gfc_action_get_percent_complete(GFC_Action *action,float frame);
+double gfc_action_get_percent_complete(GFC_Action *action,double frame);
 
 /**
  * @brief get the number of frames into the action we are based on the current frame
@@ -231,7 +231,7 @@ float gfc_action_get_percent_complete(GFC_Action *action,float frame);
  * @return -1 on error or no frame rate, the number of frames into the action otherwise
  * @note:this DOES take into consideration frame Rate.  SO its more like the number of calls to next_frame since the action began
  */
-int gfc_action_get_action_frame(GFC_Action *action,float frame);
+int gfc_action_get_action_frame(GFC_Action *action,double frame);
 
 /**
  * @brief get an action from an actor by the frame number

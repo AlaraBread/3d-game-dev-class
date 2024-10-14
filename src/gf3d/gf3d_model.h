@@ -56,7 +56,7 @@ typedef struct {
 	Texture *texture;
 	Texture *normalMap;
 	GFC_Box bounds;		// copied from the mesh
-	GFC_Matrix4 matrix; // a delta applied right before rendering.  an
+	GFC_Matrix4F matrix; // a delta applied right before rendering.  an
 						// adjustment loaded from file
 } Model;
 
@@ -67,10 +67,10 @@ typedef struct {
  */
 typedef struct {
 	Model *model;
-	GFC_Matrix4 mat;
-	GFC_Vector3D position;
-	GFC_Vector3D rotation;
-	GFC_Vector3D scale;
+	GFC_Matrix4F mat;
+	GFC_Vector3DF position;
+	GFC_Vector3DF rotation;
+	GFC_Vector3DF scale;
 } ModelMat;
 
 /**
@@ -145,7 +145,7 @@ void gf3d_model_move(Model *in, GFC_Vector3D offset, GFC_Vector3D rotation);
  * @param frame the animation frame to use for armature based animations
  */
 void gf3d_model_draw(
-	Model *model, GFC_Matrix4 modelMat,
+	Model *model, GFC_Matrix4F modelMat,
 	GFC_Color colorMod, // TODO pass a material instead
 	Uint32 frame
 );
@@ -160,7 +160,7 @@ void gf3d_model_draw(
  * @param colorMod color modulation (values from 0 to 1);
  * @param frame the animation frame to use for armature based animations
  */
-void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame);
+void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame);
 
 /**
  * @brief draw all of the meshes of a model.  This is meant for multi-mesh
@@ -171,7 +171,7 @@ void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4 modelMat, GFC
  * @param frame used to access a frame of armature based animation
  * @note this is called by gf3d_model_draw when not using a sequence of meshes
  */
-void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame);
+void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame);
 
 /**
  * @brief queue up a model for rendering as a sky
@@ -179,7 +179,7 @@ void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4 modelMat, GFC_Color co
  * @param modelMat the model matrix (MVP)
  * @param color the color adjustement (gfc_color(1,1,1,1) for no color change
  */
-void gf3d_model_draw_sky(Model *model, GFC_Matrix4 modelMat, GFC_Color color);
+void gf3d_model_draw_sky(Model *model, GFC_Matrix4F modelMat, GFC_Color color);
 
 /**
  * @brief free a model
@@ -203,7 +203,7 @@ void gf3d_model_mat_parse(ModelMat *mat, SJson *config);
  * @param scale used to make this matrix
  */
 void mat_from_parent(
-	GFC_Matrix4 out, GFC_Matrix4 parent, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale
+	GFC_Matrix4F out, GFC_Matrix4F parent, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale
 );
 
 /**

@@ -71,7 +71,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		Bool p3 = triangleFacingOrigin(gfc_triangle(v0, v1.m, v3.m));
 #if DEBUG_MPR_EXPANSION
 		if(keys[SDL_SCANCODE_1+i] || (i == 0 && !pressingAButton)) {
-			float r = 0.25;
+			double r = 0.25;
 			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v0, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
 			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v1.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1));
 			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v2.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 0, 1), gfc_color(1, 1, 1, 1));
@@ -187,7 +187,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		SupportPoint v4 = minkowskiPoint(a, b, newNormal);
 #if DEBUG_MPR_REFINEMENT
 		if(keys[SDL_SCANCODE_1+i] || (i == 0 && !pressingAButton)) {
-			float r = 0.25;
+			double r = 0.25;
 			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v0, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
 			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v1.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1));
 			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v2.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 0, 1), gfc_color(1, 1, 1, 1));
@@ -226,7 +226,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		GFC_Vector3D d;
 		gfc_vector3d_sub(d, v1.m, v4.m);
 		d = projectVector(d, newNormal);
-		/*float e = 0.001;
+		/*double e = 0.001;
 		if(gfc_vector3d_magnitude_squared(d) < e * e) {
 			// support plane is too close to portal, miss
 			slog("support plane is too close to portal, miss");

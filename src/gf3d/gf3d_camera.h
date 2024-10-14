@@ -4,14 +4,14 @@
 #include "gfc_matrix.h"
 
 typedef struct {
-	GFC_Matrix4 cameraMat;			 // final matrix to become the view matrix
-	GFC_Matrix4 cameraMatInv;		 // final matrix to become the inverse view matrix
+	GFC_Matrix4F cameraMat;			 // final matrix to become the view matrix
+	GFC_Matrix4F cameraMatInv;		 // final matrix to become the inverse view matrix
 	GFC_Vector3D scale;				 // for building camera matrix
 	GFC_Vector3D position;			 // for building camera matrix
 	GFC_Vector3D rotation;			 // pitch, roll, yaw for building camera matrix
-	float moveStep;					 // when using gf3d_camera_controls_update, this is how
+	double moveStep;					 // when using gf3d_camera_controls_update, this is how
 									 // much the camera will move per frame
-	float rotateStep;				 // when using gf3d_camera_controls_update, this is how
+	double rotateStep;				 // when using gf3d_camera_controls_update, this is how
 									 // much the camera will move per frame
 	int autoPan;					 // if true, the amount gf3d_camera_controls_update will pan
 									 // the camera around
@@ -39,12 +39,12 @@ void gf3d_camera_update_view();
  * @param view output, the matrix provided will be populated with the current
  * camera information
  */
-void gf3d_camera_get_view_mat4(GFC_Matrix4 *view);
+void gf3d_camera_get_view_mat4(GFC_Matrix4F *view);
 
 /**
  * @brief set the current camera based on the matrix provided
  */
-void gf3d_camera_set_view_mat4(GFC_Matrix4 *view);
+void gf3d_camera_set_view_mat4(GFC_Matrix4F *view);
 
 /**
  * @brief have the camera point towards a point in space
@@ -58,128 +58,128 @@ void gf3d_camera_look_at(GFC_Vector3D target, const GFC_Vector3D *position);
  * gf3d_camera_controls_update
  * @param step how much to move per update
  */
-void gf3d_camera_set_move_step(float step);
+void gf3d_camera_set_move_step(double step);
 
 /**
  * @brief set the rotation step for camera movement with
  * gf3d_camera_controls_update
  * @param step how much to move per update
  */
-void gf3d_camera_set_rotate_step(float step);
+void gf3d_camera_set_rotate_step(double step);
 
 /**
  * @brief move the camera "FORWARD" relative to the view angles of the camera
  * @param magnitude how much to move
  */
-void gf3d_camera_fly_forward(float magnitude);
+void gf3d_camera_fly_forward(double magnitude);
 
 /**
  * @brief move the camera "RIGHT" relative to the view angles of the camera
  * @param magnitude how much to move
  */
-void gf3d_camera_fly_right(float magnitude);
+void gf3d_camera_fly_right(double magnitude);
 
 /**
  * @brief move the camera "UP" relative to the view angles of the camera
  * @param magnitude how much to move
  */
-void gf3d_camera_fly_up(float magnitude);
+void gf3d_camera_fly_up(double magnitude);
 
 /**
  * @brief move the camera forward relative to the camera view angle
  * @note does not move along the z axis
  * @param magnitude how far to move
  */
-void gf3d_camera_walk_forward(float magnitude);
+void gf3d_camera_walk_forward(double magnitude);
 
 /**
  * @brief move the camera right relative to the camera view angle
  * @note does not move along the z axis
  * @param magnitude how far to move
  */
-void gf3d_camera_walk_right(float magnitude);
+void gf3d_camera_walk_right(double magnitude);
 
 /**
  * @brief move the camera up along the z axis.
  * @note does not consider view angles.
  * @param magnitude how far to move
  */
-void gf3d_camera_move_up(float magnitude);
+void gf3d_camera_move_up(double magnitude);
 
 /**
  * @brief rotate the camera's yaw
  * @param magnitude how far, in radians, to rotate
  */
-void gf3d_camera_yaw(float magnitude);
+void gf3d_camera_yaw(double magnitude);
 
 /**
  * @brief rotate the camera's pitch
  * @param magnitude how far, in radians, to rotate
  */
-void gf3d_camera_pitch(float magnitude);
+void gf3d_camera_pitch(double magnitude);
 
 /**
  * @brief rotate the camera's roll
  * @param magnitude how far, in radians, to rotate
  */
-void gf3d_camera_roll(float magnitude);
+void gf3d_camera_roll(double magnitude);
 
 /**
  * @brief move the camera "FORWARD" relative to the view angles of the camera
  * @param magnitude how much to move
  */
-void gf3d_camera_fly_forward(float magnitude);
+void gf3d_camera_fly_forward(double magnitude);
 
 /**
  * @brief move the camera "RIGHT" relative to the view angles of the camera
  * @param magnitude how much to move
  */
-void gf3d_camera_fly_right(float magnitude);
+void gf3d_camera_fly_right(double magnitude);
 
 /**
  * @brief move the camera "UP" relative to the view angles of the camera
  * @param magnitude how much to move
  */
-void gf3d_camera_fly_up(float magnitude);
+void gf3d_camera_fly_up(double magnitude);
 
 /**
  * @brief move the camera forward relative to the camera view angle
  * @note does not move along the z axis
  * @param magnitude how far to move
  */
-void gf3d_camera_walk_forward(float magnitude);
+void gf3d_camera_walk_forward(double magnitude);
 
 /**
  * @brief move the camera right relative to the camera view angle
  * @note does not move along the z axis
  * @param magnitude how far to move
  */
-void gf3d_camera_walk_right(float magnitude);
+void gf3d_camera_walk_right(double magnitude);
 
 /**
  * @brief move the camera up along the z axis.
  * @note does not consider view angles.
  * @param magnitude how far to move
  */
-void gf3d_camera_move_up(float magnitude);
+void gf3d_camera_move_up(double magnitude);
 
 /**
  * @brief rotate the camera's yaw
  * @param magnitude how far, in radians, to rotate
  */
-void gf3d_camera_yaw(float magnitude);
+void gf3d_camera_yaw(double magnitude);
 
 /**
  * @brief rotate the camera's pitch
  * @param magnitude how far, in radians, to rotate
  */
-void gf3d_camera_pitch(float magnitude);
+void gf3d_camera_pitch(double magnitude);
 
 /**
  * @brief rotate the camera's roll
  * @param magnitude how far, in radians, to rotate
  */
-void gf3d_camera_roll(float magnitude);
+void gf3d_camera_roll(double magnitude);
 
 /**
  * @brief get the current camera position in world space;

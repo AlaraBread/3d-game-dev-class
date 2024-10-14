@@ -125,7 +125,7 @@ void gf2d_draw_rect(GFC_Rect rect, GFC_Color color) {
 
 void gf2d_draw_edge(GFC_Edge2D edge, GFC_Color color) {
 	GFC_Shape shape;
-	float angle;
+	double angle;
 	GFC_Vector2D dir;
 	SDL_Rect rect = {0};
 	int length;
@@ -406,9 +406,9 @@ GFC_List *gf2d_draw_get_bezier_points(GFC_Vector2D p0, GFC_Vector2D p1, GFC_Vect
     GFC_Vector2D qp,qp2,qpv; /*approximation line starting point and gfc_vector*/
     GFC_Vector2D p0v,p1v,temp; /*gfc_vectors from point to next point*/
     GFC_Vector2D dp; /*draw point*/
-    float t = 0;  /*time segment*/
-    float tstep;
-    float totalLength;
+    double t = 0;  /*time segment*/
+    double tstep;
+    double totalLength;
     gfc_vector2d_sub(p0v,p1,p0);
     gfc_vector2d_sub(p1v,p2,p1);
     totalLength = gfc_vector2d_magnitude(p0v)+gfc_vector2d_magnitude(p1v);
@@ -532,7 +532,7 @@ void gf2d_draw_bezier4_curve(GFC_Vector2D p0,GFC_Vector2D r0,GFC_Vector2D r1,GFC
     GFC_Vector2D *points;
     int length;
     int index = 0;
-    float t,step;
+    double t,step;
     GFC_Color drawGFC_Color;
     //source: https://programmerbay.com/c-program-to-draw-bezier-curve-using-4-control-points/
     drawGFC_Color = gfc_color_to_int8(color);
@@ -547,7 +547,7 @@ void gf2d_draw_bezier4_curve(GFC_Vector2D p0,GFC_Vector2D r0,GFC_Vector2D r1,GFC
     if (length == 0)return;
     points = gfc_allocate_array(sizeof(GFC_Vector2D),length);
     if (!points)return;
-    step = 1/(float)length;
+    step = 1/(double)length;
     for (t= 0,index = 0; index < length;t += step,index++)
     {
         points[index].x = pow(1-t,3)*p0.x + 3*t*pow(1-t,2)*r0.x + 3*t*t*(1-t)*r1.x + pow(t,3)*p1.x;
@@ -682,9 +682,9 @@ GFC_List *gf2d_draw_get_bezier4_points(
     GFC_Vector2D qp,qp2,qpv; //approximation line starting point and gfc_vector
     GFC_Vector2D p0v,p1v,p2v,temp; //gfc_vectors from point to next point
     GFC_Vector2D dp; //draw point
-    float t = 0;  //time segment
-    float tstep;
-    float totalLength;
+    double t = 0;  //time segment
+    double tstep;
+    double totalLength;
     gfc_vector2d_sub(p0v,rp1,ep1);
     gfc_vector2d_sub(p1v,rp2,rp1);
     gfc_vector2d_sub(p2v,ep2,rp2);//segments between each

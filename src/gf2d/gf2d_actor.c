@@ -95,10 +95,10 @@ SJson *gf2d_actor_to_json(Actor *actor) {
 	sj_object_insert(save, "frameWidth", sj_new_int(actor->frameWidth));
 	sj_object_insert(save, "frameHeight", sj_new_int(actor->frameHeight));
 	sj_object_insert(save, "framesPerLine", sj_new_int(actor->framesPerLine));
-	sj_object_insert(save, "scale", sj_vector2d_new(actor->scale));
-	sj_object_insert(save, "center", sj_vector2d_new(actor->center));
+	sj_object_insert(save, "scale", sj_vector2d_new(gfc_vector2d_to_float(actor->scale)));
+	sj_object_insert(save, "center", sj_vector2d_new(gfc_vector2d_to_float(actor->center)));
 	sj_object_insert(save, "color", sj_vector4d_new(gfc_color_to_vector4(actor->color)));
-	sj_object_insert(save, "drawOffset", sj_vector2d_new(actor->drawOffset));
+	sj_object_insert(save, "drawOffset", sj_vector2d_new(gfc_vector2d_to_float(actor->drawOffset)));
 	sj_object_insert(save, "actionList", gfc_action_list_to_json(actor->al));
 	return save;
 }
@@ -116,8 +116,7 @@ void gf2d_actor_save(Actor *actor, const char *filename) {
 }
 
 Actor *gf2d_actor_load_json(SJson *json) {
-	GFC_Vector4D color = {255, 255, 255, 255};
-	GFC_Vector2D scaleTo;
+	GFC_Vector4DF color = {255, 255, 255, 255};
 	Actor *actor;
 	SJson *actorJS = NULL;
 	if(!json) { return NULL; }
@@ -133,13 +132,20 @@ Actor *gf2d_actor_load_json(SJson *json) {
 		if(actor->sprite) { gfc_line_cpy(actor->spriteFile, actor->sprite->filename); }
 	}
 
-	sj_value_as_vector2d(sj_object_get_value(actorJS, "scale"), &actor->scale);
+	GFC_Vector2DF scale;
+	sj_value_as_vector2d(sj_object_get_value(actorJS, "scale"), &scale);
+	actor->scale = gfc_vector2df_to_double(scale);
+	GFC_Vector2DF scaleTo;
 	if((actor->sprite) && (sj_value_as_vector2d(sj_object_get_value(actorJS, "scaleTo"), &scaleTo))) {
 		actor->scale.x = scaleTo.x / actor->sprite->frameWidth;
 		actor->scale.y = scaleTo.y / actor->sprite->frameHeight;
 	}
-	sj_value_as_vector2d(sj_object_get_value(actorJS, "center"), &actor->center);
-	sj_value_as_vector2d(sj_object_get_value(actorJS, "drawOffset"), &actor->drawOffset);
+	GFC_Vector2DF center;
+	sj_value_as_vector2d(sj_object_get_value(actorJS, "center"), &center);
+	actor->center = gfc_vector2df_to_double(center);
+	GFC_Vector2DF drawOffset;
+	sj_value_as_vector2d(sj_object_get_value(actorJS, "drawOffset"), &drawOffset);
+	actor->drawOffset = gfc_vector2df_to_double(drawOffset);
 	sj_value_as_vector4d(sj_object_get_value(actorJS, "color"), &color);
 	actor->color = gfc_color_from_vector4(color);
 
@@ -203,7 +209,7 @@ Actor *gf2d_actor_load(const char *file) {
 	return gf2d_actor_load_image(file);
 }
 
-GFC_Action *gf2d_actor_get_action(Actor *actor, const char *name, float *frame) {
+GFC_Action *gf2d_actor_get_action(Actor *actor, const char *name, double *frame) {
 	GFC_Action *action;
 	if(!actor) return NULL;
 	action = gf2d_actor_get_action_by_name(actor, name);
@@ -239,7 +245,7 @@ Uint32 gf2d_actor_get_framecount(Actor *actor) {
 }
 
 void gf2d_actor_draw(
-	Actor *actor, float frame, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *center, float *rotation,
+	Actor *actor, double frame, GFC_Vector2D position, GFC_Vector2D *scale, GFC_Vector2D *center, double *rotation,
 	GFC_Color *color, GFC_Vector2D *flip
 ) {
 	GFC_Color drawGFC_Color;

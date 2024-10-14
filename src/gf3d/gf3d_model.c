@@ -40,7 +40,7 @@ void gf3d_model_create_descriptor_pool(Model *model);
 void gf3d_model_create_descriptor_sets(Model *model);
 void gf3d_model_create_descriptor_set_layout();
 void gf3d_model_update_uniform_buffer(
-	Model *model, UniformBuffer *ubo, GFC_Matrix4 modelMat, GFC_Vector4D colorMod, GFC_Vector4D ambientLight
+	Model *model, UniformBuffer *ubo, GFC_Matrix4F modelMat, GFC_Vector4D colorMod, GFC_Vector4D ambientLight
 );
 
 VkDescriptorSetLayout *gf3d_model_get_descriptor_set_layout();
@@ -89,7 +89,7 @@ Model *gf3d_model_new() {
 		if(!gf3d_model.model_list[i].refCount) {
 			gf3d_model_delete(&gf3d_model.model_list[i]);
 			gf3d_model.model_list[i].refCount = 1;
-			gfc_matrix4_identity(gf3d_model.model_list[i].matrix);
+			gfc_matrix4f_identity(gf3d_model.model_list[i].matrix);
 			gf3d_model.model_list[i].mesh_list = gfc_list_new();
 			return &gf3d_model.model_list[i];
 		}
@@ -359,7 +359,7 @@ void gf3d_model_mat_set_rotation(ModelMat *mat, GFC_Vector3D rotation) {
 
 void gf3d_model_mat_scale(ModelMat *mat, GFC_Vector3D scale) {
 	if(!mat) return;
-	gfc_vector3d_multiply(mat->scale, scale);
+	gfc_vector3df_multiply(mat->scale, gfc_vector3d_to_float(scale));
 }
 
 void gf3d_model_mat_move(ModelMat *mat, GFC_Vector3D translation) {
@@ -375,18 +375,18 @@ void gf3d_model_mat_rotate(ModelMat *mat, GFC_Vector3D rotation) {
 void gf3d_model_mat_reset(ModelMat *mat) {
 	if(!mat) return;
 	memset(mat, 0, sizeof(ModelMat));
-	gfc_matrix4_identity(mat->mat);
-	mat->scale = gfc_vector3d(1, 1, 1);
+	gfc_matrix4f_identity(mat->mat);
+	mat->scale = gfc_vector3df(1, 1, 1);
 }
 
 void gf3d_model_mat_extract_vectors(ModelMat *mat) {
 	if(!mat) return;
-	gfc_matrix4_to_vectors(mat->mat, &mat->position, &mat->rotation, &mat->scale);
+	gfc_matrix4f_to_vectors(mat->mat, &mat->position, &mat->rotation, &mat->scale);
 }
 
 void gf3d_model_mat_set_matrix(ModelMat *mat) {
 	if(!mat) return;
-	gfc_matrix4_from_vectors(mat->mat, mat->position, mat->rotation, mat->scale);
+	gfc_matrix4f_from_vectors(mat->mat, mat->position, mat->rotation, mat->scale);
 }
 
 void gf3d_model_mat_free(ModelMat *mat) {
@@ -409,18 +409,18 @@ SJson *gf3d_model_mat_save(ModelMat *mat, Bool updateFirst) {
 }
 
 void mat_from_parent(
-	GFC_Matrix4 out, GFC_Matrix4 parent, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale
+	GFC_Matrix4F out, GFC_Matrix4F parent, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale
 ) {
-	GFC_Matrix4 temp;
-	gfc_matrix4_from_vectors(temp, position, rotation, scale);
-	gfc_matrix4_multiply(out, temp, parent);
+	GFC_Matrix4F temp;
+	gfc_matrix4f_from_vectors(temp, gfc_vector3d_to_float(position), gfc_vector3d_to_float(rotation), gfc_vector3d_to_float(scale));
+	gfc_matrix4f_multiply(out, temp, parent);
 }
 
 void gf3d_model_mat_parse(ModelMat *mat, SJson *config) {
 	const char *str;
 	if(!mat) return;
 	if(!config) return;
-	gfc_matrix4_identity(mat->mat);
+	gfc_matrix4f_identity(mat->mat);
 	str = sj_object_get_value_as_string(config, "model");
 	if(str) mat->model = gf3d_model_load(str);
 	sj_value_as_vector3d(sj_object_get_value(config, "position"), &mat->position);
@@ -434,31 +434,31 @@ ModelMat *gf3d_model_mat_new() {
 	ModelMat *modelMat;
 	modelMat = gfc_allocate_array(sizeof(ModelMat), 1);
 	if(!modelMat) return NULL;
-	gfc_matrix4_identity(modelMat->mat);
+	gfc_matrix4f_identity(modelMat->mat);
 	gfc_vector3d_set(modelMat->scale, 1, 1, 1);
 	return modelMat;
 }
 
-MeshUBO gf3d_model_get_sky_ubo(GFC_Matrix4 modelMat, GFC_Vector4D colorMod) {
+MeshUBO gf3d_model_get_sky_ubo(GFC_Matrix4F modelMat, GFC_Vector4DF colorMod) {
 	ModelViewProjection mvp;
 	MeshUBO modelUBO;
 
 	mvp = gf3d_vgraphics_get_mvp();
 
-	gfc_matrix4_copy(modelUBO.model, modelMat);
-	gfc_matrix4_copy(modelUBO.view, mvp.view);
+	gfc_matrix4f_copy(modelUBO.model, modelMat);
+	gfc_matrix4f_copy(modelUBO.view, mvp.view);
 	modelUBO.view[0][3] = 0;
 	modelUBO.view[1][3] = 0;
 	modelUBO.view[2][3] = 0;
 	modelUBO.view[3][0] = 0;
 	modelUBO.view[3][1] = 0;
 	modelUBO.view[3][2] = 0;
-	gfc_matrix4_copy(modelUBO.proj, mvp.proj);
+	gfc_matrix4f_copy(modelUBO.proj, mvp.proj);
 	gfc_vector4d_copy(modelUBO.color, colorMod);
 	return modelUBO;
 }
 
-void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame) {
+void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame) {
 	int i, c;
 	if(!model) return;
 	c = gfc_list_get_count(model->mesh_list);
@@ -467,7 +467,7 @@ void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4 modelMat, GFC_Color co
 	}
 }
 
-void gf3d_model_draw(Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame) {
+void gf3d_model_draw(Model *model, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame) {
 	if(!model) return;
 	if(model->mesh_as_frame) {
 		gf3d_model_draw_index(model, frame, modelMat, colorMod, 0);
@@ -476,10 +476,10 @@ void gf3d_model_draw(Model *model, GFC_Matrix4 modelMat, GFC_Color colorMod, Uin
 	gf3d_model_draw_all_meshes(model, modelMat, colorMod, frame);
 }
 
-void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4 modelMat, GFC_Color colorMod, Uint32 frame) {
+void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame) {
 	Mesh *mesh;
-	GFC_Matrix4 matrix = {0};
-	GFC_Vector4D modColor = {0};
+	GFC_Matrix4F matrix = {0};
+	GFC_Vector4DF modColor = {0};
 	ModelUBO uboData = {0};
 	Texture *texture;
 	if(!gf3d_model.initiliazed) return;
@@ -488,7 +488,7 @@ void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4 modelMat, GFC
 	if(!mesh) return;
 
 	// factor in the matrix loaded from disk
-	gfc_matrix4_multiply(matrix, model->matrix, modelMat);
+	gfc_matrix4f_multiply(matrix, model->matrix, modelMat);
 
 	uboData.mesh = gf3d_mesh_get_ubo(matrix, colorMod);
 
@@ -507,14 +507,14 @@ void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4 modelMat, GFC
 	gf3d_mesh_queue_render(mesh, gf3d_model.pipe, &uboData, texture);
 }
 
-void gf3d_model_draw_sky(Model *model, GFC_Matrix4 modelMat, GFC_Color color) {
+void gf3d_model_draw_sky(Model *model, GFC_Matrix4F modelMat, GFC_Color color) {
 	Mesh *mesh;
-	GFC_Matrix4 matrix = {0};
+	GFC_Matrix4F matrix = {0};
 	Texture *texture;
 	MeshUBO uboData = {0};
 	if(!gf3d_model.initiliazed) return;
 	if(!model) return;
-	gfc_matrix4_multiply(matrix, model->matrix, modelMat);
+	gfc_matrix4f_multiply(matrix, model->matrix, modelMat);
 	uboData = gf3d_model_get_sky_ubo(matrix, gfc_color_to_vector4f(color));
 	if(!model->texture) {
 		texture = gf3d_model.defaultTexture;
