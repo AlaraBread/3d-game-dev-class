@@ -124,8 +124,10 @@ void carPhysicsProcess(PhysicsBody *self, double delta) {
 		// apply forces
 		rotate_vector3_by_euler_vector(&force, self->rotation);
 		gfc_vector3d_scale(force, force, delta);
-		GFC_Vector3D selfPoint = start;
-		projectVectorOntoPlane(selfPoint, up);
+		GFC_Vector3D selfPoint;
+		gfc_vector3d_sub(selfPoint, col.position, self->position);
+		selfPoint = projectVectorOntoPlane(selfPoint, up);
+		gfc_vector3d_add(selfPoint, selfPoint, self->position);
 		applyImpulse(self, force, selfPoint);
 		gfc_vector3d_negate(force, force);
 		applyImpulse(col.body, force, col.position);
