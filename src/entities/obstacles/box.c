@@ -13,7 +13,12 @@ PhysicsBody *createBox() {
 	box->mass = 0.01;
 	box->friction = 0.8;
 	box->bounce = 0.4;
+	box->motionType = DYNAMIC;
 	calculateInertiaForBody(box);
-	box->visualScale = boxShape.shape.box.extents;
+	gfc_matrix4f_scale(
+		box->visualTransform,
+		box->visualTransform,
+		gfc_vector3d_to_float(boxShape.shape.box.extents)
+	);
 	return box;
 }

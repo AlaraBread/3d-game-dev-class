@@ -2,7 +2,6 @@
 #include "gf3d_draw.h"
 #include "gfc_hashmap.h"
 #include "intersection_tests.h"
-#include "lists.h"
 #include "shapes.h"
 #include "simple_logger.h"
 #include "util.h"

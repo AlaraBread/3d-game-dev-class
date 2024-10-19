@@ -259,7 +259,7 @@ VkFormat gf3d_pipeline_find_normal_format() {
 		VK_FORMAT_B8G8R8A8_UNORM,
 	};
 	return gf3d_pipeline_find_supported_format(
-		formats, 2, VK_IMAGE_TILING_OPTIMAL,
+		formats, 1, VK_IMAGE_TILING_OPTIMAL,
 		VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT | VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT
 	);
 }

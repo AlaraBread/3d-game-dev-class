@@ -39,12 +39,18 @@ PhysicsBody *physicsCreateBody() {
 	return NULL;
 }
 
+void physicsFreeBody(PhysicsBody *body) {
+	if(body->model) gf3d_model_free(body->model);
+	if(body->free) body->free(body);
+	body->inuse = false;
+}
+
 static void physicsBodyInitialize(PhysicsBody *body) {
 	memset(body, 0, sizeof(PhysicsBody));
 	body->inuse = true;
 	body->mass = 1.0;
 	body->inertia = gfc_vector3d(1, 1, 1);
-	body->visualScale = gfc_vector3d(1, 1, 1);
+	gfc_matrix4f_identity(body->visualTransform);
 	body->linearVelocity = gfc_vector3d(0.1, 0.1, 0.1);
 	body->friction = 1.0;
 	body->bounce = 1.0;
@@ -52,7 +58,7 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 
 void physicsUpdate(double delta);
 
-#define FIXED_TIMESTEP (1.0/120.0)
+#define FIXED_TIMESTEP (1.0/240.0)
 #define MAX_TIMESTEPS_PER_FRAME 5
 void physicsFrame(double delta) {
 	static double physicsDelta = 0;
@@ -155,7 +161,13 @@ void drawPhysicsObjects() {
 			GFC_Vector4D quat;
 			euler_vector_to_quat(&quat, body->rotation);
 			GFC_Matrix4F matrix;
-			gfc_matrix4f_from_vectors_q(matrix, gfc_vector3d_to_float(body->position), gfc_vector4d_to_float(quat), gfc_vector3d_to_float(body->visualScale));
+			gfc_matrix4f_from_vectors_q(
+				matrix,
+				gfc_vector3d_to_float(body->position),
+				gfc_vector4d_to_float(quat),
+				gfc_vector3df(1, 1, 1)
+			);
+			gfc_matrix4f_multiply(matrix, body->visualTransform, matrix);
 			gf3d_model_draw(body->model, matrix, gfc_color(1, 1, 1, 1), 0);
 		}
 	}
@@ -213,6 +225,9 @@ GFC_Vector3D velocityAtPoint(PhysicsBody *body, GFC_Vector3D point) {
 // adapted from the 2d version that i wrote for 2d game programming
 // https://github.com/AlaraBread/2d-game-dev-class/blob/main/src/entities/physics.c#L402
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
+	if(a->motionType == TRIGGER || b->motionType == TRIGGER) {
+		return;
+	}
 	// react to collision
 	GFC_Vector3D ra;
 	GFC_Vector3D aCom = physicsBodyLocalToGlobal(a, a->centerOfMass);

@@ -96,11 +96,14 @@ RayCollision boxRayTest(GFC_Edge3D ray, PhysicsBody *body) {
 }
 
 RayCollision rayTest(GFC_Edge3D ray, PhysicsBody *body) {
+	RayCollision col = {0};
+	if(body->motionType == TRIGGER) {
+		return col;
+	}
 	switch(body->shape.shapeType) {
 		case SPHERE: return sphereRayTest(ray, body);
 		case BOX: return boxRayTest(ray, body);
 		default: break;
 	}
-	RayCollision col = {0};
 	return col;
 }

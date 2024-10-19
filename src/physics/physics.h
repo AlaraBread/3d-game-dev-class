@@ -35,8 +35,9 @@ typedef struct Shape_s {
 } Shape;
 
 typedef enum {
-	DYNAMIC,
+	TRIGGER,
 	STATIC,
+	DYNAMIC,
 } MotionType;
 
 #define MAX_REPORTED_COLLISIONS 3
@@ -45,6 +46,7 @@ typedef enum {
 	NONE,
 	PLAYER,
 	PLATFORM,
+	POWERUP,
 } EntityType;
 
 struct PhysicsBody_s {
@@ -60,7 +62,7 @@ struct PhysicsBody_s {
 	GFC_Vector3D position;
 	GFC_Vector3D rotation;
 	GFC_Vector3D centerOfMass;
-	GFC_Vector3D visualScale;
+	GFC_Matrix4F visualTransform;
 	Model *model;
 	Shape shape;
 	int numReportedCollisions;
@@ -68,12 +70,13 @@ struct PhysicsBody_s {
 	void (*physicsProcess)(PhysicsBody *, double);
 	void (*frameProcess)(PhysicsBody *, double);
 	void (*draw)(PhysicsBody *);
+	void (*free)(PhysicsBody *);
 	EntityType entityType;
 	union {
 		struct {
 			double yaw, pitch;
 			Collision coyoteCollisions[MAX_REPORTED_COLLISIONS];
-			double jumpBufferTimer, coyoteTimer, rightingTimer;
+			double jumpBufferTimer, coyoteTimer, rightingTimer, powerupTimer;
 			Bool isRighting;
 			Model *wheelModel;
 			double wheelRotations[4];
@@ -85,12 +88,17 @@ struct PhysicsBody_s {
 			GFC_Vector3D movementStart, movementEnd;
 			double movementSpeed, direction, moveRatio;
 		} platform;
+		struct {
+			float time;
+			float respawnTimer;
+		} powerup;
 	} entity;
 };
 
 void physicsStart(int maxPhysicsBodies);
 void physicsEnd();
 PhysicsBody *physicsCreateBody();
+void physicsFreeBody(PhysicsBody *body);
 void physicsFrame(double delta);
 void drawPhysicsObjects();
 GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local);

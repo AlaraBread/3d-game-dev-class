@@ -64,29 +64,30 @@ void carPhysicsProcess(PhysicsBody *self, double delta) {
 	self->entity.player.steer = steer;
 	double engineForce = 0;
 	if(gfc_input_command_held("forward")) {
-		engineForce += 0.5;
+		engineForce += 1.0;
 		gfc_vector3d_add(airControl, airControl, right);
 	}
 	if(gfc_input_command_held("back")) {
-		engineForce -= 0.5;
+		engineForce -= 1.0;
 		gfc_vector3d_sub(airControl, airControl, right);
 	}
 	gfc_vector3d_scale(airControl, airControl, 20*delta);
 	Bool jump = gfc_input_command_pressed("jump");
 	Bool onGround = false;
+	const int suspensionDistance = 4;
 	// cast wheel rays
 	// fl, fr, bl, br
 	for(int i = 0; i < 4; i++) {
 		GFC_Vector3D start = wheelOffset(i);
 		GFC_Vector3D end = start;
-		end.z = -4;
+		end.z = -suspensionDistance;
 		start = physicsBodyLocalToGlobal(self, start);
 		end = physicsBodyLocalToGlobal(self, end);
 		GFC_Edge3D ray = gfc_edge3d_from_vectors(start, end);
 		RayCollision col = castRay(ray, self);
 		self->entity.player.wheelRotations[i] += self->entity.player.wheelVelocities[i]*delta;
 		if(!col.hit) {
-			self->entity.player.wheelDistances[i] = 4;
+			self->entity.player.wheelDistances[i] = suspensionDistance;
 			continue;
 		}
 		onGround = true;
@@ -135,37 +136,30 @@ void carPhysicsProcess(PhysicsBody *self, double delta) {
 	if(!onGround) {
 		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, airControl);
 	}
-}
-
-void carFrameProcess(PhysicsBody *self, double delta) {
-	// camera movement
-	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
-	self->entity.player.pitch -= mouseMotion.y*0.01;
-	self->entity.player.yaw -= mouseMotion.x*0.01;
-	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI/2.0+0.01, M_PI/2.0-0.01);
-	// position camera
-	GFC_Vector3D cameraPos = gfc_vector3d(30, 0, 0);
-	gfc_vector3d_rotate_about_y(&cameraPos, self->entity.player.pitch);
-	gfc_vector3d_rotate_about_z(&cameraPos, self->entity.player.yaw);
-	gfc_vector3d_add(cameraPos, self->position, cameraPos);
-	GFC_Edge3D ray = gfc_edge3d_from_vectors(self->position, cameraPos);
-	RayCollision rayCol = castRay(ray, self);
-	if(rayCol.hit) {
-		GFC_Vector3D dir;
-		gfc_vector3d_sub(dir, ray.b, ray.a);
-		gfc_vector3d_normalize(&dir);
-		gfc_vector3d_scale(dir, dir, -0.25);
-		gfc_vector3d_add(rayCol.position, rayCol.position, dir);
-		cameraPos = rayCol.position;
+	self->entity.player.powerupTimer -= delta;
+	if(self->entity.player.powerupTimer <= 0.0) {
+		PhysicsBody *newPlayer = createPlayer();
+		newPlayer->position = self->position;
+		newPlayer->rotation = self->rotation;
+		newPlayer->linearVelocity = self->linearVelocity;
+		newPlayer->angularVelocity = self->angularVelocity;
+		newPlayer->entity.player.pitch = self->entity.player.pitch;
+		newPlayer->entity.player.yaw = self->entity.player.yaw;
+		physicsFreeBody(self);
 	}
-	gf3d_camera_look_at(self->position, &cameraPos);
 }
 
 void carDraw(PhysicsBody *self) {
 	GFC_Vector4D quat;
 	euler_vector_to_quat(&quat, self->rotation);
 	GFC_Matrix4F matrix;
-	gfc_matrix4f_from_vectors_q(matrix, gfc_vector3d_to_float(self->position), gfc_vector4d_to_float(quat), gfc_vector3d_to_float(self->visualScale));
+	gfc_matrix4f_from_vectors_q(
+		matrix,
+		gfc_vector3d_to_float(self->position),
+		gfc_vector4d_to_float(quat),
+		gfc_vector3df(1, 1, 1)
+	);
+	gfc_matrix4f_multiply(matrix, self->visualTransform, matrix);
 	gf3d_model_draw(self->model, matrix, gfc_color(1, 1, 1, 1), 0);
 	for(int i = 0; i < 4; i++) {
 		GFC_Vector3D wheelPos = wheelOffset(i);
@@ -185,6 +179,10 @@ void carDraw(PhysicsBody *self) {
 	}
 }
 
+void carFree(PhysicsBody *self) {
+	gf3d_model_free(self->entity.player.wheelModel);
+}
+
 PhysicsBody *createCarPlayer() {
 	Shape s;
 	s.shapeType = BOX;
@@ -195,15 +193,21 @@ PhysicsBody *createCarPlayer() {
 	player->entity.player.wheelModel = gf3d_model_load("assets/models/test_cylinder/test_cylinder.model");
 	player->entity.player.wheelRadius = 2;
 	player->model = cubeModel;
-	player->visualScale = s.shape.box.extents;
+	gfc_matrix4f_scale(
+		player->visualTransform,
+		player->visualTransform,
+		gfc_vector3d_to_float(s.shape.box.extents)
+	);
 	player->draw = carDraw;
 	player->position = gfc_vector3d(0, 0, 10);
 	player->mass = 0.01;
 	player->bounce = 0.5;
 	player->friction = 1.0;
+	player->motionType = DYNAMIC;
 	calculateInertiaForBody(player);
 	player->physicsProcess = carPhysicsProcess;
-	player->frameProcess = carFrameProcess;
+	player->frameProcess = playerFrameProcess;
+	player->free = carFree;
 	SDL_SetRelativeMouseMode(true);
 	player->entityType = PLAYER;
 	return player;

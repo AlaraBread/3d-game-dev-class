@@ -35,7 +35,11 @@ PhysicsBody *createMovingPlatform(GFC_Vector3D position, GFC_Vector3D movement, 
 	s.shape.box.extents = gfc_vector3d(10, 10, 2);
 	platform->shape = s;
 	platform->model = gf3d_model_load("assets/models/test_cube/test_cube.model");
-	platform->visualScale = platform->shape.shape.box.extents;
+	gfc_matrix4f_scale(
+		platform->visualTransform,
+		platform->visualTransform,
+		gfc_vector3d_to_float(s.shape.box.extents)
+	);
 	platform->physicsProcess = movingPlatformPhysicsProcess;
 	platform->motionType = STATIC;
 	platform->friction = 1.0;

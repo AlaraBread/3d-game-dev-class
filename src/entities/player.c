@@ -101,6 +101,7 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 	self->entity.player.pitch -= mouseMotion.y*0.01;
 	self->entity.player.yaw -= mouseMotion.x*0.01;
 	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI/2.0+0.01, M_PI/2.0-0.01);
+	self->entity.player.yaw = wrapMinMax(self->entity.player.yaw, -M_PI, M_PI);
 	// position camera
 	GFC_Vector3D cameraPos = gfc_vector3d(30, 0, 0);
 	gfc_vector3d_rotate_about_y(&cameraPos, self->entity.player.pitch);
@@ -127,11 +128,16 @@ PhysicsBody *createPlayer() {
 	player->shape = s;
 	Model *sphereModel = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
 	player->model = sphereModel;
-	player->visualScale = gfc_vector3d(s.shape.sphere.radius, s.shape.sphere.radius, s.shape.sphere.radius);
+	gfc_matrix4f_scale(
+		player->visualTransform,
+		player->visualTransform,
+		gfc_vector3df(s.shape.sphere.radius, s.shape.sphere.radius, s.shape.sphere.radius)
+	);
 	player->position = gfc_vector3d(0, 0, 10);
 	player->mass = 0.01;
 	player->bounce = 0.5;
 	player->friction = 1.0;
+	player->motionType = DYNAMIC;
 	calculateInertiaForBody(player);
 	player->physicsProcess = playerPhysicsProcess;
 	player->frameProcess = playerFrameProcess;

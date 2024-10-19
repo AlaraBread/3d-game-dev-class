@@ -4,5 +4,6 @@
 #include "physics.h"
 
 PhysicsBody *createPlayer();
+void playerFrameProcess(PhysicsBody *self, double delta);
 
 #endif

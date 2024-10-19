@@ -34,6 +34,7 @@
 #include "ball.h"
 #include "floor.h"
 #include "moving_platform.h"
+#include "powerup.h"
 
 extern int __DEBUG;
 
@@ -75,7 +76,7 @@ int main(int argc, char *argv[]) {
 
 	gf3d_camera_enable_free_look(1);
 	physicsStart(50);
-	createCarPlayer();
+	createPlayer();
 	createBox()->position = gfc_vector3d(0, 0, 10);
 	createBox()->position = gfc_vector3d(0, 0, 20);
 	createBall(gfc_vector3d(5, 10, 0));
@@ -90,6 +91,7 @@ int main(int argc, char *argv[]) {
 	createFloor(gfc_vector3d(0, -floorSize, 0), gfc_vector3d(-M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 
 	createMovingPlatform(gfc_vector3d(-32, 4, -floorSize/2.0+4), gfc_vector3d(256, 0, 0), 10);
+	createPowerup(gfc_vector3d(50, 0, -10));
 	// windows
 
 	// main game loop
@@ -133,12 +135,12 @@ void parse_arguments(int argc, char *argv[]) {
 }
 
 double calculate_delta_time() {
-	static Uint64 now;
+	static Uint64 now = 0;
 	Uint64 then = now;
 	now = SDL_GetTicks64();
 	double delta = (double)(now - then) / 1000.0;
-	// double fps = 1.0/MAX(delta, 0.00001);
-	// slog("fps: %f",fps);
+	//double fps = 1.0/MAX(delta, 0.00001);
+	//slog("fps: %f",fps);
 	return delta;
 }
 
