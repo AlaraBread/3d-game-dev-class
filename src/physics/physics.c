@@ -54,6 +54,7 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 	body->linearVelocity = gfc_vector3d(0.1, 0.1, 0.1);
 	body->friction = 1.0;
 	body->bounce = 1.0;
+	body->colorMod = gfc_color(1, 1, 1, 1);
 }
 
 void physicsUpdate(double delta);
@@ -168,7 +169,7 @@ void drawPhysicsObjects() {
 				gfc_vector3df(1, 1, 1)
 			);
 			gfc_matrix4f_multiply(matrix, body->visualTransform, matrix);
-			gf3d_model_draw(body->model, matrix, gfc_color(1, 1, 1, 1), 0);
+			gf3d_model_draw(body->model, matrix, body->colorMod, 0);
 		}
 	}
 }

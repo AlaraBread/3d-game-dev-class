@@ -8,40 +8,43 @@
 #include "gfc_input.h"
 #include "gf3d_draw.h"
 
+#define PLAYER_RADIUS 4
+
 #define JUMP_BUFFER 0.25
 #define COYOTE_TIME 0.25
 #define AIR_CONTROL 2
 #define ANGULAR_SPEED 20
 #define JUMP_IMPULSE 0.5
 
-void jump(Collision cols[MAX_REPORTED_COLLISIONS]);
+void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]);
 
 void playerPhysicsProcess(PhysicsBody *self, double delta) {
 	// ball movement
-	double speed = delta*ANGULAR_SPEED;
+	double speed = delta*ANGULAR_SPEED*self->entity.player.speedMult;
 	GFC_Vector3D forward = gfc_vector3d(-speed, 0, 0);
 	GFC_Vector3D left = gfc_vector3d(0, -speed, 0);
 	gfc_vector3d_rotate_about_z(&forward, self->entity.player.yaw);
 	gfc_vector3d_rotate_about_z(&left, self->entity.player.yaw);
+	double airControlAmount = AIR_CONTROL*self->entity.player.speedMult;
 	GFC_Vector3D airControl;
 	if(gfc_input_command_held("forward")) {
 		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
-		gfc_vector3d_scale(airControl, forward, AIR_CONTROL);
+		gfc_vector3d_scale(airControl, forward, airControlAmount);
 		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
 	if(gfc_input_command_held("back")) {
 		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, left);
-		gfc_vector3d_scale(airControl, forward, -AIR_CONTROL);
+		gfc_vector3d_scale(airControl, forward, -airControlAmount);
 		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
 	if(gfc_input_command_held("left")) {
 		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, forward);
-		gfc_vector3d_scale(airControl, left, AIR_CONTROL);
+		gfc_vector3d_scale(airControl, left, airControlAmount);
 		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
 	if(gfc_input_command_held("right")) {
 		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, forward);
-		gfc_vector3d_scale(airControl, left, -AIR_CONTROL);
+		gfc_vector3d_scale(airControl, left, -airControlAmount);
 		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
 	self->entity.player.jumpBufferTimer -= delta;
@@ -50,14 +53,14 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 	self->entity.player.coyoteTimer = MAX(self->entity.player.coyoteTimer, 0);
 	if(gfc_input_command_pressed("jump")) {
 		if(self->reportedCollisions[0].hit) {
-			jump(self->reportedCollisions);
+			jump(self, self->reportedCollisions);
 			self->entity.player.jumpBufferTimer = 0;
 			self->entity.player.coyoteTimer = 0;
 		} else {
 			// pressed jump without touching surface
 			if(self->entity.player.coyoteCollisions[0].hit && self->entity.player.coyoteTimer > 0.01) {
 				// coyote jump
-				jump(self->entity.player.coyoteCollisions);
+				jump(self, self->entity.player.coyoteCollisions);
 				self->entity.player.jumpBufferTimer = 0;
 				self->entity.player.coyoteTimer = 0;
 				self->entity.player.coyoteCollisions[0].hit = false;
@@ -70,7 +73,7 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 		// didnt press jump, but touching surface
 		if(self->entity.player.jumpBufferTimer > 0.01) {
 			// we pressed jump recently, so jump
-			jump(self->reportedCollisions);
+			jump(self, self->reportedCollisions);
 			self->entity.player.jumpBufferTimer = 0;
 			self->entity.player.coyoteTimer = 0;
 		} else {
@@ -79,12 +82,23 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 			self->entity.player.coyoteTimer = COYOTE_TIME;
 		}
 	}
+	if(self->entity.player.powerupTimer > 0.0 && (self->entity.player.powerupTimer -= delta) <= 0.0) {
+		self->entity.player.jumpMult = self->entity.player.speedMult = 1.0;
+		self->shape.shape.sphere.radius = PLAYER_RADIUS;
+		calculateInertiaForBody(self);
+		gfc_matrix4f_identity(self->visualTransform);
+		gfc_matrix4f_scale(
+			self->visualTransform,
+			self->visualTransform,
+			gfc_vector3df(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS)
+		);
+	}
 }
 
-void jump(Collision cols[MAX_REPORTED_COLLISIONS]) {
+void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]) {
 	int numCollisions = 0;
 	while(numCollisions < MAX_REPORTED_COLLISIONS && cols[numCollisions].hit) numCollisions++;
-	double jumpAmount = JUMP_IMPULSE/numCollisions;
+	double jumpAmount = self->entity.player.jumpMult*JUMP_IMPULSE/numCollisions;
 	for(int i = 0; i < numCollisions; i++) {
 		Collision *col = &cols[i];
 		GFC_Vector3D jump;
@@ -103,7 +117,11 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI/2.0+0.01, M_PI/2.0-0.01);
 	self->entity.player.yaw = wrapMinMax(self->entity.player.yaw, -M_PI, M_PI);
 	// position camera
-	GFC_Vector3D cameraPos = gfc_vector3d(30, 0, 0);
+	double cameraDist = self->shape.shape.sphere.radius*8;
+	if(self->entity.player.isCar) {
+		cameraDist = PLAYER_RADIUS*8;
+	}
+	GFC_Vector3D cameraPos = gfc_vector3d(cameraDist, 0, 0);
 	gfc_vector3d_rotate_about_y(&cameraPos, self->entity.player.pitch);
 	gfc_vector3d_rotate_about_z(&cameraPos, self->entity.player.yaw);
 	gfc_vector3d_add(cameraPos, self->position, cameraPos);
@@ -123,7 +141,7 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 PhysicsBody *createPlayer() {
 	Shape s;
 	s.shapeType = SPHERE;
-	s.shape.sphere.radius = 4.0;
+	s.shape.sphere.radius = PLAYER_RADIUS;
 	PhysicsBody *player = physicsCreateBody();
 	player->shape = s;
 	Model *sphereModel = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
@@ -143,5 +161,6 @@ PhysicsBody *createPlayer() {
 	player->frameProcess = playerFrameProcess;
 	SDL_SetRelativeMouseMode(true);
 	player->entityType = PLAYER;
+	player->entity.player.jumpMult = player->entity.player.speedMult = 1.0;
 	return player;
 }

@@ -6,6 +6,7 @@
 #include "gfc_vector.h"
 #include "collision.h"
 #include "raycast.h"
+#include "powerup.h"
 
 typedef enum ShapeType_e {
 	SPHERE,
@@ -63,6 +64,7 @@ struct PhysicsBody_s {
 	GFC_Vector3D rotation;
 	GFC_Vector3D centerOfMass;
 	GFC_Matrix4F visualTransform;
+	GFC_Color colorMod;
 	Model *model;
 	Shape shape;
 	int numReportedCollisions;
@@ -83,6 +85,8 @@ struct PhysicsBody_s {
 			double wheelVelocities[4];
 			double wheelDistances[4];
 			double wheelRadius, steer;
+			double speedMult, jumpMult;
+			Bool isCar;
 		} player;
 		struct {
 			GFC_Vector3D movementStart, movementEnd;
@@ -91,6 +95,7 @@ struct PhysicsBody_s {
 		struct {
 			float time;
 			float respawnTimer;
+			PowerupType type;
 		} powerup;
 	} entity;
 };
