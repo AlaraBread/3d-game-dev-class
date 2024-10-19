@@ -34,7 +34,12 @@
 #include "ball.h"
 #include "floor.h"
 #include "moving_platform.h"
+#include "rotating_platform.h"
+#include "jump_pad.h"
+#include "treadmill.h"
+#include "fan.h"
 #include "powerup.h"
+#include "util.h"
 
 extern int __DEBUG;
 
@@ -75,9 +80,9 @@ int main(int argc, char *argv[]) {
 	gf3d_camera_set_rotate_step(2.0);
 
 	gf3d_camera_enable_free_look(1);
-	physicsStart(50);
+	physicsStart(100);
 	createPlayer();
-	createBox()->position = gfc_vector3d(0, 0, 10);
+	createBox()->position = gfc_vector3d(-24, 200, 10);
 	createBox()->position = gfc_vector3d(0, 0, 20);
 	createBall(gfc_vector3d(5, 10, 0));
 
@@ -91,6 +96,11 @@ int main(int argc, char *argv[]) {
 	createFloor(gfc_vector3d(0, -floorSize, 0), gfc_vector3d(-M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 
 	createMovingPlatform(gfc_vector3d(-32, 4, -floorSize/2.0+4), gfc_vector3d(256, 0, 0), 10);
+	createRotatingPlatform(gfc_vector3d(-32, 200, -floorSize/2.0+4), 4);
+	createJumpPad(gfc_vector3d(-200, 0, -floorSize/2.0+4));
+	createTreadmill(gfc_vector3d(0, -200, -floorSize/2.0+4));
+	createFan(gfc_vector3d(200, 200, -floorSize/2.0+10), gfc_vector3d(0, 0, 1), 500);
+	createFan(gfc_vector3d(-200, 200, -floorSize/2.0+10), gfc_vector3d(1, 0, 0), 500);
 	createPowerup(gfc_vector3d(200, 0, -floorSize/2+floorThickness+8), CAR);
 	createPowerup(gfc_vector3d(200, 30, -floorSize/2+floorThickness+8), SUPER_SPEED);
 	createPowerup(gfc_vector3d(200, 60, -floorSize/2+floorThickness+8), SUPER_JUMP);
@@ -110,8 +120,11 @@ int main(int argc, char *argv[]) {
 		gf3d_vgraphics_render_start();
 
 		physicsFrame(delta);
-
 		// 3D draws
+		gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 1), gfc_vector3d(200, 200, 0), gfc_vector3d(0,0,0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
+		gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 1), gfc_vector3d(-200, 200, 0), gfc_vector3d(0,0,0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
+		gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 1), gfc_vector3d(200, -200, 0), gfc_vector3d(0,0,0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
+		gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 1), gfc_vector3d(-200, -200, 0), gfc_vector3d(0,0,0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
 		drawPhysicsObjects();
 		gf3d_model_draw_sky(sky, skyMat, GFC_COLOR_WHITE);
 		render_outlines();

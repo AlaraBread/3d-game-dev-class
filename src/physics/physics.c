@@ -96,10 +96,6 @@ void physicsUpdate(double delta) {
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];
 		if(!body->inuse) continue;
-		// gravity
-		if(body->motionType == DYNAMIC) {
-			body->linearVelocity.z -= delta*100;
-		}
 		for(int j = 0; j < physics.maxPhysicsBodies; j++) {
 			if(i <= j) continue;
 			PhysicsBody *otherBody = &physics.physicsBodies[j];
@@ -118,24 +114,26 @@ void physicsUpdate(double delta) {
 				otherBody->numReportedCollisions++;
 			}
 		}
-		// linear damp
-		GFC_Vector3D linearDampVector;
-		gfc_vector3d_scale(linearDampVector, body->linearVelocity, delta * 0.1);
-		gfc_vector3d_sub(body->linearVelocity, body->linearVelocity, linearDampVector);
-		// angular damp
-		GFC_Vector3D angularDampVector;
-		gfc_vector3d_scale(angularDampVector, body->angularVelocity, delta * 0.4);
-		gfc_vector3d_sub(body->angularVelocity, body->angularVelocity, angularDampVector);
-		// euler integration
 		if(body->motionType == DYNAMIC) {
+			// gravity
+			body->linearVelocity.z -= delta*100;
+			// linear damp
+			GFC_Vector3D linearDampVector;
+			gfc_vector3d_scale(linearDampVector, body->linearVelocity, delta * 0.1);
+			gfc_vector3d_sub(body->linearVelocity, body->linearVelocity, linearDampVector);
+			// angular damp
+			GFC_Vector3D angularDampVector;
+			gfc_vector3d_scale(angularDampVector, body->angularVelocity, delta * 0.4);
+			gfc_vector3d_sub(body->angularVelocity, body->angularVelocity, angularDampVector);
+			// euler integration
 			GFC_Vector3D angularMove;
 			gfc_vector3d_scale(angularMove, body->angularVelocity, delta);
 			body->rotation = compose_euler_vectors(body->rotation, angularMove);
-			wrap_euler_vector(&body->rotation);
 			GFC_Vector3D linearMove;
 			gfc_vector3d_scale(linearMove, body->linearVelocity, delta);
 			gfc_vector3d_add(body->position, body->position, linearMove);
 		}
+		wrap_euler_vector(&body->rotation);
 		// world boundary
 		if(body->motionType == DYNAMIC && body->position.z < -50) {
 			body->position = gfc_vector3d(1, 0, 10);
