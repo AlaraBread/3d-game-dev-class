@@ -6,10 +6,13 @@
 #include "moments_of_inertia.h"
 
 void powerupFrameProcess(PhysicsBody *self, double delta) {
-	self->rotation = compose_euler_vectors(self->rotation, gfc_vector3d(0, 0, delta));
+	self->entity.powerup.time += delta;
+	GFC_Vector3D r = compose_euler_vectors(gfc_vector3d(1, 0, 0), gfc_vector3d(0, self->entity.powerup.time, 0));
+	gfc_vector3d_normalize(&r);
+	gfc_vector3d_scale(r, r, delta);
+	self->rotation = compose_euler_vectors(self->rotation, r);
 	GFC_Vector4D q;
 	euler_vector_to_quat(&q, self->rotation);
-	self->entity.powerup.time += delta;
 	if(self->entity.powerup.respawnTimer < 0.0) {
 		gfc_matrix4f_make_translation(self->visualTransform, gfc_vector3df(0, 0, 2*sin(self->entity.powerup.time)));
 		gfc_matrix4f_scale(self->visualTransform, self->visualTransform, gfc_vector3df(2, 2, 2));
@@ -88,6 +91,7 @@ PhysicsBody *createPowerup(GFC_Vector3D position, PowerupType type) {
 	powerup->model = gf3d_model_load("assets/models/test_cube/test_cube.model");
 	powerup->position = position;
 	powerup->entity.powerup.type = type;
+	powerup->rotation = gfc_vector3d(gfc_crandom(), gfc_crandom(), gfc_crandom());
 	switch(type) {
 		case CAR:
 			powerup->colorMod = gfc_color(1.0, 1.0, 0.0, 1.0);
