@@ -51,6 +51,7 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 	self->entity.player.jumpBufferTimer = MAX(self->entity.player.jumpBufferTimer, 0);
 	self->entity.player.coyoteTimer -= delta;
 	self->entity.player.coyoteTimer = MAX(self->entity.player.coyoteTimer, 0);
+	self->entity.player.timeSinceJump += delta;
 	if(gfc_input_command_pressed("jump")) {
 		if(self->reportedCollisions[0].hit) {
 			jump(self, self->reportedCollisions);
@@ -99,8 +100,11 @@ void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]) {
 	int numCollisions = 0;
 	while(numCollisions < MAX_REPORTED_COLLISIONS && cols[numCollisions].hit) numCollisions++;
 	double jumpAmount = self->entity.player.jumpMult*JUMP_IMPULSE/numCollisions;
+	self->entity.player.timeSinceJump = 0;
 	for(int i = 0; i < numCollisions; i++) {
 		Collision *col = &cols[i];
+		PhysicsBody *other = col->a == self ? col->b : col->a;
+		if(other->motionType == TRIGGER) continue;
 		GFC_Vector3D jump;
 		gfc_vector3d_scale(jump, col->normal, jumpAmount);
 		applyImpulse(col->a, jump, col->aPosition);

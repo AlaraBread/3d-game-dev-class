@@ -156,7 +156,7 @@ void drawPhysicsObjects() {
 		if(!body->inuse) continue;
 		if(body->draw) {
 			body->draw(body);
-		} else {
+		} else if(body->model) {
 			GFC_Vector4D quat;
 			euler_vector_to_quat(&quat, body->rotation);
 			GFC_Matrix4F matrix;

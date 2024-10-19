@@ -40,6 +40,7 @@
 #include "fan.h"
 #include "powerup.h"
 #include "util.h"
+#include "magnet.h"
 
 extern int __DEBUG;
 
@@ -100,7 +101,8 @@ int main(int argc, char *argv[]) {
 	createJumpPad(gfc_vector3d(-200, 0, -floorSize/2.0+4));
 	createTreadmill(gfc_vector3d(0, -200, -floorSize/2.0+4));
 	createFan(gfc_vector3d(200, 200, -floorSize/2.0+10), gfc_vector3d(0, 0, 1), 500);
-	createFan(gfc_vector3d(-200, 200, -floorSize/2.0+10), gfc_vector3d(1, 0, 0), 500);
+	createFan(gfc_vector3d(-200, 200, -floorSize/2.0+10), gfc_vector3d(-1, 0, 0), 500);
+	createMagnet(gfc_vector3d(200, -200, -floorSize/2.0+30), 75);
 	createPowerup(gfc_vector3d(200, 0, -floorSize/2+floorThickness+8), CAR);
 	createPowerup(gfc_vector3d(200, 30, -floorSize/2+floorThickness+8), SUPER_SPEED);
 	createPowerup(gfc_vector3d(200, 60, -floorSize/2+floorThickness+8), SUPER_JUMP);
@@ -121,10 +123,6 @@ int main(int argc, char *argv[]) {
 
 		physicsFrame(delta);
 		// 3D draws
-		gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 1), gfc_vector3d(200, 200, 0), gfc_vector3d(0,0,0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
-		gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 1), gfc_vector3d(-200, 200, 0), gfc_vector3d(0,0,0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
-		gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 1), gfc_vector3d(200, -200, 0), gfc_vector3d(0,0,0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
-		gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, 1), gfc_vector3d(-200, -200, 0), gfc_vector3d(0,0,0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
 		drawPhysicsObjects();
 		gf3d_model_draw_sky(sky, skyMat, GFC_COLOR_WHITE);
 		render_outlines();

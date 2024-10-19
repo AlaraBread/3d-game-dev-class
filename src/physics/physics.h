@@ -78,7 +78,7 @@ struct PhysicsBody_s {
 		struct {
 			double yaw, pitch;
 			Collision coyoteCollisions[MAX_REPORTED_COLLISIONS];
-			double jumpBufferTimer, coyoteTimer, rightingTimer, powerupTimer;
+			double jumpBufferTimer, coyoteTimer, rightingTimer, powerupTimer, timeSinceJump;
 			Bool isRighting;
 			Model *wheelModel;
 			double wheelRotations[4];
@@ -91,6 +91,7 @@ struct PhysicsBody_s {
 		struct {
 			GFC_Vector3D movementStart, movementEnd;
 			double movementSpeed, direction, moveRatio;
+			PhysicsBody *magnetCenter;
 		} platform;
 		struct {
 			float time;
