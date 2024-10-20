@@ -116,12 +116,12 @@ int main(int argc, char *argv[]) {
 		double delta = calculate_delta_time();
 		gf2d_font_update();
 		// camera updaes
+		physicsFrame(delta);
 		gf3d_camera_update_view();
 		gf3d_camera_get_view_mat4(gf3d_vgraphics_get_view_matrix());
 
 		gf3d_vgraphics_render_start();
 
-		physicsFrame(delta);
 		// 3D draws
 		drawPhysicsObjects();
 		gf3d_model_draw_sky(sky, skyMat, GFC_COLOR_WHITE);

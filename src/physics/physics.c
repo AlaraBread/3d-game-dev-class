@@ -59,7 +59,7 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 
 void physicsUpdate(double delta);
 
-#define FIXED_TIMESTEP (1.0/5.0)
+#define FIXED_TIMESTEP (1.0/120.0)
 #define MAX_TIMESTEPS_PER_FRAME 5
 void physicsFrame(double delta) {
 	static double physicsDelta = 0;
