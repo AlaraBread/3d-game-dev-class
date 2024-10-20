@@ -12,7 +12,7 @@ PhysicsBody *createBox() {
 	box->model = model;
 	box->mass = 0.01;
 	box->friction = 0.8;
-	box->bounce = 0.4;
+	box->bounce = 0;
 	box->motionType = DYNAMIC;
 	calculateInertiaForBody(box);
 	gfc_matrix4f_scale(

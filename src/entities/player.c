@@ -113,6 +113,8 @@ void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]) {
 	}
 }
 
+#define CAMERA_DIST_MULT 12
+
 void playerFrameProcess(PhysicsBody *self, double delta) {
 	// camera movement
 	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
@@ -121,9 +123,9 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI/2.0+0.01, M_PI/2.0-0.01);
 	self->entity.player.yaw = wrapMinMax(self->entity.player.yaw, -M_PI, M_PI);
 	// position camera
-	double cameraDist = self->shape.shape.sphere.radius*8;
+	double cameraDist = self->shape.shape.sphere.radius*CAMERA_DIST_MULT;
 	if(self->entity.player.isCar) {
-		cameraDist = PLAYER_RADIUS*8;
+		cameraDist = PLAYER_RADIUS*CAMERA_DIST_MULT;
 	}
 	GFC_Vector3D cameraPos = gfc_vector3d(cameraDist, 0, 0);
 	gfc_vector3d_rotate_about_y(&cameraPos, self->entity.player.pitch);

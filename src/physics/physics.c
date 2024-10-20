@@ -59,7 +59,7 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 
 void physicsUpdate(double delta);
 
-#define FIXED_TIMESTEP (1.0/240.0)
+#define FIXED_TIMESTEP (1.0/5.0)
 #define MAX_TIMESTEPS_PER_FRAME 5
 void physicsFrame(double delta) {
 	static double physicsDelta = 0;
@@ -292,7 +292,11 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	}
 	// resolve intersection
 	GFC_Vector3D resolveVector;
-	gfc_vector3d_scale(resolveVector, col.normal, col.penetrationDepth);
+	double depth = col.penetrationDepth;
+	if(a->motionType != DYNAMIC || b->motionType != DYNAMIC) {
+		depth *= 2.0;
+	}
+	gfc_vector3d_scale(resolveVector, col.normal, depth);
 	if(a->motionType == DYNAMIC) {
 		gfc_vector3d_add(a->position, a->position, resolveVector);
 	}

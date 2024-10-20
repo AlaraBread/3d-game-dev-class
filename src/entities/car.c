@@ -98,25 +98,28 @@ void carPhysicsProcess(PhysicsBody *self, double delta) {
 		rotate_vector3_by_euler_vector(&wheelVelocity, invRotation);
 		GFC_Vector3D force = {0};
 		GFC_Vector3D leftLocal = gfc_vector3d(0, 1, 0);
+		GFC_Vector3D forwardLocal = gfc_vector3d(1, 0, 0);
 		if(wheelIsFront(i)) {
 			// front
 			rotate_vector3_by_axis_angle(&leftLocal, gfc_vector4d(0, 0, 1, steer));
+			rotate_vector3_by_axis_angle(&forwardLocal, gfc_vector4d(0, 0, 1, steer));
 		} else {
 			// back
 			force.x = engineForce;
 		}
-		if(col.dist < 3) {
+		if(col.dist < suspensionDistance) {
 			// suspension force
-			force.z = col.dist*0.5;
+			force.z = (suspensionDistance-col.dist)*0.5;
 			// damping
-			force.z -= wheelVelocity.z*0.05;
+			force.z -= wheelVelocity.z*0.005;
 		}
-		// friction
+		// slip friction
 		double slip = gfc_vector3d_dot_product(leftLocal, wheelVelocity);
 		force.y -= 0.05*slip;
+		// rolling friction
+		force.x -= gfc_vector3d_dot_product(forwardLocal, wheelVelocity)*0.002;
 		// wheel turning
 		double wheelRadius = self->entity.player.wheelRadius;
-		GFC_Vector3D forwardLocal = gfc_vector3d(1, 0, 0);
 		self->entity.player.wheelVelocities[i] = gfc_vector3d_dot_product(forwardLocal, wheelVelocity)/wheelRadius;
 		// jump
 		if(jump) {

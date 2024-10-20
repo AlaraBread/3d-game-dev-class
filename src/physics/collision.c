@@ -174,7 +174,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 				col.hit = true;
 				GFC_Triangle3D mTriangle = gfc_triangle(v1.m, v3.m, v2.m);
 				col.normal = gfc_trigfc_angle_get_normal(mTriangle);
-				col.penetrationDepth = gfc_vector3d_dot_product(col.normal, v1.m)/2.0;
+				col.penetrationDepth = gfc_vector3d_dot_product(col.normal, v1.m);
 				GFC_Vector3D bary = toBarycentric(gfc_vector3d(0,0,0), mTriangle);
 				col.aPosition = fromBarycentric(bary, gfc_triangle(v1.a, v3.a, v2.a));
 				col.bPosition = fromBarycentric(bary, gfc_triangle(v1.b, v3.b, v2.b));

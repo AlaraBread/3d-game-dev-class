@@ -33,7 +33,7 @@ Bool pickupPowerup(PhysicsBody *self, PhysicsBody *player) {
 			newPlayer->linearVelocity = player->linearVelocity;
 			newPlayer->entity.player.pitch = player->entity.player.pitch;
 			newPlayer->entity.player.yaw = player->entity.player.yaw;
-			newPlayer->entity.player.powerupTimer = 10;
+			newPlayer->entity.player.powerupTimer = 30;
 			physicsFreeBody(player);
 			self->entity.powerup.respawnTimer = 15;
 		} break;
