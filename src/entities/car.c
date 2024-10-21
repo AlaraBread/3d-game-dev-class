@@ -190,6 +190,7 @@ void carFree(PhysicsBody *self) {
 	gf3d_model_free(self->entity.player.wheelModel);
 }
 
+extern PhysicsBody *g_player;
 PhysicsBody *createCarPlayer() {
 	Shape s;
 	s.shapeType = BOX;
@@ -218,5 +219,6 @@ PhysicsBody *createCarPlayer() {
 	SDL_SetRelativeMouseMode(true);
 	player->entityType = PLAYER;
 	player->entity.player.isCar = true;
+	g_player = player;
 	return player;
 }

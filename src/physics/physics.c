@@ -148,7 +148,7 @@ void physicsUpdate(double delta) {
 }
 
 void resetPhysicsBody(PhysicsBody *body) {
-	body->position = gfc_vector3d(1, 0, 10);
+	body->position = gfc_vector3d(gfc_crandom(), gfc_crandom(), gfc_crandom());
 	body->linearVelocity = gfc_vector3d(0, 0, 0);
 	body->angularVelocity = gfc_vector3d(0, 0, 0);
 	body->rotation = gfc_vector3d(0, 0, 0);

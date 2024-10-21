@@ -44,6 +44,9 @@
 #include "ice.h"
 #include "lava.h"
 
+#include "ball_enemy.h"
+#include "cylinder_enemy.h"
+
 extern int __DEBUG;
 
 void parse_arguments(int argc, char *argv[]);
@@ -89,8 +92,8 @@ int main(int argc, char *argv[]) {
 	createBox()->position = gfc_vector3d(0, 0, 20);
 	createBall(gfc_vector3d(5, 10, 0));
 
-	double floorSize = 100;
-	double floorThickness = 5;
+	const double floorSize = 100;
+	const double floorThickness = 5;
 	createFloor(gfc_vector3d(0, 0, -floorSize/2.0), gfc_vector3d(0, 0, 0), gfc_vector3d(floorSize*4, floorSize*4, floorThickness));
 
 	//createFloor(gfc_vector3d(floorSize, 0, 0), gfc_vector3d(0, -M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
@@ -112,6 +115,9 @@ int main(int argc, char *argv[]) {
 	createPowerup(gfc_vector3d(200, 30, -floorSize/2+floorThickness+8), SUPER_SPEED);
 	createPowerup(gfc_vector3d(200, 60, -floorSize/2+floorThickness+8), SUPER_JUMP);
 	createPowerup(gfc_vector3d(200, 90, -floorSize/2+floorThickness+8), BIG);
+
+	createCylinderEnemy(gfc_vector3d(100, 0.1, -floorSize/2.0+floorThickness));
+
 	// windows
 
 	// main game loop

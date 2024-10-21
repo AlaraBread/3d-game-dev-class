@@ -148,6 +148,7 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 	gf3d_camera_look_at(self->position, &cameraPos);
 }
 
+PhysicsBody *g_player = NULL;
 PhysicsBody *createPlayer() {
 	Shape s;
 	s.shapeType = SPHERE;
@@ -172,5 +173,6 @@ PhysicsBody *createPlayer() {
 	SDL_SetRelativeMouseMode(true);
 	player->entityType = PLAYER;
 	player->entity.player.jumpMult = player->entity.player.speedMult = 1.0;
+	g_player = player;
 	return player;
 }

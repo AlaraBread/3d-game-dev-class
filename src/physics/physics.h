@@ -48,6 +48,7 @@ typedef enum {
 	PLAYER,
 	PLATFORM,
 	POWERUP,
+	ENEMY,
 } EntityType;
 
 struct PhysicsBody_s {
