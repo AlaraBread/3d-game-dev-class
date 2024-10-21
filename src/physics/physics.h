@@ -107,6 +107,7 @@ PhysicsBody *physicsCreateBody();
 void physicsFreeBody(PhysicsBody *body);
 void physicsFrame(double delta);
 void drawPhysicsObjects();
+void resetPhysicsBody(PhysicsBody *body);
 GFC_Vector3D physicsBodyLocalToGlobal(PhysicsBody *body, GFC_Vector3D local);
 GFC_Vector3D physicsBodyGlobalToLocal(PhysicsBody *body, GFC_Vector3D global);
 GFC_Vector3D velocityAtPoint(PhysicsBody *body, GFC_Vector3D point);

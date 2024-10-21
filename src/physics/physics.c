@@ -135,11 +135,8 @@ void physicsUpdate(double delta) {
 		}
 		wrap_euler_vector(&body->rotation);
 		// world boundary
-		if(body->motionType == DYNAMIC && body->position.z < -50) {
-			body->position = gfc_vector3d(1, 0, 10);
-			body->linearVelocity = gfc_vector3d(0, 0, 0);
-			body->angularVelocity = gfc_vector3d(0, 0, 0);
-			body->rotation = gfc_vector3d(0, 0, 0);
+		if(body->motionType == DYNAMIC && body->position.z < -200) {
+			resetPhysicsBody(body);
 		}
 		physicsBodyUpdateInertiaTensor(body);
 	}
@@ -148,6 +145,13 @@ void physicsUpdate(double delta) {
 		if(!body->inuse) continue;
 		if(body->physicsProcess) body->physicsProcess(body, delta);
 	}
+}
+
+void resetPhysicsBody(PhysicsBody *body) {
+	body->position = gfc_vector3d(1, 0, 10);
+	body->linearVelocity = gfc_vector3d(0, 0, 0);
+	body->angularVelocity = gfc_vector3d(0, 0, 0);
+	body->rotation = gfc_vector3d(0, 0, 0);
 }
 
 void drawPhysicsObjects() {
