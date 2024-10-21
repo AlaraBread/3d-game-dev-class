@@ -41,6 +41,7 @@
 #include "powerup.h"
 #include "util.h"
 #include "magnet.h"
+#include "ice.h"
 
 extern int __DEBUG;
 
@@ -95,6 +96,8 @@ int main(int argc, char *argv[]) {
 	createFloor(gfc_vector3d(-floorSize, 0, 0), gfc_vector3d(0, M_PI/4.0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(0, floorSize, 0), gfc_vector3d(M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
 	createFloor(gfc_vector3d(0, -floorSize, 0), gfc_vector3d(-M_PI/4.0, 0, 0), gfc_vector3d(floorSize, floorSize, floorThickness));
+
+	createIce(gfc_vector3d(floorSize*4, floorSize*4, -floorSize/2.0), gfc_vector3d(0, 0, 0), gfc_vector3d(200, 200, 4));
 
 	createMovingPlatform(gfc_vector3d(-32, 4, -floorSize/2.0+4), gfc_vector3d(256, 0, 0), 10);
 	createRotatingPlatform(gfc_vector3d(-32, 200, -floorSize/2.0+4), 4);

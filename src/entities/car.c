@@ -96,6 +96,7 @@ void carPhysicsProcess(PhysicsBody *self, double delta) {
 		GFC_Vector3D wheelVelocity = velocityAtPoint(self, col.position);
 		gfc_vector3d_sub(wheelVelocity, wheelVelocity, colVelocity);
 		rotate_vector3_by_euler_vector(&wheelVelocity, invRotation);
+		double friction = col.body->friction;
 		GFC_Vector3D force = {0};
 		GFC_Vector3D leftLocal = gfc_vector3d(0, 1, 0);
 		GFC_Vector3D forwardLocal = gfc_vector3d(1, 0, 0);
@@ -115,10 +116,9 @@ void carPhysicsProcess(PhysicsBody *self, double delta) {
 		}
 		// slip friction
 		double slip = gfc_vector3d_dot_product(leftLocal, wheelVelocity);
-		force.y -= 0.05*slip;
+		force.y -= 0.05*slip*friction;
 		// rolling friction
-		force.x -= gfc_vector3d_dot_product(forwardLocal, wheelVelocity)*0.002;
-		// wheel turning
+		force.x -= gfc_vector3d_dot_product(forwardLocal, wheelVelocity)*0.002*friction;
 		double wheelRadius = self->entity.player.wheelRadius;
 		self->entity.player.wheelVelocities[i] = gfc_vector3d_dot_product(forwardLocal, wheelVelocity)/wheelRadius;
 		// jump

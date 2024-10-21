@@ -12,41 +12,14 @@
 
 #define JUMP_BUFFER 0.25
 #define COYOTE_TIME 0.25
-#define AIR_CONTROL 2
-#define ANGULAR_SPEED 20
+#define AIR_CONTROL 1
+#define ANGULAR_SPEED 40
 #define JUMP_IMPULSE 0.5
 
 void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]);
 
 void playerPhysicsProcess(PhysicsBody *self, double delta) {
-	// ball movement
-	double speed = delta*ANGULAR_SPEED*self->entity.player.speedMult;
-	GFC_Vector3D forward = gfc_vector3d(-speed, 0, 0);
-	GFC_Vector3D left = gfc_vector3d(0, -speed, 0);
-	gfc_vector3d_rotate_about_z(&forward, self->entity.player.yaw);
-	gfc_vector3d_rotate_about_z(&left, self->entity.player.yaw);
-	double airControlAmount = AIR_CONTROL*self->entity.player.speedMult;
-	GFC_Vector3D airControl;
-	if(gfc_input_command_held("forward")) {
-		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
-		gfc_vector3d_scale(airControl, forward, airControlAmount);
-		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
-	}
-	if(gfc_input_command_held("back")) {
-		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, left);
-		gfc_vector3d_scale(airControl, forward, -airControlAmount);
-		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
-	}
-	if(gfc_input_command_held("left")) {
-		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, forward);
-		gfc_vector3d_scale(airControl, left, airControlAmount);
-		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
-	}
-	if(gfc_input_command_held("right")) {
-		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, forward);
-		gfc_vector3d_scale(airControl, left, -airControlAmount);
-		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
-	}
+	// jump
 	self->entity.player.jumpBufferTimer -= delta;
 	self->entity.player.jumpBufferTimer = MAX(self->entity.player.jumpBufferTimer, 0);
 	self->entity.player.coyoteTimer -= delta;
@@ -82,6 +55,37 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 			memcpy(self->entity.player.coyoteCollisions, self->reportedCollisions, sizeof(Collision)*MAX_REPORTED_COLLISIONS);
 			self->entity.player.coyoteTimer = COYOTE_TIME;
 		}
+	}
+	// ball movement
+	double speed = delta*ANGULAR_SPEED*self->entity.player.speedMult;
+	GFC_Vector3D forward = gfc_vector3d(-speed, 0, 0);
+	GFC_Vector3D left = gfc_vector3d(0, -speed, 0);
+	gfc_vector3d_rotate_about_z(&forward, self->entity.player.yaw);
+	gfc_vector3d_rotate_about_z(&left, self->entity.player.yaw);
+	double airControlAmount = AIR_CONTROL*self->entity.player.speedMult;
+	if(self->entity.player.coyoteTimer > 0.01) {
+		airControlAmount = 0;
+	}
+	GFC_Vector3D airControl;
+	if(gfc_input_command_held("forward")) {
+		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
+		gfc_vector3d_scale(airControl, forward, airControlAmount);
+		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
+	}
+	if(gfc_input_command_held("back")) {
+		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, left);
+		gfc_vector3d_scale(airControl, forward, -airControlAmount);
+		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
+	}
+	if(gfc_input_command_held("left")) {
+		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, forward);
+		gfc_vector3d_scale(airControl, left, airControlAmount);
+		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
+	}
+	if(gfc_input_command_held("right")) {
+		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, forward);
+		gfc_vector3d_scale(airControl, left, -airControlAmount);
+		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
 	if(self->entity.player.powerupTimer > 0.0 && (self->entity.player.powerupTimer -= delta) <= 0.0) {
 		self->entity.player.jumpMult = self->entity.player.speedMult = 1.0;
