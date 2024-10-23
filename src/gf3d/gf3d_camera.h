@@ -9,7 +9,7 @@ typedef struct {
 	GFC_Vector3D scale;				 // for building camera matrix
 	GFC_Vector3D position;			 // for building camera matrix
 	GFC_Vector3D rotation;			 // pitch, roll, yaw for building camera matrix
-	double moveStep;					 // when using gf3d_camera_controls_update, this is how
+	double moveStep;				 // when using gf3d_camera_controls_update, this is how
 									 // much the camera will move per frame
 	double rotateStep;				 // when using gf3d_camera_controls_update, this is how
 									 // much the camera will move per frame

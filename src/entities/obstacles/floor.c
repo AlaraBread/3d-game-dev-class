@@ -1,5 +1,5 @@
-#include "gf3d_model.h"
 #include "floor.h"
+#include "gf3d_model.h"
 #include "moments_of_inertia.h"
 
 PhysicsBody *createFloor(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D extents) {
@@ -14,11 +14,7 @@ PhysicsBody *createFloor(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vecto
 	floor->bounce = 0.8;
 	floor->motionType = STATIC;
 	calculateInertiaForBody(floor);
-	gfc_matrix4f_scale(
-		floor->visualTransform,
-		floor->visualTransform,
-		gfc_vector3d_to_float(extents)
-	);
+	gfc_matrix4f_scale(floor->visualTransform, floor->visualTransform, gfc_vector3d_to_float(extents));
 	floor->position = position;
 	floor->rotation = rotation;
 	return floor;

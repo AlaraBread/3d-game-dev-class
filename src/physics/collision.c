@@ -1,11 +1,11 @@
 #include "collision.h"
 #include "gf3d_draw.h"
 #include "gfc_hashmap.h"
+#include "gfc_vector.h"
 #include "intersection_tests.h"
 #include "shapes.h"
 #include "simple_logger.h"
 #include "util.h"
-#include "gfc_vector.h"
 
 Collision mpr(PhysicsBody *a, PhysicsBody *b);
 
@@ -37,7 +37,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	Bool pressingAButton = false;
 	for(int l = 0; l < 9; l++) {
-		if(keys[SDL_SCANCODE_1+l]) {
+		if(keys[SDL_SCANCODE_1 + l]) {
 			pressingAButton = true;
 			break;
 		}
@@ -69,19 +69,46 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		Bool p2 = triangleFacingOrigin(gfc_triangle(v0, v3.m, v2.m));
 		Bool p3 = triangleFacingOrigin(gfc_triangle(v0, v1.m, v3.m));
 #if DEBUG_MPR_EXPANSION
-		if(keys[SDL_SCANCODE_1+i] || (i == 0 && !pressingAButton)) {
+		if(keys[SDL_SCANCODE_1 + i] || (i == 0 && !pressingAButton)) {
 			double r = 0.25;
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v0, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v1.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v2.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 0, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v3.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 0, 1, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v0, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v1.m, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(1, 0, 0, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v2.m, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(0, 1, 0, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v3.m, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(0, 0, 1, 1),
+				gfc_color(1, 1, 1, 1)
+			);
 
 			GFC_Vector3D c = triangleCenter(gfc_triangle(v1.m, v2.m, v3.m));
-			gf3d_draw_edge_3d(gfc_edge3d(c.x, c.y, c.z, v0.x, v0.y, v0.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,1,0,1));
-			gf3d_draw_edge_3d(gfc_edge3d(0,0,0, v0.x, v0.y, v0.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,1,0,1));
-			gf3d_draw_edge_3d(gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v2.m.x, v2.m.y, v2.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,0,1));
-			gf3d_draw_edge_3d(gfc_edge3d(v2.m.x, v2.m.y, v2.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,0,1));
-			gf3d_draw_edge_3d(gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,0,1));
+			gf3d_draw_edge_3d(
+				gfc_edge3d(c.x, c.y, c.z, v0.x, v0.y, v0.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+				gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 1, 0, 1)
+			);
+			gf3d_draw_edge_3d(
+				gfc_edge3d(0, 0, 0, v0.x, v0.y, v0.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+				gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 1, 0, 1)
+			);
+			gf3d_draw_edge_3d(
+				gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v2.m.x, v2.m.y, v2.m.z), gfc_vector3d(0, 0, 0),
+				gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.125, gfc_color(0, 0, 0, 1)
+			);
+			gf3d_draw_edge_3d(
+				gfc_edge3d(v2.m.x, v2.m.y, v2.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0, 0, 0),
+				gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.125, gfc_color(0, 0, 0, 1)
+			);
+			gf3d_draw_edge_3d(
+				gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0, 0, 0),
+				gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.125, gfc_color(0, 0, 0, 1)
+			);
 			printf("p1=%d\np2=%d\np3=%d\n", p1, p2, p3);
 		}
 #endif
@@ -96,13 +123,28 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 			GFC_Vector3D normal = gfc_trigfc_angle_get_normal(t);
 			v3 = minkowskiPoint(a, b, normal);
 #if DEBUG_MPR_EXPANSION
-			if(keys[SDL_SCANCODE_1+i] || (i == 0 && !pressingAButton)) {
+			if(keys[SDL_SCANCODE_1 + i] || (i == 0 && !pressingAButton)) {
 				GFC_Vector3D c = triangleCenter(t);
-				gf3d_draw_edge_3d(gfc_edge3d(c.x, c.y, c.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,1,1));
-				gf3d_draw_edge_3d(gfc_edge3d(c.x, c.y, c.z, normal.x, normal.y, normal.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.25, gfc_color(0,0,1,1));
-				gf3d_draw_edge_3d(gfc_edge3d(t.a.x, t.a.y, t.a.z, t.b.x, t.b.y, t.b.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,1,1));
-				gf3d_draw_edge_3d(gfc_edge3d(t.b.x, t.b.y, t.b.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,1,1));
-				gf3d_draw_edge_3d(gfc_edge3d(t.a.x, t.a.y, t.a.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,1,1));
+				gf3d_draw_edge_3d(
+					gfc_edge3d(c.x, c.y, c.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(0, 0, 1, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(c.x, c.y, c.z, normal.x, normal.y, normal.z), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.25, gfc_color(0, 0, 1, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(t.a.x, t.a.y, t.a.z, t.b.x, t.b.y, t.b.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 1, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(t.b.x, t.b.y, t.b.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 1, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(t.a.x, t.a.y, t.a.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 1, 1)
+				);
 			}
 #endif
 			// preserve normal direction
@@ -115,13 +157,28 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 			GFC_Vector3D normal = gfc_trigfc_angle_get_normal(t);
 			v1 = minkowskiPoint(a, b, normal);
 #if DEBUG_MPR_EXPANSION
-			if(keys[SDL_SCANCODE_1+i] || (i == 0 && !pressingAButton)) {
+			if(keys[SDL_SCANCODE_1 + i] || (i == 0 && !pressingAButton)) {
 				GFC_Vector3D c = triangleCenter(t);
-				gf3d_draw_edge_3d(gfc_edge3d(c.x, c.y, c.z, v1.m.x, v1.m.y, v1.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,0,1));
-				gf3d_draw_edge_3d(gfc_edge3d(c.x, c.y, c.z, normal.x, normal.y, normal.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.25, gfc_color(1,0,0,1));
-				gf3d_draw_edge_3d(gfc_edge3d(t.a.x, t.a.y, t.a.z, t.b.x, t.b.y, t.b.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,1,1));
-				gf3d_draw_edge_3d(gfc_edge3d(t.b.x, t.b.y, t.b.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,1,1));
-				gf3d_draw_edge_3d(gfc_edge3d(t.a.x, t.a.y, t.a.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,1,1));
+				gf3d_draw_edge_3d(
+					gfc_edge3d(c.x, c.y, c.z, v1.m.x, v1.m.y, v1.m.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 0, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(c.x, c.y, c.z, normal.x, normal.y, normal.z), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.25, gfc_color(1, 0, 0, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(t.a.x, t.a.y, t.a.z, t.b.x, t.b.y, t.b.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 1, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(t.b.x, t.b.y, t.b.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 1, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(t.a.x, t.a.y, t.a.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 1, 1)
+				);
 			}
 #endif
 			// preserve normal direction
@@ -134,13 +191,28 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 			GFC_Vector3D normal = gfc_trigfc_angle_get_normal(t);
 			v2 = minkowskiPoint(a, b, normal);
 #if DEBUG_MPR_EXPANSION
-			if(keys[SDL_SCANCODE_1+i] || (i == 0 && !pressingAButton)) {
+			if(keys[SDL_SCANCODE_1 + i] || (i == 0 && !pressingAButton)) {
 				GFC_Vector3D c = triangleCenter(t);
-				gf3d_draw_edge_3d(gfc_edge3d(c.x, c.y, c.z, v2.m.x, v2.m.y, v2.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,1,0,1));
-				gf3d_draw_edge_3d(gfc_edge3d(c.x, c.y, c.z, normal.x, normal.y, normal.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.25, gfc_color(0,1,0,1));
-				gf3d_draw_edge_3d(gfc_edge3d(t.a.x, t.a.y, t.a.z, t.b.x, t.b.y, t.b.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,1,1));
-				gf3d_draw_edge_3d(gfc_edge3d(t.b.x, t.b.y, t.b.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,1,1));
-				gf3d_draw_edge_3d(gfc_edge3d(t.a.x, t.a.y, t.a.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,0,1,1));
+				gf3d_draw_edge_3d(
+					gfc_edge3d(c.x, c.y, c.z, v2.m.x, v2.m.y, v2.m.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(0, 1, 0, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(c.x, c.y, c.z, normal.x, normal.y, normal.z), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.25, gfc_color(0, 1, 0, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(t.a.x, t.a.y, t.a.z, t.b.x, t.b.y, t.b.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 1, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(t.b.x, t.b.y, t.b.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 1, 1)
+				);
+				gf3d_draw_edge_3d(
+					gfc_edge3d(t.a.x, t.a.y, t.a.z, t.c.x, t.c.y, t.c.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+					gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 0, 1, 1)
+				);
 			}
 #endif
 			// preserve normal direction
@@ -175,7 +247,7 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 				GFC_Triangle3D mTriangle = gfc_triangle(v1.m, v3.m, v2.m);
 				col.normal = gfc_trigfc_angle_get_normal(mTriangle);
 				col.penetrationDepth = gfc_vector3d_dot_product(col.normal, v1.m);
-				GFC_Vector3D bary = toBarycentric(gfc_vector3d(0,0,0), mTriangle);
+				GFC_Vector3D bary = toBarycentric(gfc_vector3d(0, 0, 0), mTriangle);
 				col.aPosition = fromBarycentric(bary, gfc_triangle(v1.a, v3.a, v2.a));
 				col.bPosition = fromBarycentric(bary, gfc_triangle(v1.b, v3.b, v2.b));
 				return col;
@@ -185,36 +257,88 @@ Collision mpr(PhysicsBody *a, PhysicsBody *b) {
 		GFC_Vector3D newNormal = gfc_trigfc_angle_get_normal(gfc_triangle(v1.m, v3.m, v2.m));
 		SupportPoint v4 = minkowskiPoint(a, b, newNormal);
 #if DEBUG_MPR_REFINEMENT
-		if(keys[SDL_SCANCODE_1+i] || (i == 0 && !pressingAButton)) {
+		if(keys[SDL_SCANCODE_1 + i] || (i == 0 && !pressingAButton)) {
 			double r = 0.25;
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v0, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 1, 1, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v1.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v2.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 0, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v3.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 0, 1, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v4.m, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 1, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v0, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 1, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v1.m, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(1, 0, 0, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v2.m, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(0, 1, 0, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v3.m, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(0, 0, 1, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v4.m, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(1, 0, 1, 1),
+				gfc_color(1, 1, 1, 1)
+			);
 
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v1.a, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v2.a, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 0, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v3.a, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 0, 1, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v1.a, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(1, 0, 0, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v2.a, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(0, 1, 0, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v3.a, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(0, 0, 1, 1),
+				gfc_color(1, 1, 1, 1)
+			);
 
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v1.b, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 0, 0, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v2.b, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 0, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), v3.b, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 0, 1, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v1.b, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(1, 0, 0, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v2.b, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(0, 1, 0, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), v3.b, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(0, 0, 1, 1),
+				gfc_color(1, 1, 1, 1)
+			);
 
-			gf3d_draw_edge_3d(gfc_edge3d(0,0,0, v0.x, v0.y, v0.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(1,1,0,1));
-			gf3d_draw_edge_3d(gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v2.m.x, v2.m.y, v2.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,0,1));
-			gf3d_draw_edge_3d(gfc_edge3d(v2.m.x, v2.m.y, v2.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,0,1));
-			gf3d_draw_edge_3d(gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0,0,0), gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), 0.125, gfc_color(0,0,0,1));
+			gf3d_draw_edge_3d(
+				gfc_edge3d(0, 0, 0, v0.x, v0.y, v0.z), gfc_vector3d(0, 0, 0), gfc_vector3d(0, 0, 0),
+				gfc_vector3d(1, 1, 1), 0.125, gfc_color(1, 1, 0, 1)
+			);
+			gf3d_draw_edge_3d(
+				gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v2.m.x, v2.m.y, v2.m.z), gfc_vector3d(0, 0, 0),
+				gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.125, gfc_color(0, 0, 0, 1)
+			);
+			gf3d_draw_edge_3d(
+				gfc_edge3d(v2.m.x, v2.m.y, v2.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0, 0, 0),
+				gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.125, gfc_color(0, 0, 0, 1)
+			);
+			gf3d_draw_edge_3d(
+				gfc_edge3d(v1.m.x, v1.m.y, v1.m.z, v3.m.x, v3.m.y, v3.m.z), gfc_vector3d(0, 0, 0),
+				gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), 0.125, gfc_color(0, 0, 0, 1)
+			);
 
-			//GFC_Vector3D v1o; // from v1 to origin
-			//gfc_vector3d_negate(v1o, v1.m);
+			// GFC_Vector3D v1o; // from v1 to origin
+			// gfc_vector3d_negate(v1o, v1.m);
 			GFC_Triangle3D t = gfc_triangle(v1.m, v3.m, v2.m);
-			//GFC_Vector3D v1op = projectVectorOntoPlane(v1o, gfc_trigfc_angle_get_normal(t)); // a to origin, projected onto triangle
-			GFC_Vector3D bary = toBarycentric(gfc_vector3d(0,0,0), t);
+			// GFC_Vector3D v1op = projectVectorOntoPlane(v1o, gfc_trigfc_angle_get_normal(t)); // a to origin,
+			// projected onto triangle
+			GFC_Vector3D bary = toBarycentric(gfc_vector3d(0, 0, 0), t);
 			GFC_Vector3D aContact = fromBarycentric(bary, gfc_triangle(v1.a, v3.a, v2.a));
 			GFC_Vector3D bContact = fromBarycentric(bary, gfc_triangle(v1.b, v3.b, v2.b));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), aContact, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(1, 1, 0, 1), gfc_color(1, 1, 1, 1));
-			gf3d_draw_sphere_solid(gfc_sphere(0, 0, 0, r), bContact, gfc_vector3d(0,0,0), gfc_vector3d(1,1,1), gfc_color(0, 1, 1, 1), gfc_color(1, 1, 1, 1));
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), aContact, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(1, 1, 0, 1),
+				gfc_color(1, 1, 1, 1)
+			);
+			gf3d_draw_sphere_solid(
+				gfc_sphere(0, 0, 0, r), bContact, gfc_vector3d(0, 0, 0), gfc_vector3d(1, 1, 1), gfc_color(0, 1, 1, 1),
+				gfc_color(1, 1, 1, 1)
+			);
 		}
 #endif
 		if(gfc_vector3d_dot_product(newNormal, v4.m) < 0.0) {

@@ -33,13 +33,13 @@
 
 typedef struct {
 	Uint8 _inuse;
-	GFC_TextLine filename;			   /**<the name of the file used to create the sprite*/
-	Uint32 frameCount;				   /**<how many frames are loaded for this model*/
-	Texture *texture;				   /**<texture memory pointer*/
-	Uint8 framesPerLine;			   /**<how many frames are per line in the sprite
-							  sheet*/
-	Uint32 frameWidth, frameHeight;	   /*<the size, in pixels, of the
-						  individual sprite frames*/
+	GFC_TextLine filename;				/**<the name of the file used to create the sprite*/
+	Uint32 frameCount;					/**<how many frames are loaded for this model*/
+	Texture *texture;					/**<texture memory pointer*/
+	Uint8 framesPerLine;				/**<how many frames are per line in the sprite
+							   sheet*/
+	Uint32 frameWidth, frameHeight;		/*<the size, in pixels, of the
+						   individual sprite frames*/
 	double widthPercent, heightPercent; /**<size percent of the sprite frame
 						  from the texture*/
 	VkBuffer buffer;

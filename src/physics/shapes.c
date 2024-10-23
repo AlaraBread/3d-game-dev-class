@@ -1,5 +1,5 @@
-#include "gf3d_draw.h"
 #include "shapes.h"
+#include "gf3d_draw.h"
 #include "util.h"
 
 GFC_Vector3D sphereSupport(Shape *shape, GFC_Vector3D direction) {
@@ -10,7 +10,7 @@ GFC_Vector3D sphereSupport(Shape *shape, GFC_Vector3D direction) {
 
 GFC_Vector3D boxSupport(Shape *shape, GFC_Vector3D direction) {
 	GFC_Vector3D extents = shape->shape.box.extents;
-	return gfc_vector3d(-extents.x*SIGN(direction.x), -extents.y*SIGN(direction.y), -extents.z*SIGN(direction.z));
+	return gfc_vector3d(-extents.x * SIGN(direction.x), -extents.y * SIGN(direction.y), -extents.z * SIGN(direction.z));
 }
 
 GFC_Vector3D convexHullSupport(Shape *shape, GFC_Vector3D direction) {

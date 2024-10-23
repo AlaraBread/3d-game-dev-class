@@ -6,9 +6,7 @@ void lavaPhysicsProcess(PhysicsBody *self, double delta) {
 		Collision *col = &self->reportedCollisions[i];
 		if(!col->hit) continue;
 		PhysicsBody *other = col->a == self ? col->b : col->a;
-		if(other->entityType == PLAYER) {
-			resetPhysicsBody(other);
-		}
+		if(other->entityType == PLAYER) { resetPhysicsBody(other); }
 	}
 }
 
@@ -22,11 +20,7 @@ PhysicsBody *createLava(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector
 	lava->model = model;
 	lava->colorMod = gfc_color(1, 0, 0, 1);
 	calculateInertiaForBody(lava);
-	gfc_matrix4f_scale(
-		lava->visualTransform,
-		lava->visualTransform,
-		gfc_vector3d_to_float(extents)
-	);
+	gfc_matrix4f_scale(lava->visualTransform, lava->visualTransform, gfc_vector3d_to_float(extents));
 	lava->position = position;
 	lava->rotation = rotation;
 	lava->physicsProcess = lavaPhysicsProcess;

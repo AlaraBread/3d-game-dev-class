@@ -5,12 +5,13 @@
 #include "gfc_vector.h"
 
 // https://stackoverflow.com/a/3982430
-#define SWAP(x,y) do \
-   { unsigned char swap_temp[sizeof(x) == sizeof(y) ? (signed)sizeof(x) : -1]; \
-     memcpy(swap_temp,&y,sizeof(x)); \
-     memcpy(&y,&x,       sizeof(x)); \
-     memcpy(&x,swap_temp,sizeof(x)); \
-    } while(0)
+#define SWAP(x, y)                                                                                                     \
+	do {                                                                                                               \
+		unsigned char swap_temp[sizeof(x) == sizeof(y) ? (signed)sizeof(x) : -1];                                      \
+		memcpy(swap_temp, &y, sizeof(x));                                                                              \
+		memcpy(&y, &x, sizeof(x));                                                                                     \
+		memcpy(&x, swap_temp, sizeof(x));                                                                              \
+	} while(0)
 
 // positive modulus
 #define POSMOD(a, b) (((a) % (b) + (b)) % (b))
@@ -53,5 +54,6 @@ GFC_Vector3D kindaPerpendicularVector3(GFC_Vector3D v);
 void transposeMat3(GFC_Matrix3 mat);
 void scaleMat3(GFC_Matrix3 mat, GFC_Vector3D scale);
 GFC_Vector4D get_rotation_between(GFC_Vector3D u, GFC_Vector3D v);
+Bool vector3_is_finite(GFC_Vector3D v);
 
 #endif

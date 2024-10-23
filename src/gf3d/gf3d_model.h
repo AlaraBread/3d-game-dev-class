@@ -55,9 +55,9 @@ typedef struct {
 	GF3D_Material *material; // if set, use this material when sending draw calls
 	Texture *texture;
 	Texture *normalMap;
-	GFC_Box bounds;		// copied from the mesh
+	GFC_Box bounds;		 // copied from the mesh
 	GFC_Matrix4F matrix; // a delta applied right before rendering.  an
-						// adjustment loaded from file
+						 // adjustment loaded from file
 } Model;
 
 /**

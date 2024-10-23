@@ -412,7 +412,9 @@ void mat_from_parent(
 	GFC_Matrix4F out, GFC_Matrix4F parent, GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D scale
 ) {
 	GFC_Matrix4F temp;
-	gfc_matrix4f_from_vectors(temp, gfc_vector3d_to_float(position), gfc_vector3d_to_float(rotation), gfc_vector3d_to_float(scale));
+	gfc_matrix4f_from_vectors(
+		temp, gfc_vector3d_to_float(position), gfc_vector3d_to_float(rotation), gfc_vector3d_to_float(scale)
+	);
 	gfc_matrix4f_multiply(out, temp, parent);
 }
 

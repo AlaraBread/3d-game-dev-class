@@ -1,18 +1,16 @@
+#include "fan.h"
 #include "gf3d_draw.h"
 #include "gf3d_model.h"
 #include "util.h"
-#include "fan.h"
 
 void fanPhysicsProcess(PhysicsBody *self, double delta) {
-	gfc_matrix4f_rotate_y(self->visualTransform, self->visualTransform, delta*4);
+	gfc_matrix4f_rotate_y(self->visualTransform, self->visualTransform, delta * 4);
 	for(int i = 0; i < self->numReportedCollisions; i++) {
 		Collision *col = &self->reportedCollisions[i];
 		PhysicsBody *other = col->a == self ? col->b : col->a;
-		GFC_Vector3D force = gfc_vector3d(delta*self->entity.platform.movementSpeed, 0, 0);
+		GFC_Vector3D force = gfc_vector3d(delta * self->entity.platform.movementSpeed, 0, 0);
 		rotate_vector3_by_euler_vector(&force, self->rotation);
-		if(other->motionType == DYNAMIC) {
-			gfc_vector3d_add(other->linearVelocity, other->linearVelocity, force);
-		}
+		if(other->motionType == DYNAMIC) { gfc_vector3d_add(other->linearVelocity, other->linearVelocity, force); }
 	}
 }
 
@@ -23,7 +21,10 @@ PhysicsBody *createFan(GFC_Vector3D position, GFC_Vector3D direction, float spee
 	gfc_vector3d_normalize(&direction);
 	GFC_Vector3D p = position;
 	p.z = 0;
-	gf3d_draw_edge_3d(gfc_edge3d_from_vectors(gfc_vector3d(0,0,0), direction), p, gfc_vector3d(0,0,0), gfc_vector3d(10,10,10), 0.1, gfc_color(1, 1, 0, 1));
+	gf3d_draw_edge_3d(
+		gfc_edge3d_from_vectors(gfc_vector3d(0, 0, 0), direction), p, gfc_vector3d(0, 0, 0), gfc_vector3d(10, 10, 10),
+		0.1, gfc_color(1, 1, 0, 1)
+	);
 	PhysicsBody *fan = physicsCreateBody();
 	GFC_Vector3D offset = {0};
 	gfc_vector3d_scale(offset, direction, FAN_DIST);

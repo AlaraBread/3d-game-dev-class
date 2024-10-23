@@ -29,7 +29,7 @@ typedef struct {
 	GFC_Vector3DF normal;
 	GFC_Vector2DF texel;
 	// armature support:
-	GFC_Vector4DF bones;	  // bone indices
+	GFC_Vector4DF bones;   // bone indices
 	GFC_Vector4DF weights; // bone weights
 } Vertex;
 

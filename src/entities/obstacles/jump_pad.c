@@ -1,7 +1,7 @@
+#include "moments_of_inertia.h"
+#include "physics.h"
 #include "simple_logger.h"
 #include "util.h"
-#include "physics.h"
-#include "moments_of_inertia.h"
 
 PhysicsBody *createJumpPad(GFC_Vector3D position) {
 	PhysicsBody *platform = physicsCreateBody();
@@ -13,9 +13,7 @@ PhysicsBody *createJumpPad(GFC_Vector3D position) {
 	platform->shape = s;
 	platform->model = gf3d_model_load("assets/models/test_cube/test_cube.model");
 	gfc_matrix4f_scale(
-		platform->visualTransform,
-		platform->visualTransform,
-		gfc_vector3d_to_float(s.shape.box.extents)
+		platform->visualTransform, platform->visualTransform, gfc_vector3d_to_float(s.shape.box.extents)
 	);
 	platform->motionType = STATIC;
 	platform->friction = 1.0;

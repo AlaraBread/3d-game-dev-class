@@ -74,8 +74,8 @@ void gf3d_draw_cube_solid(
 	GFC_Matrix4F modelMat;
 
 	gfc_matrix4f_from_vectors(
-		modelMat, gfc_vector3df(position.x + cube.x, position.y + cube.y, position.z + cube.z), gfc_vector3d_to_float(rotation),
-		gfc_vector3df(scale.x * cube.w, scale.y * cube.h, scale.z * cube.d)
+		modelMat, gfc_vector3df(position.x + cube.x, position.y + cube.y, position.z + cube.z),
+		gfc_vector3d_to_float(rotation), gfc_vector3df(scale.x * cube.w, scale.y * cube.h, scale.z * cube.d)
 	);
 	gf3d_model_draw(gf3d_draw_manager.cube, modelMat, color, 0);
 }
@@ -87,8 +87,8 @@ void gf3d_draw_sphere_solid(
 	GFC_Matrix4F modelMat;
 
 	gfc_matrix4f_from_vectors(
-		modelMat, gfc_vector3df(position.x + sphere.x, position.y + sphere.y, position.z + sphere.z), gfc_vector3d_to_float(rotation),
-		gfc_vector3df(scale.x * sphere.r, scale.y * sphere.r, scale.z * sphere.r)
+		modelMat, gfc_vector3df(position.x + sphere.x, position.y + sphere.y, position.z + sphere.z),
+		gfc_vector3d_to_float(rotation), gfc_vector3df(scale.x * sphere.r, scale.y * sphere.r, scale.z * sphere.r)
 	);
 	gf3d_model_draw(gf3d_draw_manager.sphere, modelMat, color, 0);
 }

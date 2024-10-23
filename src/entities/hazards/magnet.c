@@ -8,23 +8,21 @@ void magnetPhysicsProcess(PhysicsBody *self, double delta) {
 		Collision *col = &self->reportedCollisions[i];
 		PhysicsBody *other = col->a == self ? col->b : col->a;
 		if(other->motionType == DYNAMIC) {
-			if(other->entityType == PLAYER && other->entity.player.timeSinceJump < 0.25) {
-				continue;
-			}
+			if(other->entityType == PLAYER && other->entity.player.timeSinceJump < 0.25) { continue; }
 			GFC_Vector3D force;
 			gfc_vector3d_sub(force, self->position, other->position);
 			double dist = gfc_vector3d_magnitude(force);
-			gfc_vector3d_scale(force, force, self->entity.platform.movementSpeed*(1.0/(dist)));
-			double mag = SDL_clamp(delta*self->entity.platform.movementSpeed*(1.0/(dist)), -MAX_MAGNET*delta, MAX_MAGNET*delta);
+			gfc_vector3d_scale(force, force, self->entity.platform.movementSpeed * (1.0 / (dist)));
+			double mag = SDL_clamp(
+				delta * self->entity.platform.movementSpeed * (1.0 / (dist)), -MAX_MAGNET * delta, MAX_MAGNET * delta
+			);
 			gfc_vector3d_scale(force, force, mag);
 			gfc_vector3d_add(other->linearVelocity, other->linearVelocity, force);
 		}
 	}
 }
 
-void magnetFree(PhysicsBody *self) {
-	physicsFreeBody(self->entity.platform.magnetCenter);
-}
+void magnetFree(PhysicsBody *self) { physicsFreeBody(self->entity.platform.magnetCenter); }
 
 PhysicsBody *createMagnet(GFC_Vector3D position, double strength) {
 	PhysicsBody *center = physicsCreateBody();

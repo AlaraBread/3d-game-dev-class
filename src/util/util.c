@@ -127,18 +127,18 @@ GFC_Vector4D compose_axis_angles(GFC_Vector4D a, GFC_Vector4D b) {
 }
 
 void quatToRotationMatrix(GFC_Matrix3 out, GFC_Vector4D q) {
-	double xx = q.x*q.x;
-	double yy = q.y*q.y;
-	double zz = q.z*q.z;
-	out[0][0] = 1.0 - 2.0*yy - 2.0*zz;
-	out[0][1] = 2.0*q.x*q.y - 2.0*q.w*q.z;
-	out[0][2] = 2.0*q.x*q.z + 2.0*q.w*q.y;
-	out[1][0] = 2.0*q.x*q.y + 2.0*q.w*q.z;
-	out[1][1] = 1.0 - 2.0*xx - 2.0*zz;
-	out[1][2] = 2.0*q.y*q.z - 2.0*q.w*q.x;
-	out[2][0] = 2.0*q.x*q.z - 2.0*q.w*q.y;
-	out[2][1] = 2.0*q.y*q.z + 2.0*q.w*q.x;
-	out[2][2] = 1.0 - 2.0*xx - 2.0*yy;
+	double xx = q.x * q.x;
+	double yy = q.y * q.y;
+	double zz = q.z * q.z;
+	out[0][0] = 1.0 - 2.0 * yy - 2.0 * zz;
+	out[0][1] = 2.0 * q.x * q.y - 2.0 * q.w * q.z;
+	out[0][2] = 2.0 * q.x * q.z + 2.0 * q.w * q.y;
+	out[1][0] = 2.0 * q.x * q.y + 2.0 * q.w * q.z;
+	out[1][1] = 1.0 - 2.0 * xx - 2.0 * zz;
+	out[1][2] = 2.0 * q.y * q.z - 2.0 * q.w * q.x;
+	out[2][0] = 2.0 * q.x * q.z - 2.0 * q.w * q.y;
+	out[2][1] = 2.0 * q.y * q.z + 2.0 * q.w * q.x;
+	out[2][2] = 1.0 - 2.0 * xx - 2.0 * yy;
 }
 
 GFC_Vector3D triangleCenter(GFC_Triangle3D triangle) {
@@ -255,7 +255,7 @@ GFC_Vector4D get_rotation_between(GFC_Vector3D u, GFC_Vector3D v) {
 
 	// Unfortunately, we have to check for when u == -v, as u + v
 	// in this case will be (0, 0, 0), which cannot be normalized.
-	if (gfc_vector3d_dot_product(u, v) == -1) {
+	if(gfc_vector3d_dot_product(u, v) == -1) {
 		// 180 degree rotation around any orthogonal vector
 		GFC_Vector4D quat;
 		u = perpendicularVector3(u);
@@ -273,3 +273,5 @@ GFC_Vector4D get_rotation_between(GFC_Vector3D u, GFC_Vector3D v) {
 	gfc_vector3d_copy(quat, half);
 	return quat;
 }
+
+Bool vector3_is_finite(GFC_Vector3D v) { return isfinite(v.x) && isfinite(v.y) && isfinite(v.z); }

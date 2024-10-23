@@ -254,11 +254,15 @@ void gf3d_obj_move(ObjData *obj, GFC_Vector3D offset, GFC_Vector3D rotation) {
 	if(!obj) return;
 	for(i = 0; i < obj->face_vert_count; i++) {
 		// update the vertices
-		gfc_matrix4f_from_vectors(matrix, gfc_vector3d_to_float(offset), gfc_vector3d_to_float(rotation), gfc_vector3df(1, 1, 1)); // TODO add the scale too
+		gfc_matrix4f_from_vectors(
+			matrix, gfc_vector3d_to_float(offset), gfc_vector3d_to_float(rotation), gfc_vector3df(1, 1, 1)
+		); // TODO add the scale too
 		gfc_matrix4f_v_multiply(&outV, gfc_vector3dfw(obj->faceVertices[i].vertex, 1.0), matrix);
 		gfc_vector3d_copy(obj->faceVertices[i].vertex, outV);
 		// update the normal, without the translation
-		gfc_matrix4f_from_vectors(matrix, gfc_vector3df(0, 0, 0), gfc_vector3d_to_float(rotation), gfc_vector3df(1, 1, 1));
+		gfc_matrix4f_from_vectors(
+			matrix, gfc_vector3df(0, 0, 0), gfc_vector3d_to_float(rotation), gfc_vector3df(1, 1, 1)
+		);
 		gfc_matrix4f_v_multiply(&outV, gfc_vector3dfw(obj->faceVertices[i].normal, 1.0), matrix);
 		gfc_vector3d_copy(obj->faceVertices[i].normal, outV);
 	}
@@ -395,13 +399,17 @@ ObjData *
 	for(i = 0; i < ObjB->face_vert_count; i++) {
 		// update the vertices
 		memcpy(&ObjNew->faceVertices[i + ObjA->face_vert_count], &ObjB->faceVertices[i], sizeof(Vertex));
-		gfc_matrix4f_from_vectors(matrix, gfc_vector3d_to_float(offsetB), gfc_vector3d_to_float(rotation), gfc_vector3df(1, 1, 1));
+		gfc_matrix4f_from_vectors(
+			matrix, gfc_vector3d_to_float(offsetB), gfc_vector3d_to_float(rotation), gfc_vector3df(1, 1, 1)
+		);
 		gfc_matrix4f_v_multiply(
 			&outV, gfc_vector3dfw(ObjNew->faceVertices[i + ObjA->face_vert_count].vertex, 1.0), matrix
 		);
 		gfc_vector3d_copy(ObjNew->faceVertices[i + ObjA->face_vert_count].vertex, outV);
 		// update the normal, without the translation
-		gfc_matrix4f_from_vectors(matrix, gfc_vector3df(0, 0, 0), gfc_vector3d_to_float(rotation), gfc_vector3df(1, 1, 1));
+		gfc_matrix4f_from_vectors(
+			matrix, gfc_vector3df(0, 0, 0), gfc_vector3d_to_float(rotation), gfc_vector3df(1, 1, 1)
+		);
 		gfc_matrix4f_v_multiply(
 			&outV, gfc_vector3dfw(ObjNew->faceVertices[i + ObjA->face_vert_count].normal, 1.0), matrix
 		);

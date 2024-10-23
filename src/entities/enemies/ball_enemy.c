@@ -10,8 +10,8 @@ void ballEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 	dir.z = 0;
 	gfc_vector3d_normalize(&dir);
 	GFC_Vector3D left = dir;
-	gfc_vector3d_rotate_about_z(&left, M_PI/2.0);
-	gfc_vector3d_scale(left, left, -delta*40);
+	gfc_vector3d_rotate_about_z(&left, M_PI / 2.0);
+	gfc_vector3d_scale(left, left, -delta * 40);
 	gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
 	GFC_Vector3D angularDampVector;
 	gfc_vector3d_scale(angularDampVector, self->angularVelocity, delta * 2);

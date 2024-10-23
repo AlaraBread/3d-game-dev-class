@@ -1,5 +1,5 @@
-#include "gf3d_model.h"
 #include "ice.h"
+#include "gf3d_model.h"
 #include "moments_of_inertia.h"
 
 PhysicsBody *createIce(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D extents) {
@@ -14,11 +14,7 @@ PhysicsBody *createIce(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3
 	ice->bounce = 0.8;
 	ice->motionType = STATIC;
 	calculateInertiaForBody(ice);
-	gfc_matrix4f_scale(
-		ice->visualTransform,
-		ice->visualTransform,
-		gfc_vector3d_to_float(extents)
-	);
+	gfc_matrix4f_scale(ice->visualTransform, ice->visualTransform, gfc_vector3d_to_float(extents));
 	ice->position = position;
 	ice->rotation = rotation;
 	ice->colorMod = gfc_color(0.2, 0.2, 1, 1);

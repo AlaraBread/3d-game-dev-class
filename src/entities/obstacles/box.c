@@ -1,5 +1,5 @@
-#include "gf3d_model.h"
 #include "box.h"
+#include "gf3d_model.h"
 #include "moments_of_inertia.h"
 
 PhysicsBody *createBox() {
@@ -15,10 +15,6 @@ PhysicsBody *createBox() {
 	box->bounce = 0;
 	box->motionType = DYNAMIC;
 	calculateInertiaForBody(box);
-	gfc_matrix4f_scale(
-		box->visualTransform,
-		box->visualTransform,
-		gfc_vector3d_to_float(boxShape.shape.box.extents)
-	);
+	gfc_matrix4f_scale(box->visualTransform, box->visualTransform, gfc_vector3d_to_float(boxShape.shape.box.extents));
 	return box;
 }

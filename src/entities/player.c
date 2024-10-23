@@ -1,12 +1,12 @@
+#include "player.h"
+#include "collision.h"
+#include "gf3d_camera.h"
+#include "gf3d_draw.h"
+#include "gfc_input.h"
+#include "moments_of_inertia.h"
+#include "physics.h"
 #include "simple_logger.h"
 #include "util.h"
-#include "collision.h"
-#include "physics.h"
-#include "player.h"
-#include "gf3d_camera.h"
-#include "moments_of_inertia.h"
-#include "gfc_input.h"
-#include "gf3d_draw.h"
 
 #define PLAYER_RADIUS 4
 
@@ -52,20 +52,21 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 			self->entity.player.coyoteTimer = 0;
 		} else {
 			// save collision for coyote time
-			memcpy(self->entity.player.coyoteCollisions, self->reportedCollisions, sizeof(Collision)*MAX_REPORTED_COLLISIONS);
+			memcpy(
+				self->entity.player.coyoteCollisions, self->reportedCollisions,
+				sizeof(Collision) * MAX_REPORTED_COLLISIONS
+			);
 			self->entity.player.coyoteTimer = COYOTE_TIME;
 		}
 	}
 	// ball movement
-	double speed = delta*ANGULAR_SPEED*self->entity.player.speedMult;
+	double speed = delta * ANGULAR_SPEED * self->entity.player.speedMult;
 	GFC_Vector3D forward = gfc_vector3d(-speed, 0, 0);
 	GFC_Vector3D left = gfc_vector3d(0, -speed, 0);
 	gfc_vector3d_rotate_about_z(&forward, self->entity.player.yaw);
 	gfc_vector3d_rotate_about_z(&left, self->entity.player.yaw);
-	double airControlAmount = AIR_CONTROL*self->entity.player.speedMult;
-	if(self->entity.player.coyoteTimer > 0.01) {
-		airControlAmount = 0;
-	}
+	double airControlAmount = AIR_CONTROL * self->entity.player.speedMult;
+	if(self->entity.player.coyoteTimer > 0.01) { airControlAmount = 0; }
 	GFC_Vector3D airControl;
 	if(gfc_input_command_held("forward")) {
 		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
@@ -93,17 +94,16 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 		calculateInertiaForBody(self);
 		gfc_matrix4f_identity(self->visualTransform);
 		gfc_matrix4f_scale(
-			self->visualTransform,
-			self->visualTransform,
-			gfc_vector3df(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS)
+			self->visualTransform, self->visualTransform, gfc_vector3df(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS)
 		);
 	}
 }
 
 void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]) {
 	int numCollisions = 0;
-	while(numCollisions < MAX_REPORTED_COLLISIONS && cols[numCollisions].hit) numCollisions++;
-	double jumpAmount = self->entity.player.jumpMult*JUMP_IMPULSE/numCollisions;
+	while(numCollisions < MAX_REPORTED_COLLISIONS && cols[numCollisions].hit)
+		numCollisions++;
+	double jumpAmount = self->entity.player.jumpMult * JUMP_IMPULSE / numCollisions;
 	self->entity.player.timeSinceJump = 0;
 	for(int i = 0; i < numCollisions; i++) {
 		Collision *col = &cols[i];
@@ -122,15 +122,13 @@ void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]) {
 void playerFrameProcess(PhysicsBody *self, double delta) {
 	// camera movement
 	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
-	self->entity.player.pitch -= mouseMotion.y*0.01;
-	self->entity.player.yaw -= mouseMotion.x*0.01;
-	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI/2.0+0.01, M_PI/2.0-0.01);
+	self->entity.player.pitch -= mouseMotion.y * 0.01;
+	self->entity.player.yaw -= mouseMotion.x * 0.01;
+	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI / 2.0 + 0.01, M_PI / 2.0 - 0.01);
 	self->entity.player.yaw = wrapMinMax(self->entity.player.yaw, -M_PI, M_PI);
 	// position camera
-	double cameraDist = self->shape.shape.sphere.radius*CAMERA_DIST_MULT;
-	if(self->entity.player.isCar) {
-		cameraDist = PLAYER_RADIUS*CAMERA_DIST_MULT;
-	}
+	double cameraDist = self->shape.shape.sphere.radius * CAMERA_DIST_MULT;
+	if(self->entity.player.isCar) { cameraDist = PLAYER_RADIUS * CAMERA_DIST_MULT; }
 	GFC_Vector3D cameraPos = gfc_vector3d(cameraDist, 0, 0);
 	gfc_vector3d_rotate_about_y(&cameraPos, self->entity.player.pitch);
 	gfc_vector3d_rotate_about_z(&cameraPos, self->entity.player.yaw);
@@ -158,8 +156,7 @@ PhysicsBody *createPlayer() {
 	Model *sphereModel = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
 	player->model = sphereModel;
 	gfc_matrix4f_scale(
-		player->visualTransform,
-		player->visualTransform,
+		player->visualTransform, player->visualTransform,
 		gfc_vector3df(s.shape.sphere.radius, s.shape.sphere.radius, s.shape.sphere.radius)
 	);
 	player->position = gfc_vector3d(0, 0, 10);

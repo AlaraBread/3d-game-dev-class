@@ -1,9 +1,9 @@
 #include "physics.h"
 #include "collision.h"
 #include "gf3d_draw.h"
+#include "raycast.h"
 #include "simple_logger.h"
 #include "util.h"
-#include "raycast.h"
 
 static struct {
 	int maxPhysicsBodies;
@@ -59,7 +59,7 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 
 void physicsUpdate(double delta);
 
-#define FIXED_TIMESTEP (1.0/120.0)
+#define FIXED_TIMESTEP (1.0 / 120.0)
 #define MAX_TIMESTEPS_PER_FRAME 5
 void physicsFrame(double delta) {
 	static double physicsDelta = 0;
@@ -91,7 +91,7 @@ void physicsUpdate(double delta) {
 		PhysicsBody *body = &physics.physicsBodies[i];
 		if(!body->inuse) continue;
 		body->numReportedCollisions = 0;
-		memset(body->reportedCollisions, 0, sizeof(Collision)*MAX_REPORTED_COLLISIONS);
+		memset(body->reportedCollisions, 0, sizeof(Collision) * MAX_REPORTED_COLLISIONS);
 	}
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];
@@ -116,7 +116,7 @@ void physicsUpdate(double delta) {
 		}
 		if(body->motionType == DYNAMIC) {
 			// gravity
-			body->linearVelocity.z -= delta*100;
+			body->linearVelocity.z -= delta * 100;
 			// linear damp
 			GFC_Vector3D linearDampVector;
 			gfc_vector3d_scale(linearDampVector, body->linearVelocity, delta * 0.1);
@@ -135,7 +135,8 @@ void physicsUpdate(double delta) {
 		}
 		wrap_euler_vector(&body->rotation);
 		// world boundary
-		if(body->motionType == DYNAMIC && body->position.z < -200) {
+		if((body->motionType == DYNAMIC && body->position.z < -200) || !vector3_is_finite(body->position) ||
+		   !vector3_is_finite(body->rotation)) {
 			resetPhysicsBody(body);
 		}
 		physicsBodyUpdateInertiaTensor(body);
@@ -165,10 +166,7 @@ void drawPhysicsObjects() {
 			euler_vector_to_quat(&quat, body->rotation);
 			GFC_Matrix4F matrix;
 			gfc_matrix4f_from_vectors_q(
-				matrix,
-				gfc_vector3d_to_float(body->position),
-				gfc_vector4d_to_float(quat),
-				gfc_vector3df(1, 1, 1)
+				matrix, gfc_vector3d_to_float(body->position), gfc_vector4d_to_float(quat), gfc_vector3df(1, 1, 1)
 			);
 			gfc_matrix4f_multiply(matrix, body->visualTransform, matrix);
 			gf3d_model_draw(body->model, matrix, body->colorMod, 0);
@@ -177,7 +175,7 @@ void drawPhysicsObjects() {
 }
 
 void physicsBodyUpdateInertiaTensor(PhysicsBody *body) {
-	//https://github.com/godotengine/godot/blob/master/modules/godot_physics_3d/godot_body_3d.cpp#L47
+	// https://github.com/godotengine/godot/blob/master/modules/godot_physics_3d/godot_body_3d.cpp#L47
 	GFC_Vector4D rotation;
 	euler_vector_to_quat(&rotation, body->rotation);
 
@@ -188,9 +186,9 @@ void physicsBodyUpdateInertiaTensor(PhysicsBody *body) {
 	transposeMat3(principalAxesTransposed);
 
 	GFC_Vector3D invInertia;
-	invInertia.x = 1.0/body->inertia.x;
-	invInertia.y = 1.0/body->inertia.y;
-	invInertia.z = 1.0/body->inertia.z;
+	invInertia.x = 1.0 / body->inertia.x;
+	invInertia.y = 1.0 / body->inertia.y;
+	invInertia.z = 1.0 / body->inertia.z;
 
 	GFC_Matrix3 diag;
 	gfc_matrix3_identity(diag);
@@ -228,9 +226,7 @@ GFC_Vector3D velocityAtPoint(PhysicsBody *body, GFC_Vector3D point) {
 // adapted from the 2d version that i wrote for 2d game programming
 // https://github.com/AlaraBread/2d-game-dev-class/blob/main/src/entities/physics.c#L402
 void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
-	if(a->motionType == TRIGGER || b->motionType == TRIGGER) {
-		return;
-	}
+	if(a->motionType == TRIGGER || b->motionType == TRIGGER) { return; }
 	// react to collision
 	GFC_Vector3D ra;
 	GFC_Vector3D aCom = physicsBodyLocalToGlobal(a, a->centerOfMass);
@@ -247,11 +243,10 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 
 	gfc_vector3d_cross_product(&aInertia, aInertia, ra);
 	gfc_vector3d_cross_product(&bInertia, bInertia, rb);
-	double normalMass = 1.0/(1.0/a->mass + 1.0/b->mass +
-			gfc_vector3d_dot_product(col.normal, aInertia) +
-			gfc_vector3d_dot_product(col.normal, bInertia));
+	double normalMass = 1.0 / (1.0 / a->mass + 1.0 / b->mass + gfc_vector3d_dot_product(col.normal, aInertia) +
+							   gfc_vector3d_dot_product(col.normal, bInertia));
 	// normal impulse
-	double bounce = SDL_clamp(a->bounce*b->bounce, 0.0, 1.0);
+	double bounce = SDL_clamp(a->bounce * b->bounce, 0.0, 1.0);
 	GFC_Vector3D av = velocityAtPoint(a, col.aPosition);
 	GFC_Vector3D bv = velocityAtPoint(b, col.bPosition);
 	GFC_Vector3D dv;
@@ -261,10 +256,10 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	double normalImpulseMagnitude = gfc_vector3d_magnitude(normalImpulse);
 	// tangential impulse
 	// https://github.com/godotengine/godot/blob/master/modules/godot_physics_3d/godot_body_pair_3d.cpp#L566
-	double friction = SDL_clamp(a->friction*b->friction, 0.0, 1.0);
+	double friction = SDL_clamp(a->friction * b->friction, 0.0, 1.0);
 	GFC_Vector3D tv = projectVectorOntoPlane(dv, col.normal);
 	double tvl = gfc_vector3d_magnitude(tv);
-	gfc_vector3d_scale(tv, tv, 1.0/tvl);
+	gfc_vector3d_scale(tv, tv, 1.0 / tvl);
 	GFC_Vector3D raxtv;
 	gfc_vector3d_cross_product(&raxtv, ra, tv);
 	GFC_Vector3D rbxtv;
@@ -277,43 +272,29 @@ void reactToCollision(Collision col, PhysicsBody *a, PhysicsBody *b) {
 	gfc_vector3d_cross_product(&temp2, temp2, rb);
 	GFC_Vector3D temp3;
 	gfc_vector3d_add(temp3, temp1, temp2);
-	double t = tvl / (1.0/a->mass + 1.0/b->mass + gfc_vector3d_dot_product(tv, temp3));
-	t = SDL_clamp(t, -friction*normalImpulseMagnitude, friction*normalImpulseMagnitude);
+	double t = tvl / (1.0 / a->mass + 1.0 / b->mass + gfc_vector3d_dot_product(tv, temp3));
+	t = SDL_clamp(t, -friction * normalImpulseMagnitude, friction * normalImpulseMagnitude);
 	GFC_Vector3D tangentImpulse;
 	gfc_vector3d_scale(tangentImpulse, tv, t);
 	// total impulse
 	GFC_Vector3D impulse;
 	gfc_vector3d_add(impulse, normalImpulse, tangentImpulse);
-	if(VEC3ISNAN(impulse)) {
-		return;
-	}
-	if(a->motionType == DYNAMIC) {
-		applyImpulse(a, impulse, col.aPosition);
-	}
+	if(VEC3ISNAN(impulse)) { return; }
+	if(a->motionType == DYNAMIC) { applyImpulse(a, impulse, col.aPosition); }
 	gfc_vector3d_negate(impulse, impulse);
-	if(b->motionType == DYNAMIC) {
-		applyImpulse(b, impulse, col.bPosition);
-	}
+	if(b->motionType == DYNAMIC) { applyImpulse(b, impulse, col.bPosition); }
 	// resolve intersection
 	GFC_Vector3D resolveVector;
 	double depth = col.penetrationDepth;
-	if(a->motionType != DYNAMIC || b->motionType != DYNAMIC) {
-		depth *= 2.0;
-	}
+	if(a->motionType != DYNAMIC || b->motionType != DYNAMIC) { depth *= 2.0; }
 	gfc_vector3d_scale(resolveVector, col.normal, depth);
-	if(a->motionType == DYNAMIC) {
-		gfc_vector3d_add(a->position, a->position, resolveVector);
-	}
+	if(a->motionType == DYNAMIC) { gfc_vector3d_add(a->position, a->position, resolveVector); }
 	gfc_vector3d_negate(resolveVector, resolveVector);
-	if(b->motionType == DYNAMIC) {
-		gfc_vector3d_add(b->position, b->position, resolveVector);
-	}
+	if(b->motionType == DYNAMIC) { gfc_vector3d_add(b->position, b->position, resolveVector); }
 }
 
 void applyImpulse(PhysicsBody *body, GFC_Vector3D impulse, GFC_Vector3D point) {
-	if(body->motionType != DYNAMIC) {
-		return;
-	}
+	if(body->motionType != DYNAMIC) { return; }
 	GFC_Vector3D linearImpulse;
 	gfc_vector3d_scale(linearImpulse, impulse, 1.0 / body->mass);
 	gfc_vector3d_add(body->linearVelocity, body->linearVelocity, linearImpulse);

@@ -1,9 +1,9 @@
-#include "simple_logger.h"
 #include "powerup.h"
-#include "util.h"
 #include "car.h"
-#include "player.h"
 #include "moments_of_inertia.h"
+#include "player.h"
+#include "simple_logger.h"
+#include "util.h"
 
 void powerupFrameProcess(PhysicsBody *self, double delta) {
 	self->entity.powerup.time += delta;
@@ -14,7 +14,7 @@ void powerupFrameProcess(PhysicsBody *self, double delta) {
 	GFC_Vector4D q;
 	euler_vector_to_quat(&q, self->rotation);
 	if(self->entity.powerup.respawnTimer < 0.0) {
-		gfc_matrix4f_make_translation(self->visualTransform, gfc_vector3df(0, 0, 2*sin(self->entity.powerup.time)));
+		gfc_matrix4f_make_translation(self->visualTransform, gfc_vector3df(0, 0, 2 * sin(self->entity.powerup.time)));
 		gfc_matrix4f_scale(self->visualTransform, self->visualTransform, gfc_vector3df(2, 2, 2));
 	} else {
 		gfc_matrix4f_zero(self->visualTransform);
@@ -22,14 +22,12 @@ void powerupFrameProcess(PhysicsBody *self, double delta) {
 }
 
 Bool pickupPowerup(PhysicsBody *self, PhysicsBody *player) {
-	if(player->entity.player.powerupTimer > 0.0) {
-		return false;
-	}
+	if(player->entity.player.powerupTimer > 0.0) { return false; }
 	switch(self->entity.powerup.type) {
 		case CAR: {
 			PhysicsBody *newPlayer = createCarPlayer();
 			newPlayer->position = player->position;
-			newPlayer->rotation = gfc_vector3d(0, 0, M_PI+player->entity.player.yaw);
+			newPlayer->rotation = gfc_vector3d(0, 0, M_PI + player->entity.player.yaw);
 			newPlayer->linearVelocity = player->linearVelocity;
 			newPlayer->entity.player.pitch = player->entity.player.pitch;
 			newPlayer->entity.player.yaw = player->entity.player.yaw;
@@ -43,9 +41,11 @@ Bool pickupPowerup(PhysicsBody *self, PhysicsBody *player) {
 			calculateInertiaForBody(player);
 			gfc_matrix4f_identity(player->visualTransform);
 			gfc_matrix4f_scale(
-				player->visualTransform,
-				player->visualTransform,
-				gfc_vector3df(player->shape.shape.sphere.radius, player->shape.shape.sphere.radius, player->shape.shape.sphere.radius)
+				player->visualTransform, player->visualTransform,
+				gfc_vector3df(
+					player->shape.shape.sphere.radius, player->shape.shape.sphere.radius,
+					player->shape.shape.sphere.radius
+				)
 			);
 			self->entity.powerup.respawnTimer = 15;
 		} break;
@@ -74,9 +74,7 @@ void powerupPhysicsProcess(PhysicsBody *self, double delta) {
 		Collision *col = &self->reportedCollisions[i];
 		if(!col->hit) break;
 		PhysicsBody *other = self == col->a ? col->b : col->a;
-		if(other->entityType == PLAYER && pickupPowerup(self, other)) {
-			break;
-		}
+		if(other->entityType == PLAYER && pickupPowerup(self, other)) { break; }
 	}
 }
 

@@ -1,12 +1,12 @@
 #ifndef __ALARA_PHYSICS__
 #define __ALARA_PHYSICS__
 
+#include "collision.h"
 #include "gf3d_model.h"
 #include "gfc_matrix.h"
 #include "gfc_vector.h"
-#include "collision.h"
-#include "raycast.h"
 #include "powerup.h"
+#include "raycast.h"
 
 typedef enum ShapeType_e {
 	SPHERE,
@@ -99,6 +99,9 @@ struct PhysicsBody_s {
 			float respawnTimer;
 			PowerupType type;
 		} powerup;
+		struct {
+			double rightingTimer;
+		} enemy;
 	} entity;
 };
 
