@@ -16,7 +16,7 @@ void cylinderEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 	rotate_vector3_by_euler_vector(&right, self->rotation);
 	double upness = gfc_vector3d_dot_product(up, gfc_vector3d(0, 0, 1));
 	self->entity.enemy.rightingTimer -= delta;
-	if((self->reportedCollisions[0].hit && upness < 0.8) || self->entity.enemy.rightingTimer > 0.0) {
+	if((self->reportedCollisions[0].hit && upness < 0.55) || self->entity.enemy.rightingTimer > 0.0) {
 		if(self->entity.enemy.rightingTimer <= 0.0) { self->entity.enemy.rightingTimer = 0.5; }
 		GFC_Vector3D righting;
 		gfc_vector3d_cross_product(&righting, right, gfc_vector3d(0, 0, 1));
@@ -67,7 +67,7 @@ void cylinderEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, move);
 	}
 	GFC_Vector3D angularDampVector;
-	gfc_vector3d_scale(angularDampVector, self->angularVelocity, delta * 2);
+	gfc_vector3d_scale(angularDampVector, self->angularVelocity, delta * 8);
 	gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, angularDampVector);
 }
 
