@@ -22,7 +22,8 @@ void powerupFrameProcess(PhysicsBody *self, double delta) {
 }
 
 Bool pickupPowerup(PhysicsBody *self, PhysicsBody *player) {
-	if(player->entity.player.powerupTimer > 0.0) { return false; }
+	if(player->entity.player.powerupTimer > 0.0) return false;
+	if(player->entity.player.done) return false;
 	switch(self->entity.powerup.type) {
 		case CAR: {
 			PhysicsBody *newPlayer = createCarPlayer();

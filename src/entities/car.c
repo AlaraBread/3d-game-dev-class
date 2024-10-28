@@ -132,7 +132,7 @@ void carPhysicsProcess(PhysicsBody *self, double delta) {
 	if(onGround && jump) { self->entity.player.timeSinceJump = 0; }
 	self->entity.player.timeSinceJump += delta;
 	self->entity.player.powerupTimer -= delta;
-	if(self->entity.player.powerupTimer <= 0.0) {
+	if(!self->entity.player.done && self->entity.player.powerupTimer <= 0.0) {
 		PhysicsBody *newPlayer = createPlayer();
 		newPlayer->position = self->position;
 		newPlayer->rotation = self->rotation;

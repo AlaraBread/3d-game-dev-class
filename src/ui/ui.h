@@ -20,10 +20,9 @@ typedef struct UIElement_S {
 	int index;
 	int group;
 	Bool new;
-	unsigned int timer;
-	unsigned int totalTimer;
-	void (*think)(struct UIElement_S *self);
-	void (*update)(struct UIElement_S *self);
+	double timer;
+	void (*think)(struct UIElement_S *self, double);
+	void (*update)(struct UIElement_S *self, double);
 	void (*draw)(struct UIElement_S *self);
 	void (*cleanup)(struct UIElement_S *self);
 	void (*mouseEnter)(struct UIElement_S *self);
@@ -38,7 +37,9 @@ UIElement *newUIElement();
 void freeUIElement(UIElement *ent);
 void clearUI();
 void clearUIGroup(int group);
-void uiFrame();
+void uiFrame(double delta);
+
+void drawTextRect(UIElement *ent);
 
 UIElement *createLabel(GFC_Vector2D position, GFC_Vector2D size);
 UIElement *createButton(GFC_Vector2D position, GFC_Vector2D size, const char *text);

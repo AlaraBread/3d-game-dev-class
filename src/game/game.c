@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
 		gf3d_model_draw_sky(sky, skyMat, GFC_COLOR_WHITE);
 		render_outlines();
 		// 2D draws
-		uiFrame();
+		uiFrame(delta);
 		gf3d_vgraphics_render_end();
 		slog_sync();
 		if(gfc_input_command_down("exit")) done = true; // exit condition

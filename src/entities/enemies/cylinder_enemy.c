@@ -74,6 +74,8 @@ void cylinderEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 	gfc_vector3d_sub(self->linearVelocity, self->linearVelocity, linearDampVector);
 }
 
+extern int g_numEnemies;
+extern int g_maxEnemies;
 PhysicsBody *createCylinderEnemy(GFC_Vector3D position) {
 	PhysicsBody *enemy = physicsCreateBody();
 	enemy->position = position;
@@ -92,5 +94,8 @@ PhysicsBody *createCylinderEnemy(GFC_Vector3D position) {
 	calculateInertiaForBody(enemy);
 	enemy->colorMod = gfc_color(1, 0, 0, 1);
 	enemy->physicsProcess = cylinderEnemyPhysicsProcess;
+	g_numEnemies++;
+	g_maxEnemies++;
+	enemy->free = freeEnemy;
 	return enemy;
 }

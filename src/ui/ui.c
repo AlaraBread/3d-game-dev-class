@@ -106,17 +106,17 @@ void processMouseEventsUIElement(UIElement *element) {
 	}
 }
 
-void uiFrame() {
+void uiFrame(double delta) {
 	for(int i = 0; i < g_maxUIElements; i++) {
 		UIElement *ent = &g_UIElements[i];
 		if(!ent->inuse) { continue; }
 		processMouseEventsUIElement(ent);
-		if(ent->think) { ent->think(ent); }
+		if(ent->think) { ent->think(ent, delta); }
 	}
 	for(int i = 0; i < g_maxUIElements; i++) {
 		UIElement *ent = &g_UIElements[i];
 		if(!ent->inuse) { continue; }
-		if(ent->update) { ent->update(ent); }
+		if(ent->update) { ent->update(ent, delta); }
 		if(!ent->inuse) { continue; }
 		if(ent->draw) { ent->draw(ent); }
 	}

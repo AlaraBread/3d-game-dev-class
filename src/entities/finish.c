@@ -1,12 +1,15 @@
+#include "main_menu.h"
 #include "gf2d_mouse.h"
 #include "end_menu.h"
 #include "finish.h"
 
+extern GameMode g_gamemode;
+extern int g_numEnemies;
 void finishPhysicsProcess(PhysicsBody *finish, double delta) {
 	for(int i = 0; i < finish->numReportedCollisions; i++) {
 		Collision *col = &finish->reportedCollisions[i];
 		PhysicsBody *other = finish == col->a ? col->b : col->a;
-		if(other->entityType == PLAYER) {
+		if(other->entityType == PLAYER && !other->entity.player.done && !(g_gamemode == COMPLETION && g_numEnemies > 0)) {
 			other->entity.player.done = true;
 			gf2d_mouse_set_captured(false);
 			setTimeScale(0.1);

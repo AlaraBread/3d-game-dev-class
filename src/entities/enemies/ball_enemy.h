@@ -4,5 +4,6 @@
 #include "physics.h"
 
 PhysicsBody *createBallEnemy(GFC_Vector3D position);
+void freeEnemy(PhysicsBody *enemy);
 
 #endif
