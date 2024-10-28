@@ -131,4 +131,6 @@ int gf2d_mouse_in_rect(GFC_Rect r);
  */
 void gf2d_mouse_set_action(const char *action);
 
+void gf2d_mouse_set_captured(Bool captured);
+
 #endif

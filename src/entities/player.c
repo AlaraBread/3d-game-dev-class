@@ -7,6 +7,7 @@
 #include "physics.h"
 #include "simple_logger.h"
 #include "util.h"
+#include "gf2d_mouse.h"
 
 #define PLAYER_RADIUS 4
 
@@ -121,11 +122,13 @@ void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]) {
 
 void playerFrameProcess(PhysicsBody *self, double delta) {
 	// camera movement
-	GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
-	self->entity.player.pitch -= mouseMotion.y * 0.01;
-	self->entity.player.yaw -= mouseMotion.x * 0.01;
-	self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI / 2.0 + 0.01, M_PI / 2.0 - 0.01);
-	self->entity.player.yaw = wrapMinMax(self->entity.player.yaw, -M_PI, M_PI);
+	if(!self->entity.player.done) {
+		GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
+		self->entity.player.pitch -= mouseMotion.y * 0.01;
+		self->entity.player.yaw -= mouseMotion.x * 0.01;
+		self->entity.player.pitch = SDL_clamp(self->entity.player.pitch, -M_PI / 2.0 + 0.01, M_PI / 2.0 - 0.01);
+		self->entity.player.yaw = wrapMinMax(self->entity.player.yaw, -M_PI, M_PI);
+	}
 	// position camera
 	double cameraDist = self->shape.shape.sphere.radius * CAMERA_DIST_MULT;
 	if(self->entity.player.isCar) { cameraDist = PLAYER_RADIUS * CAMERA_DIST_MULT; }
@@ -167,7 +170,6 @@ PhysicsBody *createPlayer() {
 	calculateInertiaForBody(player);
 	player->physicsProcess = playerPhysicsProcess;
 	player->frameProcess = playerFrameProcess;
-	SDL_SetRelativeMouseMode(true);
 	player->entityType = PLAYER;
 	player->entity.player.jumpMult = player->entity.player.speedMult = 1.0;
 	g_player = player;

@@ -206,7 +206,7 @@ GFC_ActionList *gfc_action_list_parse(SJson *actionList)
     return al;
 }
 
-GFC_Action *gfc_action_list_get_action_frame(GFC_ActionList *al, const char *name,float *frame)
+GFC_Action *gfc_action_list_get_action_frame(GFC_ActionList *al, const char *name,double *frame)
 {
     GFC_Action *action;
     action = gfc_action_list_get_action(al, name);
@@ -243,7 +243,7 @@ GFC_Action *gfc_action_list_get_action(GFC_ActionList *al, const char *name)
     return NULL;// not found
 }
 
-Uint32 gfc_action_next_frame_after(GFC_Action *action,float frame)
+Uint32 gfc_action_next_frame_after(GFC_Action *action,double frame)
 {
     Uint32 ret = 0;
     if (!action)return 0;
@@ -311,7 +311,7 @@ void gfc_action_list_frame_deleted(GFC_ActionList *list,Uint32 index)
     }
 }
 
-GFC_ActionReturnType gfc_action_next_frame(GFC_Action *action,float *frame)
+GFC_ActionReturnType gfc_action_next_frame(GFC_Action *action,double *frame)
 {
     if ((!action)||(!frame))
     {
@@ -405,9 +405,9 @@ int gfc_action_get_animation_frames(GFC_Action *action)
     return (int)((action->endFrame - action->startFrame)/action->frameRate);
 }
 
-float gfc_action_get_percent_complete(GFC_Action *action,float frame)
+double gfc_action_get_percent_complete(GFC_Action *action,double frame)
 {
-    float total,passed;
+    double total,passed;
     if (!action)
     {
         return -1;
@@ -422,9 +422,9 @@ float gfc_action_get_percent_complete(GFC_Action *action,float frame)
     return (passed/total);
 }
 
-int gfc_action_get_frames_remaining(GFC_Action *action,float frame)
+int gfc_action_get_frames_remaining(GFC_Action *action,double frame)
 {
-    float total,passed;
+    double total,passed;
     if (!action)
     {
         return -1;
@@ -438,7 +438,7 @@ int gfc_action_get_frames_remaining(GFC_Action *action,float frame)
     return (int)(total - passed);
 }
 
-int gfc_action_get_action_frame(GFC_Action *action,float frame)
+int gfc_action_get_action_frame(GFC_Action *action,double frame)
 {
     if (!action)
     {

@@ -86,7 +86,7 @@ DrawImage *gf2d_draw_image_get(GFC_Shape shape, Uint8 filled) {
 	return NULL;
 }
 
-void gf2d_draw_rect(GFC_Rect rect, GFC_Color color) {
+void gf2d_draw_rect(GFC_Rect rect, GFC_Color color, int thickness) {
 	SDL_Surface *surface;
 	Sprite *sprite;
 	SDL_Rect rects[4];
@@ -106,10 +106,10 @@ void gf2d_draw_rect(GFC_Rect rect, GFC_Color color) {
 	if((!rect.w) || (!rect.h)) { slog("cannot render a zero dimension rectangle"); }
 	surface = gf3d_vgraphics_create_surface((Uint32)rect.w + 1, (Uint32)rect.h + 1);
 	if(!surface) { slog("failed to create surface for rectangle draw"); }
-	rects[0] = gfc_rect_to_sdl_rect(gfc_rect(0, 0, rect.w, 2));
-	rects[1] = gfc_rect_to_sdl_rect(gfc_rect(0, 0, 2, rect.h));
-	rects[2] = gfc_rect_to_sdl_rect(gfc_rect(0, rect.h - 2, rect.w, 2));
-	rects[3] = gfc_rect_to_sdl_rect(gfc_rect(rect.w - 2, 0, 2, rect.h));
+	rects[0] = gfc_rect_to_sdl_rect(gfc_rect(0, 0, rect.w, thickness));
+	rects[1] = gfc_rect_to_sdl_rect(gfc_rect(0, 0, thickness, rect.h));
+	rects[2] = gfc_rect_to_sdl_rect(gfc_rect(0, rect.h - thickness, rect.w, thickness));
+	rects[3] = gfc_rect_to_sdl_rect(gfc_rect(rect.w - thickness, 0, thickness, rect.h));
 
 	SDL_FillRects(surface, rects, 4, SDL_MapRGBA(surface->format, 255, 255, 255, 255));
 
@@ -369,7 +369,7 @@ void gf2d_draw_shape(GFC_Shape shape, GFC_Color color, GFC_Vector2D offset) {
 	switch(shape.type) {
 		case ST_RECT:
 			gfc_vector2d_add(shape.s.r, shape.s.r, offset);
-			gf2d_draw_rect(shape.s.r, color);
+			gf2d_draw_rect(shape.s.r, color, 2);
 			break;
 		case ST_CIRCLE:
 			gf2d_draw_circle(gfc_vector2d(shape.s.c.x + offset.x, shape.s.c.y + offset.y), shape.s.c.r, color);

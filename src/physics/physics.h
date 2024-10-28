@@ -88,6 +88,7 @@ struct PhysicsBody_s {
 			double wheelRadius, steer;
 			double speedMult, jumpMult;
 			Bool isCar;
+			Bool done;
 		} player;
 		struct {
 			GFC_Vector3D movementStart, movementEnd;
@@ -109,6 +110,8 @@ void physicsStart(int maxPhysicsBodies);
 void physicsEnd();
 PhysicsBody *physicsCreateBody();
 void physicsFreeBody(PhysicsBody *body);
+void physicsClear();
+void setTimeScale(double scale);
 void physicsFrame(double delta);
 void drawPhysicsObjects();
 void resetPhysicsBody(PhysicsBody *body);

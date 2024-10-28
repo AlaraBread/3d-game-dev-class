@@ -142,4 +142,9 @@ GFC_Vector2D gf2d_mouse_get_movement() {
 
 int gf2d_mouse_in_rect(GFC_Rect r) { return gfc_point_in_rect(_mouse.mouse[0].position, r); }
 
+void gf2d_mouse_set_captured(Bool captured) {
+	SDL_SetRelativeMouseMode(captured);
+	SDL_ShowCursor(captured ? SDL_DISABLE : SDL_ENABLE);
+}
+
 /*eol@eof*/

@@ -689,6 +689,7 @@ GFC_List *gfc_input_get_by_scancode(SDL_Scancode keysym)
 }
 
 static GFC_Vector2D mousePosition;
+static GFC_Vector2D prevMousePosition;
 static GFC_Vector2D mouseMotion;
 
 void gfc_input_update()
@@ -723,6 +724,7 @@ void gfc_input_update()
         if (!in)continue;
         gfc_input_update_command(in);
     }
+	prevMousePosition = mousePosition;
 	mouseMotion = gfc_vector2d(0, 0);
     while(SDL_PollEvent(&event))
     {
@@ -770,6 +772,10 @@ void gfc_input_update()
 
 GFC_Vector2D gfc_input_get_mouse_motion() {
 	return mouseMotion;
+}
+
+GFC_Vector2D gfc_input_get_prev_mouse_position() {
+	return prevMousePosition;
 }
 
 GFC_Vector2D gfc_input_get_mouse_position() {

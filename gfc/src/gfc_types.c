@@ -8,7 +8,6 @@
 size_t get_file_Size(FILE *file)
 {
     size_t size = 0;
-    size_t lastSize = 0;
 
     if (!file)
     {
@@ -23,7 +22,7 @@ size_t get_file_Size(FILE *file)
     return size;
 }
 
-float gfc_random_seeded(Uint32 seed)
+double gfc_random_seeded(Uint32 seed)
 {
     srand(seed);
     return gfc_random();

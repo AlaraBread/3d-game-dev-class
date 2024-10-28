@@ -8,11 +8,13 @@
 static struct {
 	int maxPhysicsBodies;
 	PhysicsBody *physicsBodies;
+	double timeScale;
 } physics = {0};
 
 void physicsStart(int maxPhysicsBodies) {
 	physics.maxPhysicsBodies = maxPhysicsBodies;
 	physics.physicsBodies = gfc_allocate_array(sizeof(PhysicsBody), maxPhysicsBodies);
+	physics.timeScale = 1.0;
 	atexit(physicsEnd);
 }
 
@@ -40,9 +42,14 @@ PhysicsBody *physicsCreateBody() {
 }
 
 void physicsFreeBody(PhysicsBody *body) {
+	if(!body->inuse) return;
 	if(body->model) gf3d_model_free(body->model);
 	if(body->free) body->free(body);
 	body->inuse = false;
+}
+
+void physicsClear() {
+	for(int i = 0; i < physics.maxPhysicsBodies; i++) physicsFreeBody(&physics.physicsBodies[i]);
 }
 
 static void physicsBodyInitialize(PhysicsBody *body) {
@@ -57,6 +64,10 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 	body->colorMod = gfc_color(1, 1, 1, 1);
 }
 
+void setTimeScale(double scale) {
+	physics.timeScale = scale;
+}
+
 void physicsUpdate(double delta);
 
 #define FIXED_TIMESTEP (1.0 / 120.0)
@@ -66,7 +77,7 @@ void physicsFrame(double delta) {
 	physicsDelta += delta;
 	int i = 0;
 	while(physicsDelta > FIXED_TIMESTEP) {
-		physicsUpdate(FIXED_TIMESTEP);
+		physicsUpdate(FIXED_TIMESTEP*physics.timeScale);
 		physicsDelta -= FIXED_TIMESTEP;
 		i++;
 		if(i > MAX_TIMESTEPS_PER_FRAME) {

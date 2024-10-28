@@ -200,7 +200,6 @@ PhysicsBody *createCarPlayer() {
 	player->physicsProcess = carPhysicsProcess;
 	player->frameProcess = playerFrameProcess;
 	player->free = carFree;
-	SDL_SetRelativeMouseMode(true);
 	player->entityType = PLAYER;
 	player->entity.player.isCar = true;
 	g_player = player;

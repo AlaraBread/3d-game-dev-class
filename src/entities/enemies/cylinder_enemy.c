@@ -69,6 +69,9 @@ void cylinderEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 	GFC_Vector3D angularDampVector;
 	gfc_vector3d_scale(angularDampVector, self->angularVelocity, delta * 4);
 	gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, angularDampVector);
+	GFC_Vector3D linearDampVector;
+	gfc_vector3d_scale(linearDampVector, self->linearVelocity, delta * 0.5);
+	gfc_vector3d_sub(self->linearVelocity, self->linearVelocity, linearDampVector);
 }
 
 PhysicsBody *createCylinderEnemy(GFC_Vector3D position) {

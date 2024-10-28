@@ -54,8 +54,9 @@ void gf2d_draw_circle_filled(GFC_Vector2D center, int radius, GFC_Color color);
  * @brief draw a rectanlge outline
  * @param rect the rect to draw
  * @param color the color to draw with
+ * @param thickness the thickness of the line
  */
-void gf2d_draw_rect(GFC_Rect rect, GFC_Color color);
+void gf2d_draw_rect(GFC_Rect rect, GFC_Color color, int thickness);
 
 /**
  * @brief draw a solid rectanlge
