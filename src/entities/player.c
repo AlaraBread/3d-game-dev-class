@@ -1,5 +1,6 @@
 #include "player.h"
 #include "collision.h"
+#include "gf2d_mouse.h"
 #include "gf3d_camera.h"
 #include "gf3d_draw.h"
 #include "gfc_input.h"
@@ -7,7 +8,6 @@
 #include "physics.h"
 #include "simple_logger.h"
 #include "util.h"
-#include "gf2d_mouse.h"
 
 #define PLAYER_RADIUS 4
 
@@ -89,8 +89,10 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 		gfc_vector3d_scale(airControl, left, -airControlAmount);
 		gfc_vector3d_add(self->linearVelocity, self->linearVelocity, airControl);
 	}
-	if(self->entity.player.powerupTimer > 0.0 && (self->entity.player.powerupTimer -= delta) <= 0.0) {
+	if(!self->entity.player.done && self->entity.player.powerupTimer > 0.0 &&
+	   (self->entity.player.powerupTimer -= delta) <= 0.0) {
 		self->entity.player.jumpMult = self->entity.player.speedMult = 1.0;
+		setTimeScale(1.0);
 		self->shape.shape.sphere.radius = PLAYER_RADIUS;
 		calculateInertiaForBody(self);
 		gfc_matrix4f_identity(self->visualTransform);

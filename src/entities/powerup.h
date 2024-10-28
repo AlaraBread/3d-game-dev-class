@@ -6,7 +6,7 @@ typedef enum {
 	BIG,
 	SUPER_SPEED,
 	SUPER_JUMP,
-	EXTRA_TIME,
+	SLOW,
 } PowerupType;
 
 #include "physics.h"

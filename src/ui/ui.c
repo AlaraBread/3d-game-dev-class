@@ -1,9 +1,10 @@
-#include "simple_logger.h"
 #include "ui.h"
 #include "gf2d_draw.h"
 #include "gf2d_font.h"
 #include "gf2d_mouse.h"
 #include "gfc_input.h"
+#include "physics.h"
+#include "simple_logger.h"
 
 // ui system adapted from ui system made for 2d game programming
 // https://github.com/AlaraBread/2d-game-dev-class/blob/midterm/src/entities/ui_element.c
@@ -69,9 +70,7 @@ Bool rectTestUI(UIElement *ent, int x, int y) {
 }
 
 void processMouseEventsUIElement(UIElement *element) {
-	if(!element->mouseEnter && !element->mouseExit) {
-		return;
-	}
+	if(!element->mouseEnter && !element->mouseExit) { return; }
 	GFC_Vector2D mouse = gfc_input_get_mouse_position();
 	GFC_Vector2D prevMouse = gfc_input_get_prev_mouse_position();
 	Bool is_in_rect = rectTestUI(element, mouse.x, mouse.y);
@@ -81,28 +80,20 @@ void processMouseEventsUIElement(UIElement *element) {
 		element->new = false;
 	}
 
-	if(element->mouseEnter && is_in_rect && !was_in_rect) {
-		element->mouseEnter(element);
-	}
+	if(element->mouseEnter && is_in_rect && !was_in_rect) { element->mouseEnter(element); }
 	if(element->mouseExit && !is_in_rect && was_in_rect) {
-		if(element->clicked && element->mouseUp) {
-			element->mouseUp(element);
-		}
+		if(element->clicked && element->mouseUp) { element->mouseUp(element); }
 		element->mouseExit(element);
 		element->clicked = false;
 	}
 	if(is_in_rect && (gf2d_mouse_button_held(0))) {
 		element->clicked = true;
-		if(element->mouseDown) {
-			element->mouseDown(element);
-		}
+		if(element->mouseDown) { element->mouseDown(element); }
 	}
 	if(is_in_rect && !(gf2d_mouse_button_held(0)) && element->clicked) {
 		element->clicked = false;
 		if(element->mouseUp) element->mouseUp(element);
-		if(element->click) {
-			element->click(element);
-		}
+		if(element->click) { element->click(element); }
 	}
 }
 
@@ -111,12 +102,12 @@ void uiFrame(double delta) {
 		UIElement *ent = &g_UIElements[i];
 		if(!ent->inuse) { continue; }
 		processMouseEventsUIElement(ent);
-		if(ent->think) { ent->think(ent, delta); }
+		if(ent->think) { ent->think(ent, delta * getTimeScale()); }
 	}
 	for(int i = 0; i < g_maxUIElements; i++) {
 		UIElement *ent = &g_UIElements[i];
 		if(!ent->inuse) { continue; }
-		if(ent->update) { ent->update(ent, delta); }
+		if(ent->update) { ent->update(ent, delta * getTimeScale()); }
 		if(!ent->inuse) { continue; }
 		if(ent->draw) { ent->draw(ent); }
 	}

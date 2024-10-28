@@ -26,9 +26,9 @@
 #include "gf3d_swapchain.h"
 #include "gf3d_texture.h"
 #include "gf3d_vgraphics.h"
-#include "util.h"
 #include "physics.h"
 #include "ui.h"
+#include "util.h"
 
 #include "main_menu.h"
 

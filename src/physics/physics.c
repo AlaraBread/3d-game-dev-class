@@ -49,7 +49,8 @@ void physicsFreeBody(PhysicsBody *body) {
 }
 
 void physicsClear() {
-	for(int i = 0; i < physics.maxPhysicsBodies; i++) physicsFreeBody(&physics.physicsBodies[i]);
+	for(int i = 0; i < physics.maxPhysicsBodies; i++)
+		physicsFreeBody(&physics.physicsBodies[i]);
 }
 
 static void physicsBodyInitialize(PhysicsBody *body) {
@@ -64,9 +65,9 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 	body->colorMod = gfc_color(1, 1, 1, 1);
 }
 
-void setTimeScale(double scale) {
-	physics.timeScale = scale;
-}
+void setTimeScale(double scale) { physics.timeScale = scale; }
+
+double getTimeScale() { return physics.timeScale; }
 
 void physicsUpdate(double delta);
 
@@ -77,7 +78,7 @@ void physicsFrame(double delta) {
 	physicsDelta += delta;
 	int i = 0;
 	while(physicsDelta > FIXED_TIMESTEP) {
-		physicsUpdate(FIXED_TIMESTEP*physics.timeScale);
+		physicsUpdate(FIXED_TIMESTEP * physics.timeScale);
 		physicsDelta -= FIXED_TIMESTEP;
 		i++;
 		if(i > MAX_TIMESTEPS_PER_FRAME) {

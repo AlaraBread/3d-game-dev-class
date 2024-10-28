@@ -1,12 +1,12 @@
-#include "gf2d_mouse.h"
-#include "ui.h"
 #include "ball.h"
 #include "ball_enemy.h"
 #include "box.h"
 #include "car.h"
 #include "cylinder_enemy.h"
 #include "fan.h"
+#include "finish.h"
 #include "floor.h"
+#include "gf2d_mouse.h"
 #include "ice.h"
 #include "jump_pad.h"
 #include "lava.h"
@@ -18,7 +18,7 @@
 #include "powerup.h"
 #include "rotating_platform.h"
 #include "treadmill.h"
-#include "finish.h"
+#include "ui.h"
 
 void createTestScene() {
 	clearUI();
@@ -69,6 +69,7 @@ void createTestScene() {
 	createPowerup(gfc_vector3d(200, 30, -floorSize / 2 + floorThickness + 8), SUPER_SPEED);
 	createPowerup(gfc_vector3d(200, 60, -floorSize / 2 + floorThickness + 8), SUPER_JUMP);
 	createPowerup(gfc_vector3d(200, 90, -floorSize / 2 + floorThickness + 8), BIG);
+	createPowerup(gfc_vector3d(200, 120, -floorSize / 2 + floorThickness + 8), SLOW);
 
 	createFinish(gfc_vector3d(100, 100, -floorSize / 2 + floorThickness + 8));
 

@@ -1,7 +1,7 @@
-#include "util.h"
+#include "main_menu.h"
 #include "physics.h"
 #include "ui.h"
-#include "main_menu.h"
+#include "util.h"
 
 extern int g_numEnemies;
 extern int g_maxEnemies;
@@ -21,7 +21,7 @@ void createEndMenu() {
 	gfc_line_cpy(label->text, "you win");
 	if(time != -1) {
 		UIElement *label = createLabel(gfc_vector2d(0, 200), gfc_vector2d(1280, 100));
-		sprintf(label->text, "level completed in  %02.0lf : %02.2lf", floor(time/60.0), wrapMax(time, 60));
+		sprintf(label->text, "level completed in  %02.0lf : %02.2lf", floor(time / 60.0), wrapMax(time, 60));
 	}
-	createButton(gfc_vector2d(1280/2, 720/2), gfc_vector2d(300, 100), "main menu")->click = mainMenuPressed;
+	createButton(gfc_vector2d(1280 / 2, 720 / 2), gfc_vector2d(300, 100), "main menu")->click = mainMenuPressed;
 }

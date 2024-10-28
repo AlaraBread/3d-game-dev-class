@@ -112,6 +112,7 @@ PhysicsBody *physicsCreateBody();
 void physicsFreeBody(PhysicsBody *body);
 void physicsClear();
 void setTimeScale(double scale);
+double getTimeScale();
 void physicsFrame(double delta);
 void drawPhysicsObjects();
 void resetPhysicsBody(PhysicsBody *body);

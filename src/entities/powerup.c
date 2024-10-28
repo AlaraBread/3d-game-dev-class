@@ -60,8 +60,10 @@ Bool pickupPowerup(PhysicsBody *self, PhysicsBody *player) {
 			player->entity.player.jumpMult = 3.0;
 			self->entity.powerup.respawnTimer = 15;
 		} break;
-		case EXTRA_TIME: {
-			// todo
+		case SLOW: {
+			setTimeScale(0.2);
+			player->entity.player.speedMult = 2.5;
+			player->entity.player.powerupTimer = 10 * 0.2;
 			self->entity.powerup.respawnTimer = 15;
 		} break;
 	}
@@ -104,7 +106,7 @@ PhysicsBody *createPowerup(GFC_Vector3D position, PowerupType type) {
 		case SUPER_JUMP:
 			powerup->colorMod = gfc_color(0.0, 1.0, 0.0, 1.0);
 			break;
-		case EXTRA_TIME:
+		case SLOW:
 			powerup->colorMod = gfc_color(0.0, 0.0, 1.0, 1.0);
 			break;
 	}

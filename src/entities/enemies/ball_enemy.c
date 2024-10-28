@@ -1,6 +1,6 @@
-#include "simple_logger.h"
 #include "ball_enemy.h"
 #include "moments_of_inertia.h"
+#include "simple_logger.h"
 
 extern PhysicsBody *g_player;
 
@@ -21,9 +21,7 @@ void ballEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 
 extern int g_numEnemies;
 extern int g_maxEnemies;
-void freeEnemy(PhysicsBody *enemy) {
-	g_numEnemies--;
-}
+void freeEnemy(PhysicsBody *enemy) { g_numEnemies--; }
 
 PhysicsBody *createBallEnemy(GFC_Vector3D position) {
 	PhysicsBody *enemy = physicsCreateBody();
