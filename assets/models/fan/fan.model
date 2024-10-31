@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "obj":"assets/models/fan/fan.obj",
+        "texture":"assets/textures/checker.png"
+    }
+}
