@@ -18,6 +18,6 @@ PhysicsBody *createTreadmill(GFC_Vector3D position) {
 	platform->motionType = STATIC;
 	platform->friction = 1.0;
 	calculateInertiaForBody(platform);
-	platform->linearVelocity = gfc_vector3d(40, 0, 0);
+	platform->linearVelocity = gfc_vector3d(100, 0, 0);
 	return platform;
 }
