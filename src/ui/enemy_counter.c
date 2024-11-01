@@ -1,7 +1,7 @@
 #include "enemy_counter.h"
 
-int g_numEnemies = 0;
-int g_maxEnemies = 0;
+extern int g_numEnemies;
+extern int g_maxEnemies;
 void updateCounter(UIElement *counter, double delta) {
 	sprintf(counter->text, "remaining enemies: %d/%d", g_numEnemies, g_maxEnemies);
 }

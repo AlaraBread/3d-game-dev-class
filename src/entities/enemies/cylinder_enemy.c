@@ -1,4 +1,5 @@
-#include "ball_enemy.h"
+#include "cylinder_enemy.h"
+#include "enemy_common.h"
 #include "moments_of_inertia.h"
 #include "simple_logger.h"
 #include "util.h"
@@ -77,7 +78,7 @@ void cylinderEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 extern int g_numEnemies;
 extern int g_maxEnemies;
 PhysicsBody *createCylinderEnemy(GFC_Vector3D position) {
-	PhysicsBody *enemy = physicsCreateBody();
+	PhysicsBody *enemy = createEnemy();
 	enemy->position = position;
 	enemy->entityType = ENEMY;
 	enemy->motionType = DYNAMIC;

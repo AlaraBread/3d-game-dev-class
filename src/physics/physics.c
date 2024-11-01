@@ -48,9 +48,13 @@ void physicsFreeBody(PhysicsBody *body) {
 	body->inuse = false;
 }
 
+extern int g_numEnemies;
+extern int g_maxEnemies;
 void physicsClear() {
 	for(int i = 0; i < physics.maxPhysicsBodies; i++)
 		physicsFreeBody(&physics.physicsBodies[i]);
+	g_numEnemies = 0;
+	g_maxEnemies = 0;
 }
 
 static void physicsBodyInitialize(PhysicsBody *body) {

@@ -1,4 +1,5 @@
 #include "ball_enemy.h"
+#include "enemy_common.h"
 #include "moments_of_inertia.h"
 #include "simple_logger.h"
 
@@ -38,12 +39,8 @@ void ballEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 	}
 }
 
-extern int g_numEnemies;
-extern int g_maxEnemies;
-void freeEnemy(PhysicsBody *enemy) { g_numEnemies--; }
-
 PhysicsBody *createBallEnemy(GFC_Vector3D position) {
-	PhysicsBody *enemy = physicsCreateBody();
+	PhysicsBody *enemy = createEnemy();
 	enemy->position = position;
 	enemy->entityType = ENEMY;
 	enemy->motionType = DYNAMIC;
@@ -57,8 +54,6 @@ PhysicsBody *createBallEnemy(GFC_Vector3D position) {
 	calculateInertiaForBody(enemy);
 	enemy->colorMod = gfc_color(1, 0, 0, 1);
 	enemy->physicsProcess = ballEnemyPhysicsProcess;
-	g_numEnemies++;
-	g_maxEnemies++;
 	enemy->free = freeEnemy;
 	return enemy;
 }
