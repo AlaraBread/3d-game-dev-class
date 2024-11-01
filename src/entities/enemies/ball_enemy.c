@@ -6,17 +6,36 @@ extern PhysicsBody *g_player;
 
 void ballEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 	if(!g_player || !g_player->inuse) return;
-	GFC_Vector3D dir;
-	gfc_vector3d_sub(dir, self->position, g_player->position);
-	dir.z = 0;
-	gfc_vector3d_normalize(&dir);
-	GFC_Vector3D left = dir;
-	gfc_vector3d_rotate_about_z(&left, M_PI / 2.0);
-	gfc_vector3d_scale(left, left, -delta * 40);
-	gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
-	GFC_Vector3D angularDampVector;
-	gfc_vector3d_scale(angularDampVector, self->angularVelocity, delta * 2);
-	gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, angularDampVector);
+	Bool onGround = false;
+	for(int i = 0; i < self->numReportedCollisions; i++) {
+		Collision *col = &self->reportedCollisions[i];
+		if(!col->hit) continue;
+		PhysicsBody *other = self == col->a ? col->b : col->a;
+		GFC_Vector3D normal = col->normal;
+		if(self == col->a) { gfc_vector3d_negate(normal, normal); }
+		if(other->entityType == PLAYER) {
+			if(normal.z > 0.75) {
+				// got goomba stomped
+				other->linearVelocity.z += 100;
+				physicsFreeBody(self);
+			}
+		} else {
+			onGround = true;
+		}
+	}
+	if(onGround) {
+		GFC_Vector3D dir;
+		gfc_vector3d_sub(dir, self->position, g_player->position);
+		dir.z = 0;
+		gfc_vector3d_normalize(&dir);
+		GFC_Vector3D left = dir;
+		gfc_vector3d_rotate_about_z(&left, M_PI / 2.0);
+		gfc_vector3d_scale(left, left, -delta * 40);
+		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
+		GFC_Vector3D angularDampVector;
+		gfc_vector3d_scale(angularDampVector, self->angularVelocity, delta * 2);
+		gfc_vector3d_sub(self->angularVelocity, self->angularVelocity, angularDampVector);
+	}
 }
 
 extern int g_numEnemies;

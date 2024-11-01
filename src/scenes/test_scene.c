@@ -19,6 +19,7 @@
 #include "rotating_platform.h"
 #include "treadmill.h"
 #include "ui.h"
+#include "cobweb.h"
 
 void createTestScene() {
 	clearUI();
@@ -57,6 +58,10 @@ void createTestScene() {
 		gfc_vector3d(floorSize * 4 + 10, floorSize * 4, -floorSize / 2.0 + 30), gfc_vector3d(0, 0, 0),
 		gfc_vector3d(10, 10, 10)
 	);
+	createCobweb(
+		gfc_vector3d(floorSize * 4 + 40, floorSize * 4, -floorSize / 2.0), gfc_vector3d(0, 0, 0),
+		gfc_vector3d(10, 10, 10)
+	);
 
 	createMovingPlatform(gfc_vector3d(-32, 4, -floorSize / 2.0 + 4), gfc_vector3d(256, 0, 0), 10);
 	createRotatingPlatform(gfc_vector3d(-32, 200, -floorSize / 2.0 + 4), 4);
@@ -73,5 +78,6 @@ void createTestScene() {
 
 	createFinish(gfc_vector3d(100, 100, -floorSize / 2 + floorThickness + 8));
 
-	createCylinderEnemy(gfc_vector3d(100, 0.1, -floorSize / 2.0 + floorThickness));
+	//createCylinderEnemy(gfc_vector3d(100, 0.1, -floorSize / 2.0 + floorThickness));
+	createBallEnemy(gfc_vector3d(101.1, 0.1, 0));
 }

@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 	gf3d_camera_set_rotate_step(2.0);
 
 	gf3d_camera_enable_free_look(1);
-	physicsStart(100);
+	physicsStart(200);
 
 	mainMenu();
 
