@@ -93,6 +93,9 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 	   (self->entity.player.powerupTimer -= delta) <= 0.0) {
 		self->entity.player.jumpMult = self->entity.player.speedMult = 1.0;
 		setTimeScale(1.0);
+		self->model = self->entity.player.sphereModel;
+		self->shape.shapeType = SPHERE;
+		calculateInertiaForBody(self);
 		self->shape.shape.sphere.radius = PLAYER_RADIUS;
 		calculateInertiaForBody(self);
 		gfc_matrix4f_identity(self->visualTransform);
@@ -151,6 +154,12 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 	gf3d_camera_look_at(self->position, &cameraPos);
 }
 
+void freePlayer(PhysicsBody *self) {
+	if(self->entity.player.boxModel) gf3d_model_free(self->entity.player.boxModel);
+	if(self->entity.player.sphereModel) gf3d_model_free(self->entity.player.sphereModel);
+	self->model = NULL; // make sure we dont free twice
+}
+
 PhysicsBody *g_player = NULL;
 PhysicsBody *createPlayer() {
 	Shape s;
@@ -159,6 +168,8 @@ PhysicsBody *createPlayer() {
 	PhysicsBody *player = physicsCreateBody();
 	player->shape = s;
 	Model *sphereModel = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
+	player->entity.player.sphereModel = sphereModel;
+	player->entity.player.boxModel = gf3d_model_load("assets/models/test_cube/test_cube.model");
 	player->model = sphereModel;
 	gfc_matrix4f_scale(
 		player->visualTransform, player->visualTransform,

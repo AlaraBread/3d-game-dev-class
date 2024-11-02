@@ -9,5 +9,7 @@ void freeEnemy(PhysicsBody *enemy) {
 PhysicsBody *createEnemy() {
 	g_numEnemies++;
 	g_maxEnemies++;
-	return physicsCreateBody();
+	PhysicsBody *enemy = physicsCreateBody();
+	enemy->free = freeEnemy;
+	return enemy;
 }

@@ -20,6 +20,7 @@
 #include "treadmill.h"
 #include "ui.h"
 #include "cobweb.h"
+#include "box_enemy.h"
 
 void createTestScene() {
 	clearUI();
@@ -78,6 +79,7 @@ void createTestScene() {
 
 	createFinish(gfc_vector3d(100, 100, -floorSize / 2 + floorThickness + 8));
 
-	//createCylinderEnemy(gfc_vector3d(100, 0.1, -floorSize / 2.0 + floorThickness));
+	createCylinderEnemy(gfc_vector3d(100, 0.1, 0));
 	createBallEnemy(gfc_vector3d(101.1, 0.1, 0));
+	createBoxEnemy(gfc_vector3d(100, 30, 0));
 }

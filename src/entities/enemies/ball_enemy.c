@@ -54,6 +54,5 @@ PhysicsBody *createBallEnemy(GFC_Vector3D position) {
 	calculateInertiaForBody(enemy);
 	enemy->colorMod = gfc_color(1, 0, 0, 1);
 	enemy->physicsProcess = ballEnemyPhysicsProcess;
-	enemy->free = freeEnemy;
 	return enemy;
 }

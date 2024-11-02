@@ -81,7 +81,7 @@ struct PhysicsBody_s {
 			Collision coyoteCollisions[MAX_REPORTED_COLLISIONS];
 			double jumpBufferTimer, coyoteTimer, rightingTimer, powerupTimer, timeSinceJump;
 			Bool isRighting;
-			Model *wheelModel;
+			Model *wheelModel, *sphereModel, *boxModel;
 			double wheelRotations[4];
 			double wheelVelocities[4];
 			double wheelDistances[4];
@@ -102,6 +102,7 @@ struct PhysicsBody_s {
 		} powerup;
 		struct {
 			double rightingTimer;
+			GFC_Vector3D direction;
 		} enemy;
 	} entity;
 };
