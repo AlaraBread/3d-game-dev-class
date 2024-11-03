@@ -54,6 +54,7 @@ void turretEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 			gfc_vector3d_scale(bullet->linearVelocity, v, 100);
 			bullet->entity.enemy.shootTimer = 2;
 			bullet->physicsProcess = bulletPhysicsProcess;
+			bullet->colorMod = gfc_color(0.3, 0.3, 0.3, 1.0);
 		}
 	}
 }

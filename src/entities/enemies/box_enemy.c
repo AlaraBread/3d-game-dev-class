@@ -22,14 +22,15 @@ void boxEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 			if(normal.z > 0.7) {
 				// got goomba stomped
 				physicsFreeBody(self);
-			} else if(other->entity.player.powerupTimer > 0.0) {
+			} else if(!other->entity.player.isCubed && other->entity.player.powerupTimer > 0.0) {
 				other->entity.player.powerupTimer = 0.01;
 			} else {
 				// turn player into box
 				other->shape.shapeType = BOX;
 				other->shape.shape.box.extents = gfc_vector3d(4, 4, 4);
 				other->model = other->entity.player.boxModel;
-				other->entity.player.powerupTimer = 1;
+				other->entity.player.powerupTimer = 2;
+				other->entity.player.isCubed = true;
 				calculateInertiaForBody(other);
 			}
 			GFC_Vector3D impulse;

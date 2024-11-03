@@ -71,7 +71,7 @@ void createTestScene() {
 	createTreadmill(gfc_vector3d(0, -200, -floorSize / 2.0 + 4));
 	createFan(gfc_vector3d(200, 200, -floorSize / 2.0 + 10), gfc_vector3d(0, 0, 1), 500);
 	createFan(gfc_vector3d(-200, 200, -floorSize / 2.0 + 10), gfc_vector3d(-1, 0, 0), 500);
-	createMagnet(gfc_vector3d(200, -200, -floorSize / 2.0 + 30), 75);
+	createMagnet(gfc_vector3d(-200, -200, -floorSize / 2.0 + 30), 75);
 	createPowerup(gfc_vector3d(200, 0, -floorSize / 2 + floorThickness + 8), CAR);
 	createPowerup(gfc_vector3d(200, 30, -floorSize / 2 + floorThickness + 8), SUPER_SPEED);
 	createPowerup(gfc_vector3d(200, 60, -floorSize / 2 + floorThickness + 8), SUPER_JUMP);

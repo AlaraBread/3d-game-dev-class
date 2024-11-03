@@ -67,7 +67,7 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 	gfc_vector3d_rotate_about_z(&forward, self->entity.player.yaw);
 	gfc_vector3d_rotate_about_z(&left, self->entity.player.yaw);
 	double airControlAmount = AIR_CONTROL * self->entity.player.speedMult;
-	if(self->entity.player.coyoteTimer > 0.01) { airControlAmount = 0; }
+	if(self->entity.player.coyoteTimer > 0.01) airControlAmount *= 0.5;
 	GFC_Vector3D airControl;
 	if(gfc_input_command_held("forward")) {
 		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);
@@ -95,6 +95,7 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 		setTimeScale(1.0);
 		self->model = self->entity.player.sphereModel;
 		self->shape.shapeType = SPHERE;
+		self->entity.player.isCubed = false;
 		calculateInertiaForBody(self);
 		self->shape.shape.sphere.radius = PLAYER_RADIUS;
 		calculateInertiaForBody(self);

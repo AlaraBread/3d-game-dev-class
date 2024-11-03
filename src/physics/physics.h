@@ -87,7 +87,7 @@ struct PhysicsBody_s {
 			double wheelDistances[4];
 			double wheelRadius, steer;
 			double speedMult, jumpMult;
-			Bool isCar;
+			Bool isCar, isCubed;
 			Bool done;
 		} player;
 		struct {
