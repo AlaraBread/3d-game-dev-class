@@ -101,7 +101,7 @@ struct PhysicsBody_s {
 			PowerupType type;
 		} powerup;
 		struct {
-			double rightingTimer;
+			double rightingTimer, shootTimer;
 			GFC_Vector3D direction;
 		} enemy;
 	} entity;

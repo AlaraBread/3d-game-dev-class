@@ -11,5 +11,6 @@ PhysicsBody *createEnemy() {
 	g_maxEnemies++;
 	PhysicsBody *enemy = physicsCreateBody();
 	enemy->free = freeEnemy;
+	enemy->entityType = ENEMY;
 	return enemy;
 }
