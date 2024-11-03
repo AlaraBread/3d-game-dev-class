@@ -10,8 +10,6 @@ void bulletPhysicsProcess(PhysicsBody *self, double delta) {
 	}
 }
 
-#define SHOOT_INTERVAL 2
-
 extern PhysicsBody *g_player;
 void turretEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 	if(!g_player) return;
@@ -52,7 +50,7 @@ void turretEnemyPhysicsProcess(PhysicsBody *self, double delta) {
 			gfc_vector3d_sub(v, g_player->position, self->position);
 			gfc_vector3d_normalize(&v);
 			gfc_vector3d_scale(bullet->linearVelocity, v, 100);
-			bullet->entity.enemy.shootTimer = 2;
+			bullet->entity.enemy.shootTimer = 5;
 			bullet->physicsProcess = bulletPhysicsProcess;
 			bullet->colorMod = gfc_color(0.3, 0.3, 0.3, 1.0);
 		}

@@ -22,6 +22,7 @@
 #include "cobweb.h"
 #include "box_enemy.h"
 #include "turret_enemy.h"
+#include "moving_turret_enemy.h"
 
 void createTestScene() {
 	clearUI();
@@ -84,4 +85,5 @@ void createTestScene() {
 	createBallEnemy(gfc_vector3d(101.1, 0.1, 0));
 	createBoxEnemy(gfc_vector3d(100, 30, 0));
 	createTurretEnemy(gfc_vector3d(100, -100, -floorSize / 2 + floorThickness + 4));
+	createMovingTurretEnemy(gfc_vector3d(-100, 100, -floorSize / 2 + floorThickness + 4), gfc_vector3d(-50, 50, 50), 10);
 }

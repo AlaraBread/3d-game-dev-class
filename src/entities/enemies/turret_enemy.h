@@ -3,6 +3,9 @@
 
 #include "physics.h"
 
+#define SHOOT_INTERVAL 2
+
 PhysicsBody *createTurretEnemy(GFC_Vector3D position);
+void turretEnemyPhysicsProcess(PhysicsBody *self, double delta);
 
 #endif

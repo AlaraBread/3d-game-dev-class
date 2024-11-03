@@ -103,6 +103,8 @@ struct PhysicsBody_s {
 		struct {
 			double rightingTimer, shootTimer;
 			GFC_Vector3D direction;
+			GFC_Vector3D movementStart, movementEnd;
+			double movementSpeed, moveDirection, moveRatio;
 		} enemy;
 	} entity;
 };
