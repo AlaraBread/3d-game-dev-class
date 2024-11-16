@@ -10,7 +10,7 @@ void lavaPhysicsProcess(PhysicsBody *self, double delta) {
 	}
 }
 
-PhysicsBody *createLava(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D extents) {
+PhysicsBody *createLava(GFC_Vector3D extents) {
 	PhysicsBody *lava = physicsCreateBody();
 	Shape boxShape;
 	boxShape.shapeType = BOX;
@@ -21,8 +21,6 @@ PhysicsBody *createLava(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector
 	lava->colorMod = gfc_color(1, 0, 0, 1);
 	calculateInertiaForBody(lava);
 	gfc_matrix4f_scale(lava->visualTransform, lava->visualTransform, gfc_vector3d_to_float(extents));
-	lava->position = position;
-	lava->rotation = rotation;
 	lava->physicsProcess = lavaPhysicsProcess;
 	return lava;
 }

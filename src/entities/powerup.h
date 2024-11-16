@@ -11,6 +11,6 @@ typedef enum {
 
 #include "physics.h"
 
-PhysicsBody *createPowerup(GFC_Vector3D position, PowerupType type);
+PhysicsBody *createPowerup(PowerupType type);
 
 #endif

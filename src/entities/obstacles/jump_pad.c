@@ -3,13 +3,12 @@
 #include "simple_logger.h"
 #include "util.h"
 
-PhysicsBody *createJumpPad(GFC_Vector3D position) {
+PhysicsBody *createJumpPad(GFC_Vector3D extents, double strength) {
 	PhysicsBody *platform = physicsCreateBody();
-	platform->position = position;
 	platform->entityType = PLATFORM;
 	Shape s;
 	s.shapeType = BOX;
-	s.shape.box.extents = gfc_vector3d(30, 30, 2);
+	s.shape.box.extents = extents;
 	platform->shape = s;
 	platform->model = gf3d_model_load("assets/models/test_cube/test_cube.model");
 	gfc_matrix4f_scale(
@@ -18,6 +17,6 @@ PhysicsBody *createJumpPad(GFC_Vector3D position) {
 	platform->motionType = STATIC;
 	platform->friction = 1.0;
 	calculateInertiaForBody(platform);
-	platform->linearVelocity = gfc_vector3d(0, 0, 100);
+	platform->linearVelocity = gfc_vector3d(0, 0, strength);
 	return platform;
 }

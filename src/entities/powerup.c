@@ -81,7 +81,7 @@ void powerupPhysicsProcess(PhysicsBody *self, double delta) {
 	}
 }
 
-PhysicsBody *createPowerup(GFC_Vector3D position, PowerupType type) {
+PhysicsBody *createPowerup(PowerupType type) {
 	PhysicsBody *powerup = physicsCreateBody();
 	powerup->shape.shapeType = SPHERE;
 	powerup->shape.shape.sphere.radius = 4;
@@ -90,7 +90,6 @@ PhysicsBody *createPowerup(GFC_Vector3D position, PowerupType type) {
 	powerup->frameProcess = powerupFrameProcess;
 	powerup->physicsProcess = powerupPhysicsProcess;
 	powerup->model = gf3d_model_load("assets/models/test_cube/test_cube.model");
-	powerup->position = position;
 	powerup->entity.powerup.type = type;
 	powerup->rotation = gfc_vector3d(gfc_crandom(), gfc_crandom(), gfc_crandom());
 	switch(type) {

@@ -3,6 +3,6 @@
 
 #include "physics.h"
 
-PhysicsBody *createRotatingPlatform(GFC_Vector3D position, double speed);
+PhysicsBody *createRotatingPlatform(GFC_Vector3D extents, GFC_Vector3D angularVelocity);
 
 #endif

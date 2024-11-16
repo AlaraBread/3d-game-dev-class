@@ -3,6 +3,6 @@
 
 #include "physics.h"
 
-PhysicsBody *createMovingPlatform(GFC_Vector3D position, GFC_Vector3D movement, double speed);
+PhysicsBody *createMovingPlatform(GFC_Vector3D position, GFC_Vector3D extents, GFC_Vector3D movement, double speed);
 
 #endif

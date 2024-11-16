@@ -176,7 +176,6 @@ PhysicsBody *createPlayer() {
 		player->visualTransform, player->visualTransform,
 		gfc_vector3df(s.shape.sphere.radius, s.shape.sphere.radius, s.shape.sphere.radius)
 	);
-	player->position = gfc_vector3d(0, 0, 10);
 	player->mass = 0.01;
 	player->bounce = 0.5;
 	player->friction = 1.0;

@@ -3,6 +3,6 @@
 
 #include "physics.h"
 
-PhysicsBody *createMagnet(GFC_Vector3D position, double strength);
+PhysicsBody *createMagnet(GFC_Vector3D position, double radius, double strength);
 
 #endif

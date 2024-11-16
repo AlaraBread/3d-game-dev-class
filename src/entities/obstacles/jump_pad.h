@@ -3,6 +3,6 @@
 
 #include "physics.h"
 
-PhysicsBody *createJumpPad(GFC_Vector3D position);
+PhysicsBody *createJumpPad(GFC_Vector3D extents, double strength);
 
 #endif

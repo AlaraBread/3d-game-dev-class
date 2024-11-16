@@ -1,20 +1,20 @@
 #include "main_menu.h"
 #include "enemy_counter.h"
 #include "physics.h"
-#include "test_scene.h"
+#include "scene_loader.h"
 #include "timer.h"
 #include "ui.h"
 
 GameMode g_gamemode = TIME;
 static void playCompletion(UIElement *button) {
 	g_gamemode = COMPLETION;
-	createTestScene();
+	loadScene("assets/scenes/level1.gltf");
 	createEnemyCounter();
 }
 
 static void playTime(UIElement *button) {
 	g_gamemode = TIME;
-	createTestScene();
+	loadScene("assets/scenes/level1.gltf");
 	createTimer();
 }
 

@@ -15,13 +15,12 @@ void fanPhysicsProcess(PhysicsBody *self, double delta) {
 }
 
 #define FAN_WIDTH 30
-#define FAN_DIST 100
 
-PhysicsBody *createFan(GFC_Vector3D position, GFC_Vector3D direction, float speed) {
+PhysicsBody *createFan(GFC_Vector3D position, GFC_Vector3D direction, double dist, double speed) {
 	gfc_vector3d_normalize(&direction);
 	PhysicsBody *fan = physicsCreateBody();
 	GFC_Vector3D offset = {0};
-	gfc_vector3d_scale(offset, direction, FAN_DIST);
+	gfc_vector3d_scale(offset, direction, dist);
 	gfc_vector3d_add(fan->position, position, offset);
 	fan->model = gf3d_model_load("assets/models/fan/fan.model");
 	fan->motionType = TRIGGER;
@@ -29,9 +28,9 @@ PhysicsBody *createFan(GFC_Vector3D position, GFC_Vector3D direction, float spee
 	quat_to_euler_vector(&fan->rotation, q);
 	gfc_vector3d_negate(fan->rotation, fan->rotation);
 	gfc_matrix4f_scale(fan->visualTransform, fan->visualTransform, gfc_vector3df(1, FAN_WIDTH, FAN_WIDTH));
-	gfc_matrix4f_translate(fan->visualTransform, fan->visualTransform, gfc_vector3df(-FAN_DIST, 0, 0));
+	gfc_matrix4f_translate(fan->visualTransform, fan->visualTransform, gfc_vector3df(-dist, 0, 0));
 	fan->shape.shapeType = BOX;
-	fan->shape.shape.box.extents = gfc_vector3d(FAN_DIST, FAN_WIDTH, FAN_WIDTH);
+	fan->shape.shape.box.extents = gfc_vector3d(dist, FAN_WIDTH, FAN_WIDTH);
 	fan->physicsProcess = fanPhysicsProcess;
 	fan->entity.platform.movementSpeed = speed;
 	return fan;

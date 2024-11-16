@@ -24,10 +24,10 @@ void magnetPhysicsProcess(PhysicsBody *self, double delta) {
 
 void magnetFree(PhysicsBody *self) { physicsFreeBody(self->entity.platform.magnetCenter); }
 
-PhysicsBody *createMagnet(GFC_Vector3D position, double strength) {
+PhysicsBody *createMagnet(GFC_Vector3D position, double radius, double strength) {
 	PhysicsBody *center = physicsCreateBody();
 	center->shape.shapeType = SPHERE;
-	center->shape.shape.sphere.radius = 4;
+	center->shape.shape.sphere.radius = radius / 8.0;
 	center->motionType = STATIC;
 	center->position = position;
 	calculateInertiaForBody(center);
@@ -36,10 +36,10 @@ PhysicsBody *createMagnet(GFC_Vector3D position, double strength) {
 	magnet->position = position;
 	magnet->motionType = TRIGGER;
 	magnet->shape.shapeType = SPHERE;
-	magnet->shape.shape.sphere.radius = 100;
+	magnet->shape.shape.sphere.radius = radius;
 	magnet->physicsProcess = magnetPhysicsProcess;
 	magnet->model = gf3d_model_load("assets/models/test_sphere/test_sphere.model");
-	magnet->entity.platform.movementSpeed = strength;
+	magnet->entity.platform.movementSpeed = strength * radius;
 	magnet->colorMod = gfc_color(1, 0, 0, 1);
 	gfc_matrix4f_scale(magnet->visualTransform, magnet->visualTransform, gfc_vector3df(4, 4, 4));
 	return magnet;

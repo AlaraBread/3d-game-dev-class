@@ -22,7 +22,7 @@ void movingPlatformPhysicsProcess(PhysicsBody *self, double delta) {
 	self->linearVelocity = diff;
 }
 
-PhysicsBody *createMovingPlatform(GFC_Vector3D position, GFC_Vector3D movement, double speed) {
+PhysicsBody *createMovingPlatform(GFC_Vector3D position, GFC_Vector3D extents, GFC_Vector3D movement, double speed) {
 	PhysicsBody *platform = physicsCreateBody();
 	platform->position = position;
 	platform->entityType = PLATFORM;
@@ -33,7 +33,7 @@ PhysicsBody *createMovingPlatform(GFC_Vector3D position, GFC_Vector3D movement, 
 	platform->entity.platform.direction = 1;
 	Shape s;
 	s.shapeType = BOX;
-	s.shape.box.extents = gfc_vector3d(10, 10, 2);
+	s.shape.box.extents = extents;
 	platform->shape = s;
 	platform->model = gf3d_model_load("assets/models/test_cube/test_cube.model");
 	gfc_matrix4f_scale(

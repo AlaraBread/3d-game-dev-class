@@ -1,6 +1,7 @@
 #ifndef __GF3D_GLTF_PARSE_H__
 #define __GF3D_GLTF_PARSE_H__
 
+#include "gf3d_model.h"
 #include "gfc_types.h"
 #include "simple_json.h"
 
@@ -47,6 +48,8 @@ const char *gf3d_gltf_accessor_get_details(GLTF *gltf, Uint32 accessorIndex, int
  * gf3d_gltf_accessor_get_details
  */
 void gf3d_gltf_get_buffer_view_data(GLTF *gltf, Uint32 viewIndex, char *buffer);
+
+Model *gf3d_gltf_parse_model(const char *filename);
 
 /**
  * @brief free the decoded gltf file data and the json.

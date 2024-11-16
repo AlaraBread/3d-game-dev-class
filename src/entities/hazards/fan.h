@@ -3,6 +3,6 @@
 
 #include "physics.h"
 
-PhysicsBody *createFan(GFC_Vector3D position, GFC_Vector3D direction, float speed);
+PhysicsBody *createFan(GFC_Vector3D position, GFC_Vector3D direction, double dist, double speed);
 
 #endif

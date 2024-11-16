@@ -19,13 +19,12 @@ void finishPhysicsProcess(PhysicsBody *finish, double delta) {
 	}
 }
 
-PhysicsBody *createFinish(GFC_Vector3D position) {
+PhysicsBody *createFinish(GFC_Vector3D extents) {
 	PhysicsBody *finish = physicsCreateBody();
-	finish->position = position;
 	finish->motionType = TRIGGER;
 	Shape boxShape;
 	boxShape.shapeType = BOX;
-	boxShape.shape.box.extents = gfc_vector3d(6, 6, 6);
+	boxShape.shape.box.extents = extents;
 	finish->shape = boxShape;
 	Model *model = gf3d_model_load("assets/models/test_cube/test_cube.model");
 	finish->model = model;

@@ -3,6 +3,6 @@
 
 #include "physics.h"
 
-PhysicsBody *createLava(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D extents);
+PhysicsBody *createLava(GFC_Vector3D extents);
 
 #endif

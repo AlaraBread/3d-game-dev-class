@@ -3,6 +3,6 @@
 
 #include "physics.h"
 
-PhysicsBody *createTreadmill(GFC_Vector3D position);
+PhysicsBody *createTreadmill(GFC_Vector3D extents, GFC_Vector3D velocity);
 
 #endif

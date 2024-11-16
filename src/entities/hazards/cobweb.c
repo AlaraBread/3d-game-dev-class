@@ -19,7 +19,7 @@ void cobwebPhysicsProcess(PhysicsBody *self, double delta) {
 	}
 }
 
-PhysicsBody *createCobweb(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vector3D extents) {
+PhysicsBody *createCobweb(GFC_Vector3D extents) {
 	PhysicsBody *cobweb = physicsCreateBody();
 	Shape boxShape;
 	boxShape.shapeType = BOX;
@@ -30,8 +30,6 @@ PhysicsBody *createCobweb(GFC_Vector3D position, GFC_Vector3D rotation, GFC_Vect
 	cobweb->colorMod = gfc_color(0, 0.5, 1, 1);
 	calculateInertiaForBody(cobweb);
 	gfc_matrix4f_scale(cobweb->visualTransform, cobweb->visualTransform, gfc_vector3d_to_float(extents));
-	cobweb->position = position;
-	cobweb->rotation = rotation;
 	cobweb->physicsProcess = cobwebPhysicsProcess;
 	return cobweb;
 }
