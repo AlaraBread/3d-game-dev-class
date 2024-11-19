@@ -157,7 +157,13 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 	down.z -= 5000;
 	ray = gfc_edge3d_from_vectors(self->position, down);
 	rayCol = castRay(ray, self);
-	if(rayCol.hit) gf3d_model_add_shadow(gfc_vector3d_to_float(rayCol.position), 4, self);
+	float shadowSize;
+	if(self->shape.shapeType == SPHERE) {
+		shadowSize = self->shape.shape.sphere.radius;
+	} else {
+		shadowSize = self->shape.shape.box.extents.x;
+	}
+	if(rayCol.hit) gf3d_model_add_shadow(gfc_vector3d_to_float(rayCol.position), shadowSize, self);
 }
 
 void freePlayer(PhysicsBody *self) {
