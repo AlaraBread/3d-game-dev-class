@@ -45,7 +45,7 @@ typedef struct {
  * same mesh and texture data, but will have separate UBO data and
  * descriptorSets
  */
-typedef struct {
+typedef struct Model_S {
 	Uint32 refCount;
 	GFC_TextLine filename;
 
@@ -147,7 +147,7 @@ void gf3d_model_move(Model *in, GFC_Vector3D offset, GFC_Vector3D rotation);
 void gf3d_model_draw(
 	Model *model, GFC_Matrix4F modelMat,
 	GFC_Color colorMod, // TODO pass a material instead
-	Uint32 frame
+	Uint32 frame, void *self
 );
 
 /**
@@ -160,7 +160,12 @@ void gf3d_model_draw(
  * @param colorMod color modulation (values from 0 to 1);
  * @param frame the animation frame to use for armature based animations
  */
-void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame);
+void gf3d_model_draw_index(
+	Model *model, Uint32 index, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame, void *self
+);
+
+void gf3d_model_add_shadow(GFC_Vector3DF position, float size, void *exclude);
+void gf3d_model_clear_shadows();
 
 /**
  * @brief draw all of the meshes of a model.  This is meant for multi-mesh
@@ -171,7 +176,7 @@ void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4F modelMat, GF
  * @param frame used to access a frame of armature based animation
  * @note this is called by gf3d_model_draw when not using a sequence of meshes
  */
-void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame);
+void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame, void *self);
 
 /**
  * @brief queue up a model for rendering as a sky

@@ -102,6 +102,7 @@ int main(int argc, char *argv[]) {
 		uiFrame(delta);
 		gf3d_vgraphics_render_end();
 		slog_sync();
+		gf3d_model_clear_shadows();
 		if(gfc_input_command_down("exit")) done = true; // exit condition
 	}
 	vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());

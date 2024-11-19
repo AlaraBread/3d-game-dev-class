@@ -29,6 +29,8 @@ typedef struct {
 	Pipeline *pipe;			 /**<the pipeline associated with model rendering*/
 	Texture *defaultTexture; /**<if a model has no texture, use this one*/
 	Texture *defaultNormal;	 /**<if a model has no normal map, use this one*/
+	Shadow shadows[NUM_SHADOWS];
+	int current_shadow;
 } ModelManager;
 
 static ModelManager gf3d_model = {0};
@@ -460,25 +462,27 @@ MeshUBO gf3d_model_get_sky_ubo(GFC_Matrix4F modelMat, GFC_Vector4DF colorMod) {
 	return modelUBO;
 }
 
-void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame) {
+void gf3d_model_draw_all_meshes(Model *model, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame, void *self) {
 	int i, c;
 	if(!model) return;
 	c = gfc_list_get_count(model->mesh_list);
 	for(i = 0; i < c; i++) {
-		gf3d_model_draw_index(model, i, modelMat, colorMod, frame);
+		gf3d_model_draw_index(model, i, modelMat, colorMod, frame, self);
 	}
 }
 
-void gf3d_model_draw(Model *model, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame) {
+void gf3d_model_draw(Model *model, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame, void *self) {
 	if(!model) return;
 	if(model->mesh_as_frame) {
-		gf3d_model_draw_index(model, frame, modelMat, colorMod, 0);
+		gf3d_model_draw_index(model, frame, modelMat, colorMod, 0, self);
 		return;
 	}
-	gf3d_model_draw_all_meshes(model, modelMat, colorMod, frame);
+	gf3d_model_draw_all_meshes(model, modelMat, colorMod, frame, self);
 }
 
-void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame) {
+void gf3d_model_draw_index(
+	Model *model, Uint32 index, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame, void *self
+) {
 	Mesh *mesh;
 	GFC_Matrix4F matrix = {0};
 	GFC_Vector4DF modColor = {0};
@@ -493,6 +497,14 @@ void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4F modelMat, GF
 	gfc_matrix4f_multiply(matrix, model->matrix, modelMat);
 
 	uboData.mesh = gf3d_mesh_get_ubo(matrix, colorMod);
+	for(int i = 0; i < NUM_SHADOWS; i++) {
+		if(self && gf3d_model.shadows[i].exclude == self) {
+			uboData.mesh.shadows[i].size = -1;
+		} else {
+			uboData.mesh.shadows[i].position = gf3d_model.shadows[i].position;
+			uboData.mesh.shadows[i].size = gf3d_model.shadows[i].size;
+		}
+	}
 
 	if(model->material) {
 		uboData.material = gf3d_material_get_ubo(model->material);
@@ -507,6 +519,20 @@ void gf3d_model_draw_index(Model *model, Uint32 index, GFC_Matrix4F modelMat, GF
 		texture = model->texture;
 	// queue up a render for batch rendering
 	gf3d_mesh_queue_render(mesh, gf3d_model.pipe, &uboData, texture);
+}
+
+void gf3d_model_add_shadow(GFC_Vector3DF position, float size, void *exclude) {
+	Shadow *shadow = &gf3d_model.shadows[gf3d_model.current_shadow++];
+	shadow->position = position;
+	shadow->size = size;
+	shadow->exclude = exclude;
+}
+
+void gf3d_model_clear_shadows() {
+	for(int i = 0; i < NUM_SHADOWS; i++) {
+		gf3d_model.shadows[i].size = -1;
+	}
+	gf3d_model.current_shadow = 0;
 }
 
 void gf3d_model_draw_sky(Model *model, GFC_Matrix4F modelMat, GFC_Color color) {

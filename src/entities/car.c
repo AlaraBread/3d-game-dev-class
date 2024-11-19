@@ -152,7 +152,7 @@ void carDraw(PhysicsBody *self) {
 		matrix, gfc_vector3d_to_float(self->position), gfc_vector4d_to_float(quat), gfc_vector3df(1, 1, 1)
 	);
 	gfc_matrix4f_multiply(matrix, self->visualTransform, matrix);
-	gf3d_model_draw(self->model, matrix, gfc_color(1, 1, 1, 1), 0);
+	gf3d_model_draw(self->model, matrix, gfc_color(1, 1, 1, 1), 0, self);
 	for(int i = 0; i < 4; i++) {
 		GFC_Vector3D wheelPos = wheelOffset(i);
 		gfc_vector3d_add(
@@ -172,7 +172,7 @@ void carDraw(PhysicsBody *self) {
 		gfc_matrix4f_from_vectors_q(
 			wheelMat, gfc_vector3d_to_float(wheelPos), gfc_vector4d_to_float(quat), gfc_vector3df(radius, 1, radius)
 		);
-		gf3d_model_draw(self->entity.player.wheelModel, wheelMat, gfc_color(1, 1, 1, 1), 0);
+		gf3d_model_draw(self->entity.player.wheelModel, wheelMat, gfc_color(1, 1, 1, 1), 0, self);
 	}
 }
 

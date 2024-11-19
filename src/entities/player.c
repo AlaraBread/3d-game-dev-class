@@ -153,6 +153,11 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 		cameraPos = rayCol.position;
 	}
 	gf3d_camera_look_at(self->position, &cameraPos);
+	GFC_Vector3D down = self->position;
+	down.z -= 5000;
+	ray = gfc_edge3d_from_vectors(self->position, down);
+	rayCol = castRay(ray, self);
+	if(rayCol.hit) gf3d_model_add_shadow(gfc_vector3d_to_float(rayCol.position), 4, self);
 }
 
 void freePlayer(PhysicsBody *self) {

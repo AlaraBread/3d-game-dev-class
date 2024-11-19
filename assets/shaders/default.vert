@@ -4,31 +4,30 @@
 const uint MAX_LIGHTS = 16;
 
 struct MeshUBO {
-	mat4    model;
-	mat4    view;
-	mat4    proj;
-	vec4    color; 
-	vec4    camera;            //needed for many light calculations
+	mat4 model;
+	mat4 view;
+	mat4 proj;
+	vec4 color;
+	vec4 camera; // needed for many light calculations
 };
 
 struct MaterialUBO {
-	vec4    ambient;        //how much ambient light affects this material
-	vec4    diffuse;        //how much diffuse light affects this material - primary influcen for material color
-	vec4    specular;       //color of the shine on the materials
-	vec4    emission;       //color that shows regardless of light
-	float   transparency;   //how translucent the material should be overall
-	float   shininess;      //how shiny the materials is.  // how pronounced the specular is
-	vec2    padding;        //for alignment
+	vec4 ambient;		// how much ambient light affects this material
+	vec4 diffuse;		// how much diffuse light affects this material - primary influcen for material color
+	vec4 specular;		// color of the shine on the materials
+	vec4 emission;		// color that shows regardless of light
+	float transparency; // how translucent the material should be overall
+	float shininess;	// how shiny the materials is.  // how pronounced the specular is
+	vec2 padding;		// for alignment
 };
 
 layout(binding = 0) uniform UniformBufferObject {
-	MeshUBO         mesh;
-	MaterialUBO     material;   //this may become an array
-} ubo;
+	MeshUBO mesh;
+	MaterialUBO material; // this may become an array
+}
+ubo;
 
-out gl_PerVertex {
-	vec4 gl_Position;
-};
+out gl_PerVertex { vec4 gl_Position; };
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inNormal;
@@ -46,7 +45,7 @@ void main() {
 	fragTexCoord = inTexCoord;
 
 	gl_Position = mvp * vec4(inPosition, 1.0);
-	tempPosition = ubo.mesh.model * vec4(inPosition, 1.0);//now in world space
+	tempPosition = ubo.mesh.model * vec4(inPosition, 1.0); // now in world space
 	normalMatrix = inverse(mat3(ubo.mesh.model));
 	fragNormal = normalize(inNormal * normalMatrix);
 	position = tempPosition.xyz;

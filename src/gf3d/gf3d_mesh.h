@@ -15,6 +15,18 @@
 // forward declaration:
 typedef struct ObjData_S ObjData;
 
+#define NUM_SHADOWS 64
+typedef struct Shadow {
+	GFC_Vector3DF position;
+	float size;
+	void *exclude;
+} Shadow;
+
+typedef struct UBOShadow {
+	GFC_Vector3DF position;
+	float size;
+} UBOShadow;
+
 // absolute basics of the mesh information sent to the graphics card
 typedef struct {
 	GFC_Matrix4F model;
@@ -22,6 +34,7 @@ typedef struct {
 	GFC_Matrix4F proj;
 	GFC_Vector4DF color;
 	GFC_Vector4DF camera;
+	UBOShadow shadows[NUM_SHADOWS];
 } MeshUBO;
 
 typedef struct {

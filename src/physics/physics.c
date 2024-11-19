@@ -185,7 +185,7 @@ void drawPhysicsObjects() {
 				matrix, gfc_vector3d_to_float(body->position), gfc_vector4d_to_float(quat), gfc_vector3df(1, 1, 1)
 			);
 			gfc_matrix4f_multiply(matrix, body->visualTransform, matrix);
-			gf3d_model_draw(body->model, matrix, body->colorMod, 0);
+			gf3d_model_draw(body->model, matrix, body->colorMod, 0, body);
 		}
 	}
 }
