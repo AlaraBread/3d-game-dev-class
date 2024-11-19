@@ -93,7 +93,7 @@ void main() {
 		outColor = (round(clamp((d + 2.0) * 0.5, 0.0, 1.0) * bands) / bands) * surfaceColor;
 	}
 	if(isShadow) {
-		outColor = mix(vec4(0.0, 0.0, 0.0, 1.0), surfaceColor, 0.3);
+		outColor = mix(vec4(0.0, 0.0, 0.0, 1.0), surfaceColor, 0.7);
 		normal = -normal;
 	}
 	outColor.w = 1.0;
