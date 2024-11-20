@@ -190,7 +190,7 @@ ObjData *gf3d_gltf_parse_primitive(GLTF *gltf, SJson *primitive) {
 
 	if(sj_object_get_value_as_int(attributes, "POSITION", &index)) {
 		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->vertex_count)) {
-			obj->vertices = (GFC_Vector3D *)gfc_allocate_array(sizeof(GFC_Vector3D), obj->vertex_count);
+			obj->vertices = (GFC_Vector3DF *)gfc_allocate_array(sizeof(GFC_Vector3DF), obj->vertex_count);
 
 			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->vertices);
 
@@ -205,7 +205,7 @@ ObjData *gf3d_gltf_parse_primitive(GLTF *gltf, SJson *primitive) {
 	}
 	if(sj_object_get_value_as_int(attributes, "NORMAL", &index)) {
 		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->normal_count)) {
-			obj->normals = (GFC_Vector3D *)gfc_allocate_array(sizeof(GFC_Vector3D), obj->normal_count);
+			obj->normals = (GFC_Vector3DF *)gfc_allocate_array(sizeof(GFC_Vector3DF), obj->normal_count);
 
 			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->normals);
 		} else
@@ -214,7 +214,7 @@ ObjData *gf3d_gltf_parse_primitive(GLTF *gltf, SJson *primitive) {
 
 	if(sj_object_get_value_as_int(attributes, "TEXCOORD_0", &index)) {
 		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->texel_count)) {
-			obj->texels = (GFC_Vector2D *)gfc_allocate_array(sizeof(GFC_Vector2D), obj->texel_count);
+			obj->texels = (GFC_Vector2DF *)gfc_allocate_array(sizeof(GFC_Vector2DF), obj->texel_count);
 
 			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->texels);
 		} else
@@ -234,7 +234,7 @@ ObjData *gf3d_gltf_parse_primitive(GLTF *gltf, SJson *primitive) {
 	// bone weights
 	if(sj_object_get_value_as_int(attributes, "WEIGHTS_0", &index)) {
 		if(gf3d_gltf_accessor_get_details(gltf, index, &bufferIndex, (int *)&obj->weight_count)) {
-			obj->boneWeights = (GFC_Vector4D *)gfc_allocate_array(sizeof(GFC_Vector4D), obj->weight_count);
+			obj->boneWeights = (GFC_Vector4DF *)gfc_allocate_array(sizeof(GFC_Vector4DF), obj->weight_count);
 
 			gf3d_gltf_get_buffer_view_data(gltf, bufferIndex, (char *)obj->boneWeights);
 		} else

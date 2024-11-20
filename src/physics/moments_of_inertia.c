@@ -33,5 +33,17 @@ void calculateInertiaForBody(PhysicsBody *body) {
 		body->mass = 1000000000000;
 		return;
 	}
+	switch(body->shape.shapeType) {
+		case SPHERE:
+			body->boundingRadius = body->shape.shape.sphere.radius;
+			break;
+		case BOX:
+			body->boundingRadius =
+				MAX(MAX(body->shape.shape.box.extents.x, body->shape.shape.box.extents.y),
+					body->shape.shape.box.extents.z);
+			break;
+		default:
+			break;
+	}
 	body->inertia = getInertiaForBody(body);
 }

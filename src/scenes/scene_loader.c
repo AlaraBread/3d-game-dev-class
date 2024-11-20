@@ -1,5 +1,6 @@
 #include "gf2d_mouse.h"
 #include "gf3d_gltf_parse.h"
+#include "gf3d_obj_load.h"
 #include "gfc_config.h"
 #include "moments_of_inertia.h"
 #include "physics.h"
@@ -77,18 +78,23 @@ void loadScene(const char *filename) {
 		Bool useTransform = true;
 		if(!entityType) {
 			continue;
-		} else if(strcmp(entityType, "floor") == 0) {
+		} else if(strcmp(entityType, "floor_invisible") == 0) {
+			entity = physicsCreateBody();
+			entity->shape.shapeType = CONVEX_HULL;
+			// dont worry about multiple primitives in a mesh
+			ObjData *objData = ((MeshPrimitive *)gfc_list_get_nth(mesh->primitives, 0))->objData;
+			entity->shape.shape.convexHull.mesh = objData;
+			entity->motionType = STATIC;
+			calculateInertiaForBody(entity);
+			entity->boundingRadius = MAX(MAX(objData->bounds.w, objData->bounds.h), objData->bounds.d) * 2;
+		} else if(strcmp(entityType, "visual") == 0) {
 			entity = physicsCreateBody();
 			Model *model = gf3d_model_new();
 			model->texture = gf3d_texture_load("assets/textures/checker.png");
 			gfc_list_append(model->mesh_list, mesh);
 			mesh->_refCount += 1;
 			entity->model = model;
-			entity->shape.shapeType = CONVEX_HULL;
-			// dont worry about multiple primitives in a mesh
-			entity->shape.shape.convexHull.mesh = ((MeshPrimitive *)gfc_list_get_nth(mesh->primitives, 0))->objData;
-			entity->motionType = STATIC;
-			calculateInertiaForBody(entity);
+			entity->motionType = TRIGGER;
 		} else if(strcmp(entityType, "player") == 0) {
 			entity = createPlayer();
 		} else if(strcmp(entityType, "box_floor") == 0) {

@@ -68,6 +68,7 @@ struct PhysicsBody_s {
 	GFC_Color colorMod;
 	Model *model;
 	Shape shape;
+	double boundingRadius;
 	int numReportedCollisions;
 	Collision reportedCollisions[MAX_REPORTED_COLLISIONS];
 	void (*physicsProcess)(PhysicsBody *, double);

@@ -67,6 +67,7 @@ static void physicsBodyInitialize(PhysicsBody *body) {
 	body->friction = 1.0;
 	body->bounce = 1.0;
 	body->colorMod = gfc_color(1, 1, 1, 1);
+	body->boundingRadius = INFINITY;
 }
 
 void setTimeScale(double scale) { physics.timeScale = scale; }
@@ -116,6 +117,7 @@ void physicsUpdate(double delta) {
 			if(i <= j) continue;
 			PhysicsBody *otherBody = &physics.physicsBodies[j];
 			if(!otherBody->inuse) continue;
+			if(body->motionType != DYNAMIC && otherBody->motionType != DYNAMIC) continue;
 			Collision col = doCollision(body, otherBody);
 			if(!col.hit) continue;
 			col.a = body;

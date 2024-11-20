@@ -1,5 +1,8 @@
-#include "shapes.h"
 #include "gf3d_draw.h"
+#include "gf3d_obj_load.h"
+#include "simple_logger.h"
+
+#include "shapes.h"
 #include "util.h"
 
 GFC_Vector3D sphereSupport(Shape *shape, GFC_Vector3D direction) {
@@ -14,8 +17,20 @@ GFC_Vector3D boxSupport(Shape *shape, GFC_Vector3D direction) {
 }
 
 GFC_Vector3D convexHullSupport(Shape *shape, GFC_Vector3D direction) {
-	// todo
-	return gfc_vector3d(1, 0, 0);
+	ObjData *obj = shape->shape.convexHull.mesh;
+	int vertexCount = obj->vertex_count;
+	GFC_Vector3DF *verts = obj->vertices;
+	double closestDist = INFINITY;
+	GFC_Vector3D closestVert = {0};
+	for(int i = 0; i < vertexCount; i++) {
+		GFC_Vector3D vert = gfc_vector3df_to_double(verts[i]);
+		double dist = gfc_vector3d_dot_product(vert, direction);
+		if(closestDist > dist) {
+			closestDist = dist;
+			closestVert = vert;
+		}
+	}
+	return closestVert;
 }
 
 GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction) {

@@ -1,4 +1,5 @@
 #include "raycast.h"
+#include "gf3d_obj_load.h"
 #include "gfc_vector.h"
 #include "physics.h"
 #include "util.h"
@@ -95,6 +96,27 @@ RayCollision boxRayTest(GFC_Edge3D ray, PhysicsBody *body) {
 	return col;
 }
 
+RayCollision meshRayTest(GFC_Edge3D ray, PhysicsBody *body) {
+	GFC_Vector3D startGlobal = ray.a;
+	GFC_Vector3D invRotation;
+	gfc_vector3d_negate(invRotation, body->rotation);
+	gfc_vector3d_sub(ray.a, ray.a, body->position);
+	gfc_vector3d_sub(ray.b, ray.b, body->position);
+	rotate_vector3_by_euler_vector(&ray.a, invRotation);
+	rotate_vector3_by_euler_vector(&ray.b, invRotation);
+	GFC_Vector3D dir;
+	gfc_vector3d_sub(dir, ray.b, ray.a);
+	gfc_vector3d_normalize(&dir);
+	RayCollision col = {0};
+	GFC_Matrix4F identity;
+	gfc_matrix4f_identity(identity);
+	col.hit = gf3d_obj_edge_test(body->shape.shape.convexHull.mesh, identity, ray, &col.position);
+	rotate_vector3_by_euler_vector(&col.position, body->rotation);
+	gfc_vector3d_add(col.position, col.position, body->position);
+	if(col.hit) col.dist = gfc_vector3d_magnitude_between(col.position, startGlobal);
+	return col;
+}
+
 RayCollision rayTest(GFC_Edge3D ray, PhysicsBody *body) {
 	RayCollision col = {0};
 	if(body->motionType == TRIGGER) { return col; }
@@ -103,8 +125,8 @@ RayCollision rayTest(GFC_Edge3D ray, PhysicsBody *body) {
 			return sphereRayTest(ray, body);
 		case BOX:
 			return boxRayTest(ray, body);
-		default:
-			break;
+		case CONVEX_HULL:
+			return meshRayTest(ray, body);
 	}
 	return col;
 }

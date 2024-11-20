@@ -4,15 +4,15 @@
 #include "gf3d_mesh.h"
 
 struct ObjData_S {
-	GFC_Vector3D *vertices;
+	GFC_Vector3DF *vertices;
 	Uint32 vertex_count;
-	GFC_Vector3D *normals;
+	GFC_Vector3DF *normals;
 	Uint32 normal_count;
-	GFC_Vector2D *texels;
+	GFC_Vector2DF *texels;
 	Uint32 texel_count;
 	GFC_Vector4UI8 *boneIndices;
 	Uint32 bone_count;
-	GFC_Vector4D *boneWeights;
+	GFC_Vector4DF *boneWeights;
 	Uint32 weight_count;
 
 	Face *faceVerts;

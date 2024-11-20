@@ -10,6 +10,13 @@
 Collision mpr(PhysicsBody *a, PhysicsBody *b);
 
 Collision doCollision(PhysicsBody *a, PhysicsBody *b) {
+	double distSquared = gfc_vector3d_magnitude_between_squared(a->position, b->position);
+	double r = a->boundingRadius + b->boundingRadius;
+	r = r * r;
+	if(distSquared > r) {
+		Collision col = {0};
+		return col;
+	}
 	switch(a->shape.shapeType) {
 		case SPHERE: {
 			switch(b->shape.shapeType) {
