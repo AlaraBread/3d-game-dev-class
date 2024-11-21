@@ -163,7 +163,12 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 	} else {
 		shadowSize = self->shape.shape.box.extents.x;
 	}
-	if(rayCol.hit) gf3d_model_add_shadow(gfc_vector3d_to_float(rayCol.position), shadowSize, self);
+	if(rayCol.hit)
+		gf3d_model_add_shadow(
+			gfc_vector3d_to_float(self->position), gfc_vector3d_to_float(rayCol.position), shadowSize, self
+		);
+	else
+		gf3d_model_add_shadow(gfc_vector3d_to_float(self->position), gfc_vector3d_to_float(down), shadowSize, self);
 }
 
 void freePlayer(PhysicsBody *self) {

@@ -164,7 +164,7 @@ void gf3d_model_draw_index(
 	Model *model, Uint32 index, GFC_Matrix4F modelMat, GFC_Color colorMod, Uint32 frame, void *self
 );
 
-void gf3d_model_add_shadow(GFC_Vector3DF position, float size, void *exclude);
+void gf3d_model_add_shadow(GFC_Vector3DF top, GFC_Vector3DF bottom, float size, void *exclude);
 void gf3d_model_clear_shadows();
 
 /**

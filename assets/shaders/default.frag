@@ -4,8 +4,10 @@
 const uint MAX_SHADOWS = 64;
 
 struct Shadow {
-	vec3 position;
+	vec3 top;
 	float size;
+	vec3 bottom;
+	float padding;
 };
 
 struct MeshUBO {
@@ -69,7 +71,11 @@ void main() {
 	for(int i = 0; i < MAX_SHADOWS; i++) {
 		float size = ubo.mesh.shadows[i].size;
 		if(size < 0) { break; }
-		if(length(worldPos - ubo.mesh.shadows[i].position) < size) {
+		float horizontalDist = length(worldPos.xy - ubo.mesh.shadows[i].bottom.xy);
+		float dist = length(worldPos - ubo.mesh.shadows[i].bottom);
+		if(worldPos.z < ubo.mesh.shadows[i].top.z && worldPos.z > ubo.mesh.shadows[i].bottom.z &&
+			   horizontalDist < size ||
+		   dist < size) {
 			isShadow = true;
 			break;
 		}
@@ -94,7 +100,7 @@ void main() {
 	}
 	if(isShadow) {
 		outColor = mix(vec4(0.0, 0.0, 0.0, 1.0), surfaceColor, 0.7);
-		normal = -normal;
+		normal = -normal; // draw outline around shadow
 	}
 	outColor.w = 1.0;
 	normalColor.xyz = (normal + vec3(1)) / 2;

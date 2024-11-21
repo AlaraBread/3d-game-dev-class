@@ -24,7 +24,8 @@ void powerupFrameProcess(PhysicsBody *self, double delta) {
 	down.z -= 5000;
 	GFC_Edge3D ray = gfc_edge3d_from_vectors(self->position, down);
 	RayCollision rayCol = castRay(ray, self);
-	if(rayCol.hit) gf3d_model_add_shadow(gfc_vector3d_to_float(rayCol.position), 2, self);
+	if(rayCol.hit)
+		gf3d_model_add_shadow(gfc_vector3d_to_float(self->position), gfc_vector3d_to_float(rayCol.position), 2, self);
 }
 
 Bool pickupPowerup(PhysicsBody *self, PhysicsBody *player) {

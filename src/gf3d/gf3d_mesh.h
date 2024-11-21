@@ -17,14 +17,16 @@ typedef struct ObjData_S ObjData;
 
 #define NUM_SHADOWS 64
 typedef struct Shadow {
-	GFC_Vector3DF position;
+	GFC_Vector3DF top, bottom;
 	float size;
 	void *exclude;
 } Shadow;
 
 typedef struct UBOShadow {
-	GFC_Vector3DF position;
+	GFC_Vector3DF top;
 	float size;
+	GFC_Vector3DF bottom;
+	float padding;
 } UBOShadow;
 
 // absolute basics of the mesh information sent to the graphics card

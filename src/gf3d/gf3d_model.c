@@ -501,7 +501,8 @@ void gf3d_model_draw_index(
 		if(self && gf3d_model.shadows[i].exclude == self) {
 			uboData.mesh.shadows[i].size = -1;
 		} else {
-			uboData.mesh.shadows[i].position = gf3d_model.shadows[i].position;
+			uboData.mesh.shadows[i].top = gf3d_model.shadows[i].top;
+			uboData.mesh.shadows[i].bottom = gf3d_model.shadows[i].bottom;
 			uboData.mesh.shadows[i].size = gf3d_model.shadows[i].size;
 		}
 	}
@@ -521,9 +522,11 @@ void gf3d_model_draw_index(
 	gf3d_mesh_queue_render(mesh, gf3d_model.pipe, &uboData, texture);
 }
 
-void gf3d_model_add_shadow(GFC_Vector3DF position, float size, void *exclude) {
+void gf3d_model_add_shadow(GFC_Vector3DF top, GFC_Vector3DF bottom, float size, void *exclude) {
+	bottom.z -= 1.0;
 	Shadow *shadow = &gf3d_model.shadows[gf3d_model.current_shadow++];
-	shadow->position = position;
+	shadow->top = top;
+	shadow->bottom = bottom;
 	shadow->size = size;
 	shadow->exclude = exclude;
 }
