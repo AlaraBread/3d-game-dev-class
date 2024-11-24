@@ -147,7 +147,9 @@ void loadScene(const char *filename) {
 			gfc_vector3d_sub(velocity, targetPos, position);
 			entity = createTreadmill(extents, velocity);
 		} else if(strcmp(entityType, "finish") == 0) {
-			entity = createFinish(extents);
+			entity = createFinish(gfc_vector3df_to_double(position));
+			quat_to_euler_vector(&entity->rotation, gfc_vector4df_to_double(rotation));
+			useTransform = false;
 		} else if(strcmp(entityType, "powerup") == 0) {
 			const char *typeString = sj_get_string_value(sj_object_get_value(extras, "type"));
 			if(!typeString) {

@@ -19,19 +19,19 @@ void finishPhysicsProcess(PhysicsBody *finish, double delta) {
 	}
 }
 
-PhysicsBody *createFinish(GFC_Vector3D extents) {
+PhysicsBody *createFinish(GFC_Vector3D position) {
 	PhysicsBody *finish = physicsCreateBody();
 	finish->motionType = TRIGGER;
 	Shape boxShape;
 	boxShape.shapeType = BOX;
-	boxShape.shape.box.extents = extents;
+	boxShape.shape.box.extents = gfc_vector3d(4, 4, 5);
 	finish->shape = boxShape;
-	Model *model = gf3d_model_load("assets/models/test_cube/test_cube.model");
+	Model *model = gf3d_model_load("assets/models/flag/flag.model");
 	finish->model = model;
 	finish->physicsProcess = finishPhysicsProcess;
-	gfc_matrix4f_scale(
-		finish->visualTransform, finish->visualTransform, gfc_vector3d_to_float(boxShape.shape.box.extents)
-	);
+	gfc_matrix4f_translate(finish->visualTransform, finish->visualTransform, gfc_vector3df(0, 0, -5));
+	position.z += 5;
+	finish->position = position;
 	finish->colorMod = gfc_color(1, 1, 1, 1.0);
 	finish->colorMod.r = 3;
 	finish->colorMod.g = 3;

@@ -3,6 +3,6 @@
 
 #include "physics.h"
 
-PhysicsBody *createFinish(GFC_Vector3D extents);
+PhysicsBody *createFinish(GFC_Vector3D position);
 
 #endif

@@ -35,8 +35,8 @@
 
 // all inclusive of features
 typedef struct {
-	MeshUBO mesh;
 	MaterialUBO material; // this may become an array
+	MeshUBO mesh;
 } ModelUBO;
 
 /**

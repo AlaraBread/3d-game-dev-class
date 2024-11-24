@@ -51,6 +51,7 @@ GF3D_Material *gf3d_material_new() {
 	material->transparency = 1.0;
 	material->shininess = 128;
 	material->ior = 1.0;
+	material->flag = 0.0;
 	gfc_list_append(material_manager.materials, material);
 	return material;
 }
@@ -191,6 +192,7 @@ GF3D_Material *gf3d_material_parse_js(SJson *json, const char *filename) {
 	sj_object_get_color_value(json, "emit", &material->emissive);
 	sj_object_get_value_as_float(json, "transparency", &material->transparency);
 	sj_object_get_value_as_float(json, "shininess", &material->shininess);
+	sj_object_get_value_as_float(json, "flag", &material->flag);
 	return material;
 }
 
@@ -250,27 +252,23 @@ void gf3d_material_delete(GF3D_Material *material) {
 	free(material);
 }
 
+extern double g_time;
+
 MaterialUBO gf3d_material_get_ubo(GF3D_Material *material) {
 	MaterialUBO ubo = {0};
 	if(!material) return ubo;
 
-	ubo.ambient = gfc_color_to_vector4f(material->ambient);
 	ubo.diffuse = gfc_color_to_vector4f(material->diffuse);
-	ubo.specular = gfc_color_to_vector4f(material->specular);
-	ubo.emission = gfc_color_to_vector4f(material->emissive);
-	ubo.shininess = material->shininess;
 	ubo.transparency = material->transparency;
+	ubo.flag = material->flag;
+	ubo.time = g_time;
 
 	return ubo;
 }
 
 MaterialUBO gf3d_material_make_basic_ubo(GFC_Color diffuse) {
 	MaterialUBO material = {0};
-	material.ambient = gfc_vector4df(1, 1, 1, 1);
-	material.specular = gfc_vector4df(1, 1, 1, 1);
 	material.diffuse = gfc_color_to_vector4f(diffuse);
-	material.emission = gfc_vector4df(0, 0, 0, 0);
-	material.shininess = 128;
 	material.transparency = 1.0;
 	return material;
 }

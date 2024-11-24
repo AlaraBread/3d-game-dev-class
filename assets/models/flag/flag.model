@@ -1,7 +1,7 @@
 {
     "model":
     {
-        "obj":"assets/models/test_sphere/test_sphere.obj",
+        "obj":"assets/models/flag/flag.obj",
         "texture":"assets/textures/checker.png",
         "material":
         {

@@ -38,6 +38,8 @@ void parse_arguments(int argc, char *argv[]);
 
 double calculate_delta_time();
 
+double g_time = 0.0;
+
 int main(int argc, char *argv[]) {
 	// initializtion
 	parse_arguments(argc, argv);
@@ -86,6 +88,7 @@ int main(int argc, char *argv[]) {
 		gfc_input_update();
 		gf2d_mouse_update();
 		double delta = calculate_delta_time();
+		g_time += delta;
 		gf2d_font_update();
 		// camera updaes
 		physicsFrame(delta);

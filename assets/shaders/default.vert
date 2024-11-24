@@ -1,6 +1,100 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
+// from https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
+
+float rand(vec2 c) { return fract(sin(dot(c.xy, vec2(12.9898, 78.233))) * 43758.5453); }
+
+#define M_PI 3.14159265358979323846
+
+float noise(vec2 p, float freq) {
+	float unit = 1.0 / freq;
+	vec2 ij = floor(p / unit);
+	vec2 xy = mod(p, unit) / unit;
+	// xy = 3.*xy*xy-2.*xy*xy*xy;
+	xy = .5 * (1. - cos(M_PI * xy));
+	float a = rand((ij + vec2(0., 0.)));
+	float b = rand((ij + vec2(1., 0.)));
+	float c = rand((ij + vec2(0., 1.)));
+	float d = rand((ij + vec2(1., 1.)));
+	float x1 = mix(a, b, xy.x);
+	float x2 = mix(c, d, xy.x);
+	return mix(x1, x2, xy.y);
+}
+
+float pNoise(vec2 p, int res) {
+	float persistance = .5;
+	float n = 0.;
+	float normK = 0.;
+	float f = 4.;
+	float amp = 1.;
+	int iCount = 0;
+	for(int i = 0; i < 50; i++) {
+		n += amp * noise(p, f);
+		f *= 2.;
+		normK += amp;
+		amp *= persistance;
+		if(iCount == res) break;
+		iCount++;
+	}
+	float nf = n / normK;
+	return nf * nf * nf * nf;
+}
+
+float rand(vec2 co, float l) { return rand(vec2(rand(co), l)); }
+float rand(vec2 co, float l, float t) { return rand(vec2(rand(co, l), t)); }
+
+float perlin(vec2 p, float dim, float time) {
+	vec2 pos = floor(p * dim);
+	vec2 posx = pos + vec2(1.0, 0.0);
+	vec2 posy = pos + vec2(0.0, 1.0);
+	vec2 posxy = pos + vec2(1.0);
+
+	float c = rand(pos, dim, time);
+	float cx = rand(posx, dim, time);
+	float cy = rand(posy, dim, time);
+	float cxy = rand(posxy, dim, time);
+
+	vec2 d = fract(p * dim);
+	d = -0.5 * cos(d * M_PI) + 0.5;
+
+	float ccx = mix(c, cx, d.x);
+	float cycxy = mix(cy, cxy, d.x);
+	float center = mix(ccx, cycxy, d.y);
+
+	return center * 2.0 - 1.0;
+}
+
+// p must be normalized!
+float perlin(vec2 p, float dim) {
+
+	/*vec2 pos = floor(p * dim);
+	vec2 posx = pos + vec2(1.0, 0.0);
+	vec2 posy = pos + vec2(0.0, 1.0);
+	vec2 posxy = pos + vec2(1.0);
+
+	// For exclusively black/white noise
+	/*float c = step(rand(pos, dim), 0.5);
+	float cx = step(rand(posx, dim), 0.5);
+	float cy = step(rand(posy, dim), 0.5);
+	float cxy = step(rand(posxy, dim), 0.5);*/
+
+	/*float c = rand(pos, dim);
+	float cx = rand(posx, dim);
+	float cy = rand(posy, dim);
+	float cxy = rand(posxy, dim);
+
+	vec2 d = fract(p * dim);
+	d = -0.5 * cos(d * M_PI) + 0.5;
+
+	float ccx = mix(c, cx, d.x);
+	float cycxy = mix(cy, cxy, d.x);
+	float center = mix(ccx, cycxy, d.y);
+
+	return center * 2.0 - 1.0;*/
+	return perlin(p, dim, 0.0);
+}
+
 const uint MAX_LIGHTS = 16;
 
 struct MeshUBO {
@@ -12,18 +106,18 @@ struct MeshUBO {
 };
 
 struct MaterialUBO {
-	vec4 ambient;		// how much ambient light affects this material
 	vec4 diffuse;		// how much diffuse light affects this material - primary influcen for material color
-	vec4 specular;		// color of the shine on the materials
-	vec4 emission;		// color that shows regardless of light
 	float transparency; // how translucent the material should be overall
-	float shininess;	// how shiny the materials is.  // how pronounced the specular is
-	vec2 padding;		// for alignment
+	vec3 padding1;
+	float flag;
+	vec3 padding2;
+	float time;
+	vec3 padding3;
 };
 
 layout(binding = 0) uniform UniformBufferObject {
-	MeshUBO mesh;
 	MaterialUBO material; // this may become an array
+	MeshUBO mesh;
 }
 ubo;
 
@@ -38,15 +132,13 @@ layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out vec3 position;
 
 void main() {
-	vec4 tempPosition;
-	mat4 bone;
-	mat4 mvp = ubo.mesh.proj * ubo.mesh.view * ubo.mesh.model;
-	mat3 normalMatrix;
 	fragTexCoord = inTexCoord;
 
-	gl_Position = mvp * vec4(inPosition, 1.0);
-	tempPosition = ubo.mesh.model * vec4(inPosition, 1.0); // now in world space
-	normalMatrix = inverse(mat3(ubo.mesh.model));
+	vec3 worldPos = (ubo.mesh.model * vec4(inPosition, 1.0)).xyz;
+	// worldPos.z += perlin(vec2(sin(ubo.material.time) * 0.0, worldPos.y), 1.0, 0.0);
+	gl_Position = ubo.mesh.proj * ubo.mesh.view * vec4(worldPos, 1.0);
+
+	mat3 normalMatrix = inverse(mat3(ubo.mesh.model));
 	fragNormal = normalize(inNormal * normalMatrix);
-	position = tempPosition.xyz;
+	position = worldPos;
 }

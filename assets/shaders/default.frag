@@ -20,18 +20,18 @@ struct MeshUBO {
 };
 
 struct MaterialUBO {
-	vec4 ambient;		// how much ambient light affects this material
 	vec4 diffuse;		// how much diffuse light affects this material - primary influcen for material color
-	vec4 specular;		// color of the shine on the materials
-	vec4 emission;		// color that shows regardless of light
 	float transparency; // how translucent the material should be overall
-	float shininess;	// how shiny the materials is.  // how pronounced the specular is
-	vec2 padding;		// for alignment
+	vec3 padding1;
+	float flag;
+	vec3 padding2;
+	float time;
+	vec3 padding3;
 };
 
 layout(binding = 0) uniform UniformBufferObject {
-	MeshUBO mesh;
 	MaterialUBO material; // this may become an array
+	MeshUBO mesh;
 }
 ubo;
 

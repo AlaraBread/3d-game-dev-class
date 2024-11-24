@@ -14,15 +14,13 @@
  * in the vertex and fragment shaders
  */
 typedef struct {
-	GFC_Vector4DF ambient;	// how much ambient light affects this material
-	GFC_Vector4DF diffuse;	// how much diffuse light affects this material -
-							// primary influcen for material color
-	GFC_Vector4DF specular; // color of the shine on the materials
-	GFC_Vector4DF emission; // color that shows regardless of light
-	float transparency;		// how translucent the material should be overall
-	float shininess;		// how shiny the materials is.  // how pronounced the
-							// specular is
-	GFC_Vector2DF padding;	// for alignment
+	GFC_Vector4DF diffuse; // how much diffuse light affects this material - primary influcen for material color
+	float transparency;	   // how translucent the material should be overall
+	GFC_Vector3DF padding1;
+	float flag;
+	GFC_Vector3DF padding2;
+	float time;
+	GFC_Vector3DF padding3;
 } MaterialUBO;
 
 /**
@@ -43,6 +41,7 @@ typedef struct {
 	float transparency;		// how translucent the material should be overall
 	float shininess;		// how shiny the materials is.  // how pronounced the
 							// specular is
+	float flag;
 } GF3D_Material;
 
 /**
