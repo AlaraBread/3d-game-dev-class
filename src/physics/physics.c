@@ -76,7 +76,7 @@ double getTimeScale() { return physics.timeScale; }
 
 void physicsUpdate(double delta);
 
-#define FIXED_TIMESTEP (1.0 / 120.0)
+#define FIXED_TIMESTEP (1.0 / 90.0)
 #define MAX_TIMESTEPS_PER_FRAME 5
 void physicsFrame(double delta) {
 	static double physicsDelta = 0;
@@ -87,7 +87,7 @@ void physicsFrame(double delta) {
 		physicsDelta -= FIXED_TIMESTEP;
 		i++;
 		if(i > MAX_TIMESTEPS_PER_FRAME) {
-			slog("frame taking too long");
+			slog("frame taking %f seconds too long", physicsDelta);
 			physicsDelta = 0;
 			break;
 		}

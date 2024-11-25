@@ -9,6 +9,7 @@
 #include "util.h"
 
 #include "cobweb.h"
+#include "enemy_counter.h"
 #include "fan.h"
 #include "finish.h"
 #include "floor.h"
@@ -19,7 +20,10 @@
 #include "moving_platform.h"
 #include "player.h"
 #include "rotating_platform.h"
+#include "timer.h"
 #include "treadmill.h"
+
+#include "scene_loader.h"
 
 GFC_Vector3D lookupTarget(SJson *node, SJson *nodes) {
 	GFC_Vector3DF position = {0};
@@ -43,6 +47,8 @@ GFC_Vector3D lookupTarget(SJson *node, SJson *nodes) {
 	slog("node %s has invalid target", name);
 	return gfc_vector3df_to_double(position);
 }
+
+GameMode g_gamemode = TIME;
 
 void loadScene(const char *filename) {
 	clearUI();
@@ -78,6 +84,19 @@ void loadScene(const char *filename) {
 		Bool useTransform = true;
 		if(!entityType) {
 			continue;
+		} else if(strcmp(entityType, "level") == 0) {
+			const char *gameModeString = sj_get_string_value(sj_object_get_value(extras, "game_mode"));
+			if(!gameModeString) {
+				slog("missing game mode");
+				continue;
+			}
+			if(strcmp(gameModeString, "time") == 0) {
+				g_gamemode = TIME;
+				createTimer();
+			} else if(strcmp(gameModeString, "completion") == 0) {
+				g_gamemode = COMPLETION;
+				createEnemyCounter();
+			}
 		} else if(strcmp(entityType, "floor_invisible") == 0) {
 			entity = physicsCreateBody();
 			entity->shape.shapeType = CONVEX_HULL;
@@ -174,7 +193,7 @@ void loadScene(const char *filename) {
 			slog("unknown entity type: %s", entityType);
 			continue;
 		}
-		if(useTransform) {
+		if(entity && useTransform) {
 			entity->position = gfc_vector3df_to_double(position);
 			quat_to_euler_vector(&entity->rotation, gfc_vector4df_to_double(rotation));
 		}
