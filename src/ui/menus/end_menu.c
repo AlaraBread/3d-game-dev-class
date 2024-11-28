@@ -1,5 +1,6 @@
 #include "main_menu.h"
 #include "physics.h"
+#include "scene_loader.h"
 #include "ui.h"
 #include "util.h"
 

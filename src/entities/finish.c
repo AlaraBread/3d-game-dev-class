@@ -1,7 +1,7 @@
 #include "finish.h"
 #include "end_menu.h"
 #include "gf2d_mouse.h"
-#include "main_menu.h"
+#include "scene_loader.h"
 
 extern GameMode g_gamemode;
 extern int g_numEnemies;
