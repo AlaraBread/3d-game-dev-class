@@ -5,5 +5,6 @@
 
 PhysicsBody *createPlayer();
 void playerFrameProcess(PhysicsBody *self, double delta);
+void processPlayerSFX(PhysicsBody *self, double delta);
 
 #endif

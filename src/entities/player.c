@@ -105,40 +105,68 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 			self->visualTransform, self->visualTransform, gfc_vector3df(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS)
 		);
 	}
+	processPlayerSFX(self, delta);
+}
+
+void processPlayerSFX(PhysicsBody *self, double delta) {
+	Bool canHit = (self->entity.player.hitTimer -= delta) <= 0.0;
 	// select collision with largest penetration
 	double maxPenetration = 0.0;
 	Collision *selectedCollision = NULL;
 	for(int i = 0; i < MAX_REPORTED_COLLISIONS; i++) {
 		Collision *col = &self->reportedCollisions[i];
+		if(!col->hit) break;
 		PhysicsBody *other = col->a == self ? col->b : col->a;
-		if(col->hit && other->motionType > TRIGGER && col->penetrationDepth > maxPenetration) {
+		if(other->motionType <= TRIGGER) continue;
+		// hit sound
+		float volume =
+			SDL_clamp(gfc_vector3d_magnitude(projectVector(self->linearVelocity, col->normal)) * 0.005, 0.0, 1.0);
+		if(canHit && volume > 0.05) {
+			self->entity.player.hitTimer = 0.2;
+			playSound3D(col->aPosition, gfc_vector3d(0, 0, 0), volume, self->entity.player.hitSound, false);
+		}
+		if(col->penetrationDepth > maxPenetration) {
 			maxPenetration = col->penetrationDepth;
 			selectedCollision = col;
-		} else {
-			break;
 		}
 	}
 	Collision col = {0};
 	if(selectedCollision) col = *selectedCollision;
-	PhysicsBody *other = col.hit ? col.a == self ? col.b : col.a : NULL;
-	GFC_Vector3D otherPos = col.hit ? col.a == self ? col.bPosition : col.aPosition : gfc_vector3d(0, 0, 0);
 	// roll sound
-	GFC_Vector3D velocity = other ? velocityAtPoint(other, otherPos) : gfc_vector3d(0, 0, 0);
-	gfc_vector3d_sub(velocity, self->linearVelocity, velocity);
-	velocity = projectVectorOntoPlane(velocity, col.normal);
-	float rollSpeed = gfc_vector3d_magnitude(velocity);
-	float volume = lerp(
-		self->entity.player.prevVolume, col.hit && rollSpeed > 30 ? SDL_clamp(rollSpeed * 0.01, 0.0, 1.0) : 0.0,
-		1 - exp(-100 * delta)
-	);
-	updateSound3D(
-		self->entity.player.rollSoundHandle, col.aPosition, self->linearVelocity, volume,
-		SDL_clamp(rollSpeed * 0.05 + 0.9, 0.9, 1.1)
-	);
+	float volume;
+	float speed;
+	GFC_Vector3D velocity;
+	GFC_Vector3D position;
+	if(self->entity.player.isCar) {
+		position = self->position;
+		velocity = self->linearVelocity;
+		float rollSpeed = 0;
+		for(int i = 0; i < 4; i++) {
+			if(!self->entity.player.wheelContacts[i].hit) continue;
+			float v = fabs(self->entity.player.wheelVelocities[i]);
+			rollSpeed = MAX(rollSpeed, v);
+		}
+		volume = lerp(
+			self->entity.player.prevVolume, rollSpeed > 5 ? SDL_clamp(rollSpeed * 0.01, 0.0, 1.0) : 0.0,
+			1 - exp(-100 * delta)
+		);
+		speed = SDL_clamp(rollSpeed * 0.05 + 0.9, 0.9, 1.1);
+	} else {
+		PhysicsBody *other = col.hit ? col.a == self ? col.b : col.a : NULL;
+		GFC_Vector3D otherPos = col.hit ? col.a == self ? col.bPosition : col.aPosition : gfc_vector3d(0, 0, 0);
+		position = col.hit ? col.a == self ? col.aPosition : col.bPosition : self->position;
+		velocity = other ? velocityAtPoint(other, otherPos) : gfc_vector3d(0, 0, 0);
+		gfc_vector3d_sub(velocity, self->linearVelocity, velocity);
+		velocity = projectVectorOntoPlane(velocity, col.normal);
+		float rollSpeed = gfc_vector3d_magnitude(velocity);
+		volume = lerp(
+			self->entity.player.prevVolume, col.hit && rollSpeed > 30 ? SDL_clamp(rollSpeed * 0.01, 0.0, 1.0) : 0.0,
+			1 - exp(-100 * delta)
+		);
+		speed = SDL_clamp(rollSpeed * 0.05 + 0.9, 0.9, 1.1);
+	}
+	updateSound3D(self->entity.player.rollSoundHandle, position, velocity, volume, speed);
 	self->entity.player.prevVolume = volume;
-	// hit sound
-	volume = SDL_clamp(gfc_vector3d_magnitude(projectVector(self->linearVelocity, col.normal)) * 0.005, 0.0, 1.0);
-	if(volume > 0.05) playSound3D(col.aPosition, gfc_vector3d(0, 0, 0), volume, self->entity.player.hitSound, false);
 }
 
 void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]) {
@@ -210,8 +238,11 @@ void freePlayer(PhysicsBody *self) {
 	if(self->entity.player.boxModel) gf3d_model_free(self->entity.player.boxModel);
 	if(self->entity.player.sphereModel) gf3d_model_free(self->entity.player.sphereModel);
 	self->model = NULL; // make sure we dont free twice
+	stopSound(self->entity.player.rollSoundHandle);
 	if(self->entity.player.rollSound) freeSound(self->entity.player.rollSound);
 	self->entity.player.rollSound = NULL;
+	if(self->entity.player.hitSound) freeSound(self->entity.player.hitSound);
+	self->entity.player.hitSound = NULL;
 }
 
 PhysicsBody *g_player = NULL;
@@ -243,5 +274,6 @@ PhysicsBody *createPlayer() {
 	player->entity.player.rollSoundHandle =
 		playSound3D(player->position, player->linearVelocity, 1.0, player->entity.player.rollSound, true);
 	g_player = player;
+	player->free = freePlayer;
 	return player;
 }

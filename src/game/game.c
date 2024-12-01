@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
 		gf3d_camera_get_view_vectors(&forward, NULL, &up);
 		GFC_Vector3D position = gf3d_camera_get_position();
 		GFC_Vector3D velocity;
-		gfc_vector3d_sub(velocity, prevPosition, position);
+		gfc_vector3d_sub(velocity, position, prevPosition);
 		gfc_vector3d_scale(velocity, velocity, 1.0 / delta);
 		updateListener3D(position, forward, up, velocity);
 		prevPosition = position;

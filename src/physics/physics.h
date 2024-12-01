@@ -87,13 +87,14 @@ struct PhysicsBody_s {
 			double wheelRotations[4];
 			double wheelVelocities[4];
 			double wheelDistances[4];
+			RayCollision wheelContacts[4];
 			double wheelRadius, steer;
 			double speedMult, jumpMult;
 			Bool isCar, isCubed;
 			Bool done;
 			Sound *rollSound, *hitSound;
 			unsigned int rollSoundHandle;
-			float prevVolume;
+			float prevVolume, hitTimer;
 		} player;
 		struct {
 			GFC_Vector3D movementStart, movementEnd;

@@ -79,6 +79,7 @@ void carPhysicsProcess(PhysicsBody *self, double delta) {
 		end = physicsBodyLocalToGlobal(self, end);
 		GFC_Edge3D ray = gfc_edge3d_from_vectors(start, end);
 		RayCollision col = castRay(ray, self);
+		self->entity.player.wheelContacts[i] = col;
 		self->entity.player.wheelRotations[i] += self->entity.player.wheelVelocities[i] * delta;
 		if(!col.hit) {
 			self->entity.player.wheelDistances[i] = suspensionDistance;
@@ -142,6 +143,7 @@ void carPhysicsProcess(PhysicsBody *self, double delta) {
 		newPlayer->entity.player.yaw = self->entity.player.yaw;
 		physicsFreeBody(self);
 	}
+	processPlayerSFX(self, delta);
 }
 
 void carDraw(PhysicsBody *self) {
@@ -176,7 +178,14 @@ void carDraw(PhysicsBody *self) {
 	}
 }
 
-void carFree(PhysicsBody *self) { gf3d_model_free(self->entity.player.wheelModel); }
+void carFree(PhysicsBody *self) {
+	gf3d_model_free(self->entity.player.wheelModel);
+	stopSound(self->entity.player.rollSoundHandle);
+	if(self->entity.player.rollSound) freeSound(self->entity.player.rollSound);
+	self->entity.player.rollSound = NULL;
+	if(self->entity.player.hitSound) freeSound(self->entity.player.hitSound);
+	self->entity.player.hitSound = NULL;
+}
 
 extern PhysicsBody *g_player;
 PhysicsBody *createCarPlayer() {
@@ -202,6 +211,10 @@ PhysicsBody *createCarPlayer() {
 	player->free = carFree;
 	player->entityType = PLAYER;
 	player->entity.player.isCar = true;
+	player->entity.player.rollSound = loadSound("assets/sfx/roll.wav");
+	player->entity.player.hitSound = loadSound("assets/sfx/hit.wav");
+	player->entity.player.rollSoundHandle =
+		playSound3D(player->position, player->linearVelocity, 1.0, player->entity.player.rollSound, true);
 	g_player = player;
 	return player;
 }

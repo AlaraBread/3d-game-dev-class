@@ -11,11 +11,9 @@ Sound *g_sounds = NULL;
 void endSound();
 void startSound() {
 	g_soloud = Soloud_create();
-	Soloud_initEx(
-		g_soloud, SOLOUD_CLIP_ROUNDOFF | SOLOUD_ENABLE_VISUALIZATION, SOLOUD_AUTO, SOLOUD_AUTO, 128, SOLOUD_AUTO
-	);
+	Soloud_initEx(g_soloud, SOLOUD_CLIP_ROUNDOFF, SOLOUD_AUTO, SOLOUD_AUTO, 128, SOLOUD_AUTO);
 	atexit(endSound);
-	Soloud_set3dSoundSpeed(g_soloud, 1000); // todo: experiment
+	Soloud_set3dSoundSpeed(g_soloud, 500); // todo: experiment
 	g_sounds = calloc(MAX_SOUNDS, sizeof(Sound));
 }
 
@@ -79,6 +77,8 @@ unsigned int playSound3D(GFC_Vector3D position, GFC_Vector3D velocity, double vo
 	Soloud_set3dSourceMinMaxDistance(g_soloud, handle, 20, 40);
 	return handle;
 }
+
+void stopSound(unsigned int handle) { Soloud_stop(g_soloud, handle); }
 
 void updateSound3D(unsigned int handle, GFC_Vector3D position, GFC_Vector3D velocity, float volume, float speed) {
 	Soloud_set3dSourcePosition(g_soloud, handle, position.x, position.y, position.z);
