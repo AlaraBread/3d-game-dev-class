@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cd "$(dirname "$0")"
-root=`pwd`
+root=$(pwd)
 
 cd ${root}
 cd gfc/simple_json/src
@@ -17,3 +17,7 @@ cd ${root}
 cd gfc/src
 make
 make static
+
+cd ${root}
+cd soloud/build/gmake
+make config=release

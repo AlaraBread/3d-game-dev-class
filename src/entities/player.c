@@ -7,6 +7,7 @@
 #include "moments_of_inertia.h"
 #include "physics.h"
 #include "simple_logger.h"
+#include "sound.h"
 #include "util.h"
 
 #define PLAYER_RADIUS 4
@@ -104,6 +105,40 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 			self->visualTransform, self->visualTransform, gfc_vector3df(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS)
 		);
 	}
+	// select collision with largest penetration
+	double maxPenetration = 0.0;
+	Collision *selectedCollision = NULL;
+	for(int i = 0; i < MAX_REPORTED_COLLISIONS; i++) {
+		Collision *col = &self->reportedCollisions[i];
+		PhysicsBody *other = col->a == self ? col->b : col->a;
+		if(col->hit && other->motionType > TRIGGER && col->penetrationDepth > maxPenetration) {
+			maxPenetration = col->penetrationDepth;
+			selectedCollision = col;
+		} else {
+			break;
+		}
+	}
+	Collision col = {0};
+	if(selectedCollision) col = *selectedCollision;
+	PhysicsBody *other = col.hit ? col.a == self ? col.b : col.a : NULL;
+	GFC_Vector3D otherPos = col.hit ? col.a == self ? col.bPosition : col.aPosition : gfc_vector3d(0, 0, 0);
+	// roll sound
+	GFC_Vector3D velocity = other ? velocityAtPoint(other, otherPos) : gfc_vector3d(0, 0, 0);
+	gfc_vector3d_sub(velocity, self->linearVelocity, velocity);
+	velocity = projectVectorOntoPlane(velocity, col.normal);
+	float rollSpeed = gfc_vector3d_magnitude(velocity);
+	float volume = lerp(
+		self->entity.player.prevVolume, col.hit && rollSpeed > 30 ? SDL_clamp(rollSpeed * 0.01, 0.0, 1.0) : 0.0,
+		1 - exp(-100 * delta)
+	);
+	updateSound3D(
+		self->entity.player.rollSoundHandle, col.aPosition, velocity, volume,
+		SDL_clamp(rollSpeed * 0.05 + 0.9, 0.9, 1.1)
+	);
+	self->entity.player.prevVolume = volume;
+	// hit sound
+	volume = SDL_clamp(gfc_vector3d_magnitude(projectVector(self->linearVelocity, col.normal)) * 0.005, 0.0, 1.0);
+	if(volume > 0.05) playSound3D(col.aPosition, gfc_vector3d(0, 0, 0), volume, self->entity.player.hitSound, false);
 }
 
 void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]) {
@@ -175,6 +210,8 @@ void freePlayer(PhysicsBody *self) {
 	if(self->entity.player.boxModel) gf3d_model_free(self->entity.player.boxModel);
 	if(self->entity.player.sphereModel) gf3d_model_free(self->entity.player.sphereModel);
 	self->model = NULL; // make sure we dont free twice
+	if(self->entity.player.rollSound) freeSound(self->entity.player.rollSound);
+	self->entity.player.rollSound = NULL;
 }
 
 PhysicsBody *g_player = NULL;
@@ -201,6 +238,10 @@ PhysicsBody *createPlayer() {
 	player->frameProcess = playerFrameProcess;
 	player->entityType = PLAYER;
 	player->entity.player.jumpMult = player->entity.player.speedMult = 1.0;
+	player->entity.player.rollSound = loadSound("assets/sfx/roll.wav");
+	player->entity.player.hitSound = loadSound("assets/sfx/hit.wav");
+	player->entity.player.rollSoundHandle =
+		playSound3D(player->position, player->linearVelocity, 1.0, player->entity.player.rollSound, true);
 	g_player = player;
 	return player;
 }

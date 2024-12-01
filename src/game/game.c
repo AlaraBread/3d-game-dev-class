@@ -17,6 +17,7 @@
 #include "gf2d_font.h"
 #include "gf2d_mouse.h"
 #include "gf2d_sprite.h"
+#include "sound.h"
 
 #include "gf3d_camera.h"
 #include "gf3d_draw.h"
@@ -55,6 +56,7 @@ int main(int argc, char *argv[]) {
 	gf3d_draw_init();			  // 3D
 	gf2d_draw_manager_init(1000); // 2D
 	initUISystem(300);
+	startSound();
 
 	gf2d_mouse_set_captured(false);
 
@@ -80,6 +82,8 @@ int main(int argc, char *argv[]) {
 
 	// windows
 
+	GFC_Vector3D prevPosition = {0};
+
 	// main game loop
 	Bool done = false;
 	while(!done) {
@@ -103,6 +107,16 @@ int main(int argc, char *argv[]) {
 		gf3d_vgraphics_render_end();
 		slog_sync();
 		gf3d_model_clear_shadows();
+
+		GFC_Vector3D up, forward;
+		gf3d_camera_get_view_vectors(&forward, NULL, &up);
+		GFC_Vector3D position = gf3d_camera_get_position();
+		GFC_Vector3D velocity;
+		gfc_vector3d_sub(velocity, prevPosition, position);
+		gfc_vector3d_scale(velocity, velocity, 1.0 / delta);
+		updateListener3D(position, forward, up, velocity);
+		prevPosition = position;
+
 		if(gfc_input_command_down("exit")) done = true; // exit condition
 	}
 	vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());

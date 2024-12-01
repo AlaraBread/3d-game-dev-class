@@ -198,6 +198,8 @@ GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle) {
 	return out;
 }
 
+double lerp(double a, double b, double r) { return (1 - r) * a + b * r; }
+
 GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, double t) {
 	gfc_vector3d_scale(a, a, t);
 	gfc_vector3d_scale(b, b, (1.0 - t));

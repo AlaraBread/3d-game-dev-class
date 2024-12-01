@@ -7,6 +7,7 @@
 #include "gfc_vector.h"
 #include "powerup.h"
 #include "raycast.h"
+#include "sound.h"
 
 typedef enum ShapeType_e {
 	SPHERE,
@@ -90,6 +91,9 @@ struct PhysicsBody_s {
 			double speedMult, jumpMult;
 			Bool isCar, isCubed;
 			Bool done;
+			Sound *rollSound, *hitSound;
+			unsigned int rollSoundHandle;
+			float prevVolume;
 		} player;
 		struct {
 			GFC_Vector3D movementStart, movementEnd;
