@@ -132,7 +132,7 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 		1 - exp(-100 * delta)
 	);
 	updateSound3D(
-		self->entity.player.rollSoundHandle, col.aPosition, velocity, volume,
+		self->entity.player.rollSoundHandle, col.aPosition, self->linearVelocity, volume,
 		SDL_clamp(rollSpeed * 0.05 + 0.9, 0.9, 1.1)
 	);
 	self->entity.player.prevVolume = volume;

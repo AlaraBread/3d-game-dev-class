@@ -71,6 +71,7 @@ unsigned int playSound3D(GFC_Vector3D position, GFC_Vector3D velocity, double vo
 	if(!g_soloud) return 0;
 	unsigned int handle = Soloud_play3d(g_soloud, sound->sound, position.x, position.y, position.z);
 	Soloud_setLooping(g_soloud, handle, looping);
+	Soloud_setInaudibleBehavior(g_soloud, handle, looping, false);
 	Soloud_set3dSourceVelocity(g_soloud, handle, velocity.x, velocity.y, velocity.z);
 	Soloud_set3dSourceDopplerFactor(g_soloud, handle, 1.0);
 	// use inverse distance
