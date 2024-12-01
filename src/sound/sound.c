@@ -40,7 +40,6 @@ Sound *loadSound(const char *file) {
 	if(!g_soloud) return NULL;
 	Sound *sound = findSound(file);
 	if(sound) {
-		slog("found existing");
 		sound->refs++;
 		return sound;
 	}
@@ -57,7 +56,6 @@ Sound *loadSound(const char *file) {
 	sound->refs = 1;
 	gfc_line_cpy(sound->filename, file);
 	sound->sound = stream;
-	slog("made new sound");
 	return sound;
 }
 
