@@ -124,6 +124,7 @@ void processPlayerSFX(PhysicsBody *self, double delta) {
 		if(canHit && volume > 0.05) {
 			self->entity.player.hitTimer = 0.2;
 			playSound3D(col->aPosition, gfc_vector3d(0, 0, 0), volume, self->entity.player.hitSound, false);
+			canHit = false;
 		}
 		if(col->penetrationDepth > maxPenetration) {
 			maxPenetration = col->penetrationDepth;
