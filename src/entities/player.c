@@ -15,7 +15,8 @@
 #define JUMP_BUFFER 0.25
 #define COYOTE_TIME 0.25
 #define AIR_CONTROL 1
-#define ANGULAR_SPEED 40
+#define FLOOR_AIR_CONTROL_AMOUNT 0.5
+#define ANGULAR_SPEED 60
 #define JUMP_IMPULSE 0.5
 
 void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]);
@@ -68,7 +69,7 @@ void playerPhysicsProcess(PhysicsBody *self, double delta) {
 	gfc_vector3d_rotate_about_z(&forward, self->entity.player.yaw);
 	gfc_vector3d_rotate_about_z(&left, self->entity.player.yaw);
 	double airControlAmount = AIR_CONTROL * self->entity.player.speedMult;
-	if(self->entity.player.coyoteTimer > 0.01) airControlAmount *= 0.5;
+	if(self->entity.player.coyoteTimer > 0.01) airControlAmount *= FLOOR_AIR_CONTROL_AMOUNT;
 	GFC_Vector3D airControl;
 	if(gfc_input_command_held("forward")) {
 		gfc_vector3d_add(self->angularVelocity, self->angularVelocity, left);

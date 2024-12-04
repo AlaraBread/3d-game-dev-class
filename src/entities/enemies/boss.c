@@ -6,7 +6,7 @@
 
 extern PhysicsBody *g_player;
 
-#define SHOOTING_TIME 1
+#define SHOOTING_TIME 0.5
 #define SHOOT_DEPTH 50
 #define SHOOT_CYCLE_TIME 4
 #define STARTING_SCALE 2.0
