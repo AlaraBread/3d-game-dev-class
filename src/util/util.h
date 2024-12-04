@@ -50,6 +50,7 @@ GFC_Vector3D toBarycentric(GFC_Vector3D p, GFC_Triangle3D triangle);
 GFC_Vector3D fromBarycentric(GFC_Vector3D bary, GFC_Triangle3D triangle);
 double lerp(double a, double b, double r);
 GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, double t);
+GFC_Vector4D slerp(GFC_Vector4D a, GFC_Vector4D b, double t);
 GFC_Vector3D perpendicularVector3(GFC_Vector3D v);
 GFC_Vector3D kindaPerpendicularVector3(GFC_Vector3D v);
 void transposeMat3(GFC_Matrix3 mat);

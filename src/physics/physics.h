@@ -13,6 +13,7 @@ typedef enum ShapeType_e {
 	SPHERE,
 	BOX,
 	CONVEX_HULL,
+	CUE,
 } ShapeType;
 
 typedef struct Sphere_s {
@@ -33,6 +34,7 @@ typedef struct Shape_s {
 		Sphere sphere;
 		Box box;
 		ConvexHull convexHull;
+		double cueScale;
 	} shape;
 } Shape;
 
@@ -110,7 +112,8 @@ struct PhysicsBody_s {
 			double rightingTimer, shootTimer;
 			GFC_Vector3D direction;
 			GFC_Vector3D movementStart, movementEnd;
-			double movementSpeed, moveDirection, moveRatio;
+			double movementSpeed, moveDirection, moveRatio, level;
+			PhysicsBody *hand;
 		} enemy;
 	} entity;
 };

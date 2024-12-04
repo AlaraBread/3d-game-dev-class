@@ -1,0 +1,7 @@
+{
+    "model":
+    {
+        "obj":"assets/models/boss/boss.obj",
+        "texture":"assets/textures/checker.png"
+    }
+}

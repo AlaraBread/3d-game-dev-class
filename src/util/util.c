@@ -1,4 +1,5 @@
 #include "util.h"
+#include "simple_logger.h"
 
 // https://stackoverflow.com/a/29871193
 
@@ -205,6 +206,22 @@ GFC_Vector3D vector3DLerp(GFC_Vector3D a, GFC_Vector3D b, double t) {
 	gfc_vector3d_scale(b, b, (1.0 - t));
 	GFC_Vector3D out;
 	gfc_vector3d_add(out, a, b);
+	return out;
+}
+
+// https://en.wikipedia.org/wiki/Slerp
+GFC_Vector4D slerp(GFC_Vector4D a, GFC_Vector4D b, double t) {
+	double o = acos(gfc_vector4d_dot_product(a, b));
+	double s = sin(o);
+	if(s == 0) return gfc_vector4d(0, 0, 0, 1);
+	double st = sin(o * t);
+	double sti = sin(o * (1 - t));
+	GFC_Vector4D p1;
+	gfc_vector4d_scale(p1, a, sti / s);
+	GFC_Vector4D p2;
+	gfc_vector4d_scale(p2, b, st / s);
+	GFC_Vector4D out;
+	gfc_vector4d_add(out, p1, p2);
 	return out;
 }
 

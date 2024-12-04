@@ -8,6 +8,7 @@
 #include "ui.h"
 #include "util.h"
 
+#include "boss.h"
 #include "cobweb.h"
 #include "enemy_counter.h"
 #include "fan.h"
@@ -199,4 +200,5 @@ void loadScene(const char *filename) {
 		}
 	}
 	gf3d_model_free(meshes);
+	createBoss(gfc_vector3d(100, -100, 0));
 }

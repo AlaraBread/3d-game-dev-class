@@ -5,6 +5,8 @@
 #include "shapes.h"
 #include "util.h"
 
+#include "boss.h"
+
 GFC_Vector3D sphereSupport(Shape *shape, GFC_Vector3D direction) {
 	GFC_Vector3D support;
 	gfc_vector3d_scale(support, direction, -shape->shape.sphere.radius);
@@ -33,6 +35,27 @@ GFC_Vector3D convexHullSupport(Shape *shape, GFC_Vector3D direction) {
 	return closestVert;
 }
 
+GFC_Vector3D circleSupport(double radius, GFC_Vector3D direction) {
+	direction.z = 0;
+	gfc_vector3d_normalize(&direction);
+	gfc_vector3d_scale(direction, direction, -radius);
+	return direction;
+}
+
+// hardcoding cue support function
+GFC_Vector3D cueSupport(Shape *shape, GFC_Vector3D direction) {
+	GFC_Vector3D s;
+	if(direction.z > 0) {
+		s = circleSupport(1.39256 * shape->shape.cueScale, direction);
+		s.z -= 109.326 * shape->shape.cueScale;
+		return s;
+	} else {
+		s = circleSupport(2.56803 * shape->shape.cueScale, direction);
+		s.z += 45.3185 * shape->shape.cueScale;
+		return s;
+	}
+}
+
 GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction) {
 	GFC_Vector3D reverseRotation;
 	gfc_vector3d_negate(reverseRotation, body->rotation);
@@ -48,6 +71,9 @@ GFC_Vector3D support(PhysicsBody *body, GFC_Vector3D direction) {
 			break;
 		case CONVEX_HULL:
 			support = convexHullSupport(shape, direction);
+			break;
+		case CUE:
+			support = cueSupport(shape, direction);
 			break;
 	}
 	rotate_vector3_by_euler_vector(&support, body->rotation);

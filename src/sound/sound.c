@@ -4,6 +4,7 @@
 #include <soloud_c.h>
 
 #include "sound.h"
+#include "util.h"
 
 Soloud *g_soloud = NULL;
 Sound *g_sounds = NULL;
@@ -66,6 +67,7 @@ void freeSound(Sound *sound) {
 }
 
 unsigned int playSound3D(GFC_Vector3D position, GFC_Vector3D velocity, double volume, Sound *sound, Bool looping) {
+	if(!(vector3_is_finite(position) && vector3_is_finite(velocity) && isfinite(volume))) return -1;
 	if(!g_soloud) return 0;
 	unsigned int handle = Soloud_play3d(g_soloud, sound->sound, position.x, position.y, position.z);
 	Soloud_setLooping(g_soloud, handle, looping);
@@ -81,6 +83,7 @@ unsigned int playSound3D(GFC_Vector3D position, GFC_Vector3D velocity, double vo
 void stopSound(unsigned int handle) { Soloud_stop(g_soloud, handle); }
 
 void updateSound3D(unsigned int handle, GFC_Vector3D position, GFC_Vector3D velocity, float volume, float speed) {
+	if(!(vector3_is_finite(position) && vector3_is_finite(velocity) && isfinite(volume) && isfinite(speed))) return;
 	Soloud_set3dSourcePosition(g_soloud, handle, position.x, position.y, position.z);
 	Soloud_set3dSourceVelocity(g_soloud, handle, velocity.x, velocity.y, velocity.z);
 	Soloud_setRelativePlaySpeed(g_soloud, handle, speed);

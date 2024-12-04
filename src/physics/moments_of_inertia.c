@@ -28,22 +28,22 @@ GFC_Vector3D getInertiaForBody(PhysicsBody *body) {
 }
 
 void calculateInertiaForBody(PhysicsBody *body) {
-	if(body->motionType == STATIC) {
-		body->inertia = gfc_vector3d(1000000000000, 1000000000000, 1000000000000);
-		body->mass = 1000000000000;
-		return;
-	}
 	switch(body->shape.shapeType) {
 		case SPHERE:
 			body->boundingRadius = body->shape.shape.sphere.radius;
 			break;
 		case BOX:
 			body->boundingRadius =
-				MAX(MAX(body->shape.shape.box.extents.x, body->shape.shape.box.extents.y),
-					body->shape.shape.box.extents.z);
+				MAX(MAX(body->shape.shape.box.extents.x * 2, body->shape.shape.box.extents.y * 2),
+					body->shape.shape.box.extents.z * 2);
 			break;
 		default:
 			break;
+	}
+	if(body->motionType == STATIC) {
+		body->inertia = gfc_vector3d(1000000000000, 1000000000000, 1000000000000);
+		body->mass = 1000000000000;
+		return;
 	}
 	body->inertia = getInertiaForBody(body);
 }
