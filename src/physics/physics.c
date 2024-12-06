@@ -166,8 +166,13 @@ void physicsUpdate(double delta) {
 	}
 }
 
+extern GFC_Vector3D g_playerSpawnPoint;
 void resetPhysicsBody(PhysicsBody *body) {
-	body->position = gfc_vector3d(gfc_crandom(), gfc_crandom(), gfc_crandom());
+	if(body->entityType == PLAYER) {
+		body->position = g_playerSpawnPoint;
+	} else {
+		body->position = gfc_vector3d(gfc_crandom(), gfc_crandom(), gfc_crandom());
+	}
 	body->linearVelocity = gfc_vector3d(0, 0, 0);
 	body->angularVelocity = gfc_vector3d(0, 0, 0);
 	body->rotation = gfc_vector3d(0, 0, 0);

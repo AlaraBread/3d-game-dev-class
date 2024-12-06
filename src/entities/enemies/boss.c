@@ -6,10 +6,10 @@
 
 extern PhysicsBody *g_player;
 
-#define SHOOTING_TIME 0.5
+#define SHOOTING_TIME 0.25
 #define SHOOT_DEPTH 50
-#define SHOOT_CYCLE_TIME 4
-#define STARTING_SCALE 2.0
+#define SHOOT_CYCLE_TIME 1.5
+#define STARTING_SCALE 1.5
 void bossPhysicsProcess(PhysicsBody *self, double delta) {
 	if(!g_player || !g_player->inuse) return;
 	PhysicsBody *hand = self->entity.enemy.hand;
@@ -18,13 +18,15 @@ void bossPhysicsProcess(PhysicsBody *self, double delta) {
 	rotate_vector3_by_euler_vector(&forward, self->rotation);
 
 	// shooting
+	const double shoot_cycle_time = SHOOT_CYCLE_TIME / pow(1.5, self->entity.enemy.level);
+	const double shooting_time = SHOOTING_TIME / pow(1.5, self->entity.enemy.level);
 	GFC_Vector3D target;
 	double beforeTimer = self->entity.enemy.shootTimer;
-	if((self->entity.enemy.shootTimer -= delta) <= SHOOTING_TIME) {
-		if(beforeTimer > SHOOTING_TIME) self->entity.enemy.direction = forward;
+	if((self->entity.enemy.shootTimer -= delta) <= shooting_time) {
+		if(beforeTimer > shooting_time) self->entity.enemy.direction = forward;
 		gfc_vector3d_scale(target, self->entity.enemy.direction, SHOOT_DEPTH);
 		gfc_vector3d_add(target, target, self->entity.enemy.movementStart);
-		if(self->entity.enemy.shootTimer <= 0) self->entity.enemy.shootTimer += SHOOT_CYCLE_TIME;
+		if(self->entity.enemy.shootTimer <= 0) self->entity.enemy.shootTimer += shoot_cycle_time;
 	} else {
 		target = self->entity.enemy.movementStart;
 	}
@@ -37,7 +39,7 @@ void bossPhysicsProcess(PhysicsBody *self, double delta) {
 	hand->position = self->position;
 
 	// rotate
-	if(self->entity.enemy.shootTimer > SHOOTING_TIME) {
+	if(self->entity.enemy.shootTimer > shooting_time) {
 		GFC_Vector3D toPlayer;
 		gfc_vector3d_sub(toPlayer, g_player->position, self->position);
 		gfc_vector3d_normalize(&toPlayer);
@@ -62,10 +64,14 @@ void bossPhysicsProcess(PhysicsBody *self, double delta) {
 		GFC_Vector3D normal = col->normal;
 		if(self == col->a) gfc_vector3d_negate(normal, normal);
 		if(other->entityType == PLAYER) {
-			GFC_Vector3D impulse;
-			gfc_vector3d_scale(impulse, normal, -2);
-			applyImpulse(other, impulse, col->aPosition);
+			GFC_Vector3D v;
+			gfc_vector3d_scale(v, normal, 200);
+			other->linearVelocity = v;
 			self->entity.enemy.level += 1;
+			if(self->entity.enemy.level >= 3) {
+				physicsFreeBody(self);
+				return;
+			}
 		}
 	}
 	double targetSize = STARTING_SCALE / pow(1.5, self->entity.enemy.level);
@@ -90,7 +96,10 @@ void bossFrameProcess(PhysicsBody *self, double delta) {
 		gf3d_model_add_shadow(gfc_vector3d_to_float(self->position), gfc_vector3d_to_float(down), shadowSize, self);
 }
 
-void bossFree(PhysicsBody *self) { physicsFreeBody(self->entity.enemy.hand); }
+void bossFree(PhysicsBody *self) {
+	freeEnemy(self);
+	physicsFreeBody(self->entity.enemy.hand);
+}
 
 PhysicsBody *createBoss(GFC_Vector3D position) {
 	PhysicsBody *boss = createEnemy();

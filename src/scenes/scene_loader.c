@@ -8,8 +8,11 @@
 #include "ui.h"
 #include "util.h"
 
+#include "ball_enemy.h"
 #include "boss.h"
+#include "box_enemy.h"
 #include "cobweb.h"
+#include "cylinder_enemy.h"
 #include "enemy_counter.h"
 #include "fan.h"
 #include "finish.h"
@@ -19,10 +22,12 @@
 #include "lava.h"
 #include "magnet.h"
 #include "moving_platform.h"
+#include "moving_turret_enemy.h"
 #include "player.h"
 #include "rotating_platform.h"
 #include "timer.h"
 #include "treadmill.h"
+#include "turret_enemy.h"
 
 #include "scene_loader.h"
 
@@ -50,6 +55,7 @@ GFC_Vector3D lookupTarget(SJson *node, SJson *nodes) {
 }
 
 GameMode g_gamemode = TIME;
+GFC_Vector3D g_playerSpawnPoint = {0};
 
 void loadScene(const char *filename) {
 	clearUI();
@@ -67,11 +73,13 @@ void loadScene(const char *filename) {
 		SJson *node = sj_array_get_nth(nodes, i);
 		SJson *extras = sj_object_get_value(node, "extras");
 		const char *entityType = sj_get_string_value(sj_object_get_value(extras, "entity"));
-		GFC_Vector3DF position = {0};
-		GFC_Vector4DF rotation = {0};
-		rotation.w = 1.0;
-		sj_object_get_vector3d(node, "translation", &position);
-		sj_object_get_vector4d(node, "rotation", &rotation);
+		GFC_Vector3DF positionf = {0};
+		GFC_Vector4DF rotationf = {0};
+		rotationf.w = 1.0;
+		sj_object_get_vector3d(node, "translation", &positionf);
+		sj_object_get_vector4d(node, "rotation", &rotationf);
+		GFC_Vector3D position = gfc_vector3df_to_double(positionf);
+		GFC_Vector4D rotation = gfc_vector4df_to_double(rotationf);
 		int meshIndex = -1;
 		sj_get_integer_value(sj_object_get_value(node, "mesh"), &meshIndex);
 		if(meshIndex < 0) { continue; }
@@ -116,6 +124,7 @@ void loadScene(const char *filename) {
 			entity->model = model;
 			entity->motionType = TRIGGER;
 		} else if(strcmp(entityType, "player") == 0) {
+			g_playerSpawnPoint = position;
 			entity = createPlayer();
 		} else if(strcmp(entityType, "box_floor") == 0) {
 			entity = createFloor(extents);
@@ -131,7 +140,7 @@ void loadScene(const char *filename) {
 			GFC_Vector3D targetPos = lookupTarget(node, nodes);
 			GFC_Vector3D diff;
 			gfc_vector3d_sub(diff, targetPos, position);
-			entity = createMovingPlatform(gfc_vector3df_to_double(position), extents, diff, speed);
+			entity = createMovingPlatform(position, extents, diff, speed);
 			useTransform = false;
 		} else if(strcmp(entityType, "fan") == 0) {
 			float speed = 200.;
@@ -140,16 +149,13 @@ void loadScene(const char *filename) {
 			GFC_Vector3D dir;
 			gfc_vector3d_sub(dir, targetPos, position);
 			double dist = gfc_vector3d_magnitude(dir);
-			entity = createFan(gfc_vector3df_to_double(position), dir, dist, speed);
+			entity = createFan(position, dir, dist, speed);
 			useTransform = false;
 		} else if(strcmp(entityType, "magnet") == 0) {
 			float strength = 10.;
 			sj_get_float_value(sj_object_get_value(extras, "strength"), &strength);
 			GFC_Vector3D targetPos = lookupTarget(node, nodes);
-			entity = createMagnet(
-				gfc_vector3df_to_double(position),
-				gfc_vector3d_magnitude_between(targetPos, gfc_vector3df_to_double(position)), strength
-			);
+			entity = createMagnet(position, gfc_vector3d_magnitude_between(targetPos, position), strength);
 			useTransform = false;
 		} else if(strcmp(entityType, "jump_pad") == 0) {
 			float strength = 100.;
@@ -190,15 +196,41 @@ void loadScene(const char *filename) {
 				continue;
 			}
 			entity = createPowerup(type);
+		} else if(strcmp(entityType, "enemy") == 0) {
+			const char *typeString = sj_get_string_value(sj_object_get_value(extras, "type"));
+			if(!typeString) {
+				slog("missing enemy type");
+				continue;
+			}
+			if(strcmp(typeString, "ball") == 0) {
+				entity = createBallEnemy(position);
+			} else if(strcmp(typeString, "puck") == 0) {
+				entity = createCylinderEnemy(position);
+			} else if(strcmp(typeString, "turret") == 0) {
+				entity = createTurretEnemy(position);
+			} else if(strcmp(typeString, "moving_turret") == 0) {
+				float speed = 10.;
+				sj_get_float_value(sj_object_get_value(extras, "speed"), &speed);
+				GFC_Vector3D targetPos = lookupTarget(node, nodes);
+				GFC_Vector3D diff;
+				gfc_vector3d_sub(diff, targetPos, position);
+				entity = createMovingTurretEnemy(position, diff, speed);
+			} else if(strcmp(typeString, "box") == 0) {
+				entity = createBoxEnemy(position);
+			} else if(strcmp(typeString, "boss") == 0) {
+				entity = createBoss(position);
+			} else {
+				slog("unknown enemy type: %s", typeString);
+				continue;
+			}
 		} else {
 			slog("unknown entity type: %s", entityType);
 			continue;
 		}
 		if(entity && useTransform) {
-			entity->position = gfc_vector3df_to_double(position);
-			quat_to_euler_vector(&entity->rotation, gfc_vector4df_to_double(rotation));
+			entity->position = position;
+			quat_to_euler_vector(&entity->rotation, rotation);
 		}
 	}
 	gf3d_model_free(meshes);
-	createBoss(gfc_vector3d(100, -100, 0));
 }
