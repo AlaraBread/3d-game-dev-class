@@ -76,6 +76,7 @@ double getTimeScale() { return physics.timeScale; }
 
 void physicsUpdate(double delta);
 
+extern Bool g_paused;
 #define FIXED_TIMESTEP (1.0 / 90.0)
 #define MAX_TIMESTEPS_PER_FRAME 5
 void physicsFrame(double delta) {
@@ -83,7 +84,7 @@ void physicsFrame(double delta) {
 	physicsDelta += delta;
 	int i = 0;
 	while(physicsDelta > FIXED_TIMESTEP) {
-		physicsUpdate(FIXED_TIMESTEP * physics.timeScale);
+		physicsUpdate(FIXED_TIMESTEP * physics.timeScale * !g_paused);
 		physicsDelta -= FIXED_TIMESTEP;
 		i++;
 		if(i > MAX_TIMESTEPS_PER_FRAME) {
@@ -95,7 +96,7 @@ void physicsFrame(double delta) {
 	for(int i = 0; i < physics.maxPhysicsBodies; i++) {
 		PhysicsBody *body = &physics.physicsBodies[i];
 		if(!body->inuse) continue;
-		if(body->frameProcess) body->frameProcess(body, delta);
+		if(body->frameProcess) body->frameProcess(body, delta * !g_paused);
 	}
 }
 

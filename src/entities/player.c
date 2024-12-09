@@ -5,6 +5,7 @@
 #include "gf3d_draw.h"
 #include "gfc_input.h"
 #include "moments_of_inertia.h"
+#include "pause.h"
 #include "physics.h"
 #include "simple_logger.h"
 #include "sound.h"
@@ -191,9 +192,10 @@ void jump(PhysicsBody *self, Collision cols[MAX_REPORTED_COLLISIONS]) {
 
 #define CAMERA_DIST_MULT 12
 
+extern Bool g_paused;
 void playerFrameProcess(PhysicsBody *self, double delta) {
 	// camera movement
-	if(!self->entity.player.done) {
+	if(!self->entity.player.done && !g_paused) {
 		GFC_Vector2D mouseMotion = gfc_input_get_mouse_motion();
 		self->entity.player.pitch -= mouseMotion.y * 0.01;
 		self->entity.player.yaw -= mouseMotion.x * 0.01;
@@ -228,6 +230,7 @@ void playerFrameProcess(PhysicsBody *self, double delta) {
 	} else {
 		shadowSize = self->shape.shape.box.extents.x;
 	}
+	if(gfc_input_command_pressed("pause")) { pause(!g_paused); }
 	if(rayCol.hit)
 		gf3d_model_add_shadow(
 			gfc_vector3d_to_float(self->position), gfc_vector3d_to_float(rayCol.position), shadowSize, self

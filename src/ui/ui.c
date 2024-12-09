@@ -51,7 +51,7 @@ void clearUI() {
 	memset(g_UIElements, 0, sizeof(UIElement) * g_maxUIElements);
 }
 
-void clearUIGroup(int group) {
+void clearUIGroup(UIGroup group) {
 	for(int i = 0; i < g_maxUIElements; i++) {
 		UIElement *ent = &g_UIElements[i];
 		if(ent->group == group) { freeUIElement(ent); }

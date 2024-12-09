@@ -6,6 +6,8 @@
 #include "gfc_text.h"
 #include "gfc_vector.h"
 
+typedef enum UIGroup { UI_NONE, UI_PAUSE } UIGroup;
+
 typedef struct UIElement_S {
 	Bool inuse;
 	GFC_TextLine text;
@@ -18,7 +20,7 @@ typedef struct UIElement_S {
 	GFC_Vector2D size;
 	FontTypes fontSize;
 	int index;
-	int group;
+	UIGroup group;
 	Bool new;
 	double timer;
 	void (*think)(struct UIElement_S *self, double);
@@ -36,7 +38,7 @@ void initUISystem(unsigned int maxElements);
 UIElement *newUIElement();
 void freeUIElement(UIElement *ent);
 void clearUI();
-void clearUIGroup(int group);
+void clearUIGroup(UIGroup group);
 void uiFrame(double delta);
 
 void drawTextRect(UIElement *ent);

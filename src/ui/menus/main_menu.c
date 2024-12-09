@@ -1,5 +1,6 @@
 #include "main_menu.h"
 #include "enemy_counter.h"
+#include "gf2d_mouse.h"
 #include "physics.h"
 #include "scene_loader.h"
 #include "timer.h"
@@ -12,6 +13,7 @@ static void level3(UIElement *button) { loadScene("assets/scenes/level3.gltf"); 
 void mainMenu() {
 	physicsClear();
 	clearUI();
+	gf2d_mouse_set_captured(false);
 	createPanel(gfc_vector2d(0, 0), gfc_vector2d(1280, 720), gfc_color(0.3, 0, 0, 1));
 	UIElement *label = createLabel(gfc_vector2d(0, 0), gfc_vector2d(1000, 200));
 	createButton(gfc_vector2d(1280 / 2, 720 / 2), gfc_vector2d(300, 100), "level 1")->click = level1;
